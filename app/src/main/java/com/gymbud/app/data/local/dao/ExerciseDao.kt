@@ -23,10 +23,10 @@ interface ExerciseDao {
     suspend fun insertAll(exercises: List<Exercise>): List<Long>
 
     @Update
-    suspend fun update(exercise: Exercise)
+    suspend fun update(exercise: Exercise): Int
 
     @Delete
-    suspend fun delete(exercise: Exercise)
+    suspend fun delete(exercise: Exercise): Int
 
 
     @Query("SELECT * FROM exercises WHERE id = :id")
