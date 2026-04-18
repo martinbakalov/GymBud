@@ -12,17 +12,31 @@ import com.gymbud.app.data.local.entity.Exercise
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.gymbud.app.data.local.dao.WorkoutDao
+import com.gymbud.app.data.local.dao.WorkoutExerciseDao
+import com.gymbud.app.data.local.dao.WorkoutSetDao
+import com.gymbud.app.data.local.entity.Workout
+import com.gymbud.app.data.local.entity.WorkoutExercise
+import com.gymbud.app.data.local.entity.WorkoutSet
 
 
 @Database(
-    entities = [Exercise::class],
-    version = 1,
+    entities = [
+        Exercise::class,
+        Workout::class,
+        WorkoutExercise::class,
+        WorkoutSet::class
+    ],
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class GymBudDatabase : RoomDatabase() {
 
     abstract fun exerciseDao(): ExerciseDao
+    abstract fun workoutDao(): WorkoutDao
+    abstract fun workoutExerciseDao(): WorkoutExerciseDao
+    abstract fun workoutSetDao(): WorkoutSetDao
 
     companion object {
         @Volatile
@@ -38,6 +52,7 @@ abstract class GymBudDatabase : RoomDatabase() {
                     GymBudDatabase::class.java,
                     "gymbud.db"
                 )
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .addCallback(SeedCallback(applicationScope))
                     .build()
                 INSTANCE = instance
