@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gymbud.app.ui.navigation.TopDestination
+import com.gymbud.app.ui.screens.exercises.ExercisesScreen
 
 
 @Composable
