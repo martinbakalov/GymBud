@@ -25,7 +25,7 @@ sealed class TopDestination(
     )
 
     data object Exercises : TopDestination(
-        route = "exercises",
+        route = ExercisesRoutes.GRAPH,
         labelRes = R.string.nav_exercises,
         iconOutlined = Icons.Outlined.FitnessCenter,
         iconFilled = Icons.Filled.FitnessCenter
@@ -38,7 +38,13 @@ sealed class TopDestination(
         iconFilled = Icons.Filled.History
     )
 
+
     companion object {
         val all = listOf(Workouts, Exercises, History)
     }
+}
+object ExercisesRoutes {
+    const val GRAPH = "exercises"
+    const val LIST = "exercises/list"
+    const val NEW = "exercises/new"
 }

@@ -1,0 +1,94 @@
+package com.gymbud.app.ui.screens.exercises
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.gymbud.app.data.local.entity.Exercise
+import com.gymbud.app.data.repository.ExerciseRepository
+import com.gymbud.app.domain.model.Equipment
+import com.gymbud.app.domain.model.ExerciseType
+import com.gymbud.app.domain.model.MuscleGroup
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+data class CreateExerciseUiState(
+    val name: String = "",
+    val equipment: Equipment = Equipment.BARBELL,
+    val primaryMuscle: MuscleGroup = MuscleGroup.CHEST,
+    val secondaryMuscles: Set<MuscleGroup> = emptySet(),
+    val type: ExerciseType = ExerciseType.WEIGHT_REPS,
+    val isSaving: Boolean = false
+) {
+    val canSave: Boolean get() = name.isNotBlank() && !isSaving
+}
+
+class CreateExerciseViewModel(
+    private val repository: ExerciseRepository
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(CreateExerciseUiState())
+    val uiState: StateFlow<CreateExerciseUiState> = _uiState.asStateFlow()
+
+    fun onNameChange(value: String) {
+        _uiState.value = _uiState.value.copy(name = value)
+    }
+
+    fun onEquipmentChange(value: Equipment) {
+        _uiState.value = _uiState.value.copy(equipment = value)
+    }
+
+    fun onPrimaryMuscleChange(value: MuscleGroup) {
+        val current = _uiState.value
+
+        _uiState.value = current.copy(
+            primaryMuscle = value,
+            secondaryMuscles = current.secondaryMuscles - value
+        )
+    }
+
+    fun onToggleSecondaryMuscle(muscle: MuscleGroup) {
+        val current = _uiState.value
+        if (muscle == current.primaryMuscle) return
+        val newSet = if (muscle in current.secondaryMuscles) {
+            current.secondaryMuscles - muscle
+        } else {
+            current.secondaryMuscles + muscle
+        }
+        _uiState.value = current.copy(secondaryMuscles = newSet)
+    }
+
+    fun onTypeChange(value: ExerciseType) {
+        _uiState.value = _uiState.value.copy(type = value)
+    }
+
+    fun save(onSaved: () -> Unit) {
+        val state = _uiState.value
+        if (!state.canSave) return
+
+        _uiState.value = state.copy(isSaving = true)
+        viewModelScope.launch {
+            repository.createCustom(
+                Exercise(
+                    name = state.name.trim(),
+                    equipment = state.equipment,
+                    primaryMuscle = state.primaryMuscle,
+                    secondaryMuscles = state.secondaryMuscles.toList(),
+                    type = state.type
+                )
+            )
+            onSaved()
+        }
+    }
+
+    class Factory(
+        private val repository: ExerciseRepository
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            require(modelClass.isAssignableFrom(CreateExerciseViewModel::class.java))
+            return CreateExerciseViewModel(repository) as T
+        }
+    }
+}

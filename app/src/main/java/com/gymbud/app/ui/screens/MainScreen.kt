@@ -17,19 +17,23 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gymbud.app.ui.navigation.TopDestination
 import com.gymbud.app.ui.screens.exercises.ExercisesScreen
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.compose.navigation
+import com.gymbud.app.ui.navigation.ExercisesRoutes
+import com.gymbud.app.ui.screens.exercises.CreateExerciseScreen
+
 
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
 
     Scaffold(
         bottomBar = {
             NavigationBar {
                 TopDestination.all.forEach { dest ->
-                    val selected = currentRoute == dest.route
+                    val selected = backStackEntry?.destination?.hierarchy?.any { it.route == dest.route } == true
                     NavigationBarItem(
                         selected = selected,
                         onClick = {
@@ -59,7 +63,25 @@ fun MainScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(TopDestination.Workouts.route) { WorkoutsScreen() }
-            composable(TopDestination.Exercises.route) { ExercisesScreen() }
+
+            navigation(
+                route = ExercisesRoutes.GRAPH,
+                startDestination = ExercisesRoutes.LIST
+            ) {
+                composable(ExercisesRoutes.LIST) {
+                    ExercisesScreen(
+                        onCreateExerciseClick = {
+                            navController.navigate(ExercisesRoutes.NEW)
+                        }
+                    )
+                }
+                composable(ExercisesRoutes.NEW) {
+                    CreateExerciseScreen(
+                        onDone = { navController.popBackStack() }
+                    )
+                }
+            }
+
             composable(TopDestination.History.route) { HistoryScreen() }
         }
     }

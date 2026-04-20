@@ -41,10 +41,12 @@ import com.gymbud.app.domain.model.Equipment
 import com.gymbud.app.domain.model.MuscleGroup
 import com.gymbud.app.ui.util.labelRes
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExercisesScreen() {
+fun ExercisesScreen(onCreateExerciseClick: () -> Unit) {
 
     val app = LocalContext.current.applicationContext as GymBudApplication
     val viewModel: ExerciseListViewModel = viewModel(
@@ -57,6 +59,11 @@ fun ExercisesScreen() {
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.exercises_title)) })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onCreateExerciseClick) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.exercises_new))
+            }
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
@@ -97,7 +104,6 @@ fun ExercisesScreen() {
 
             HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
 
-            // Results
             if (exercises.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
