@@ -21,7 +21,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.navigation
 import com.gymbud.app.ui.navigation.ExercisesRoutes
 import com.gymbud.app.ui.screens.exercises.CreateExerciseScreen
-
+import com.gymbud.app.ui.screens.workouts.WorkoutsScreen
 
 
 @Composable
@@ -62,7 +62,15 @@ fun MainScreen() {
             startDestination = TopDestination.Workouts.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(TopDestination.Workouts.route) { WorkoutsScreen() }
+            composable(TopDestination.Workouts.route) {
+                WorkoutsScreen(
+                    onStartEmptyClick = {
+                    },
+                    onTemplateClick = { templateId ->
+
+                    }
+                )
+            }
 
             navigation(
                 route = ExercisesRoutes.GRAPH,
