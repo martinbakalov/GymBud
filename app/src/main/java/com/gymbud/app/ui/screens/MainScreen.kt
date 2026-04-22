@@ -22,7 +22,11 @@ import androidx.navigation.compose.navigation
 import com.gymbud.app.ui.navigation.ExercisesRoutes
 import com.gymbud.app.ui.screens.exercises.CreateExerciseScreen
 import com.gymbud.app.ui.screens.workouts.WorkoutsScreen
-
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.gymbud.app.ui.navigation.WorkoutsRoutes
+import com.gymbud.app.ui.screens.workouts.ActiveWorkoutScreen
+import com.gymbud.app.ui.screens.workouts.TemplateDetailScreen
 
 @Composable
 fun MainScreen() {
@@ -33,7 +37,8 @@ fun MainScreen() {
         bottomBar = {
             NavigationBar {
                 TopDestination.all.forEach { dest ->
-                    val selected = backStackEntry?.destination?.hierarchy?.any { it.route == dest.route } == true
+                    val selected = backStackEntry?.destination?.hierarchy
+                        ?.any { it.route == dest.route } == true
                     NavigationBarItem(
                         selected = selected,
                         onClick = {
@@ -62,14 +67,58 @@ fun MainScreen() {
             startDestination = TopDestination.Workouts.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(TopDestination.Workouts.route) {
-                WorkoutsScreen(
-                    onStartEmptyClick = {
-                    },
-                    onTemplateClick = { templateId ->
 
-                    }
-                )
+            navigation(
+                route = WorkoutsRoutes.GRAPH,
+                startDestination = WorkoutsRoutes.HOME
+            ) {
+                composable(WorkoutsRoutes.HOME) {
+                    WorkoutsScreen(
+                        onStartEmptyWorkout = { workoutId ->
+                            navController.navigate(WorkoutsRoutes.active(workoutId))
+                        },
+                        onOpenTemplate = { templateId ->
+                            navController.navigate(WorkoutsRoutes.template(templateId))
+                        }
+                    )
+                }
+
+                composable(
+                    route = WorkoutsRoutes.TEMPLATE,
+                    arguments = listOf(
+                        navArgument(WorkoutsRoutes.ARG_WORKOUT_ID) { type = NavType.LongType }
+                    )
+                ) { entry ->
+                    val id = entry.arguments
+                        ?.getLong(WorkoutsRoutes.ARG_WORKOUT_ID)
+                        ?: return@composable
+                    TemplateDetailScreen(
+                        templateId = id,
+                        onStartWorkout = { workoutId ->
+                            navController.navigate(WorkoutsRoutes.active(workoutId)) {
+                                popUpTo(WorkoutsRoutes.HOME) { inclusive = false }
+                            }
+                        },
+                        onExit = { navController.popBackStack() }
+                    )
+                }
+
+                composable(
+                    route = WorkoutsRoutes.ACTIVE,
+                    arguments = listOf(
+                        navArgument(WorkoutsRoutes.ARG_WORKOUT_ID) { type = NavType.LongType }
+                    )
+                ) { entry ->
+                    val id = entry.arguments
+                        ?.getLong(WorkoutsRoutes.ARG_WORKOUT_ID)
+                        ?: return@composable
+                    ActiveWorkoutScreen(
+                        workoutId = id,
+                        onExit = {
+                            navController.popBackStack(WorkoutsRoutes.HOME, inclusive = false)
+                        }
+                    )
+                }
             }
 
             navigation(

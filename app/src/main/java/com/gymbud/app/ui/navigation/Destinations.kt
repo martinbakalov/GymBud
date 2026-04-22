@@ -18,7 +18,7 @@ sealed class TopDestination(
     val iconFilled: ImageVector
 ) {
     data object Workouts : TopDestination(
-        route = "workouts",
+        route = WorkoutsRoutes.GRAPH,
         labelRes = R.string.nav_workouts,
         iconOutlined = Icons.Outlined.PlayArrow,
         iconFilled = Icons.Filled.PlayArrow
@@ -47,4 +47,16 @@ object ExercisesRoutes {
     const val GRAPH = "exercises"
     const val LIST = "exercises/list"
     const val NEW = "exercises/new"
+}
+
+object WorkoutsRoutes {
+    const val GRAPH = "workouts"
+    const val HOME = "workouts/home"
+    const val TEMPLATE = "workouts/template/{workoutId}"
+    const val ACTIVE = "workouts/active/{workoutId}"
+
+    fun template(workoutId: Long): String = "workouts/template/$workoutId"
+    fun active(workoutId: Long): String = "workouts/active/$workoutId"
+
+    const val ARG_WORKOUT_ID = "workoutId"
 }

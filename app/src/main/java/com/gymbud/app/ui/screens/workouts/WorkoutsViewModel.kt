@@ -21,18 +21,31 @@ class WorkoutsViewModel(
             initialValue = emptyList()
         )
 
-    fun createTemplate(name: String, onCreated: (Long) -> Unit) {
+    fun createTemplate(name: String, onDone: () -> Unit = {}) {
         val trimmed = name.trim()
         if (trimmed.isEmpty()) return
         viewModelScope.launch {
-            val id = repository.createTemplate(trimmed)
-            onCreated(id)
+            repository.createTemplate(trimmed)
+            onDone()
         }
     }
 
     fun deleteTemplate(workout: Workout) {
         viewModelScope.launch {
             repository.deleteWorkout(workout)
+        }
+    }
+    fun startEmptyWorkout(onStarted: (Long) -> Unit) {
+        viewModelScope.launch {
+            val newId = repository.startEmptyWorkout()
+            onStarted(newId)
+        }
+    }
+
+    fun startFromTemplate(templateId: Long, onStarted: (Long) -> Unit) {
+        viewModelScope.launch {
+            val newId = repository.startFromTemplate(templateId)
+            onStarted(newId)
         }
     }
 

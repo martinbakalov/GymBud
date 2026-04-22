@@ -71,4 +71,7 @@
     <string name="equipment_kettlebell">Пудовка</string>
     <string name="equipment_band">Ластик</string>
     <string name="equipment_other">Други</string>
+    <string name="workout_no_exercises_yet">Все още няма упражнения.</string>
+    <string name="workouts_start_from_template">Започни тренировка</string>
+    <string name="template_detail_placeholder">Този шаблон все още няма упражнения</string>
 </resources>

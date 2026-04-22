@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -41,19 +42,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.width
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Workout
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutsScreen(
-    onStartEmptyClick: () -> Unit,
-    onTemplateClick: (Long) -> Unit
+    onStartEmptyWorkout: (Long) -> Unit,
+    onOpenTemplate: (Long) -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
     val viewModel: WorkoutsViewModel = viewModel(
@@ -76,7 +75,9 @@ fun WorkoutsScreen(
         ) {
 
             Button(
-                onClick = onStartEmptyClick,
+                onClick = {
+                    viewModel.startEmptyWorkout(onStarted = onStartEmptyWorkout)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
@@ -126,7 +127,7 @@ fun WorkoutsScreen(
                     items(items = templates, key = { it.id }) { template ->
                         TemplateRow(
                             template = template,
-                            onClick = { onTemplateClick(template.id) },
+                            onClick = { onOpenTemplate(template.id) },
                             onDelete = { viewModel.deleteTemplate(template) }
                         )
                     }
@@ -134,18 +135,17 @@ fun WorkoutsScreen(
             }
         }
     }
+
     if (showNewTemplateDialog) {
         NewTemplateDialog(
             onDismiss = { showNewTemplateDialog = false },
             onConfirm = { name ->
-                viewModel.createTemplate(name) { newId ->
+                viewModel.createTemplate(name) {
                     showNewTemplateDialog = false
-                    onTemplateClick(newId)
                 }
             }
         )
     }
-
 }
 
 @Composable
