@@ -7,9 +7,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,9 +27,13 @@ import com.gymbud.app.ui.screens.exercises.CreateExerciseScreen
 import com.gymbud.app.ui.screens.workouts.WorkoutsScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.gymbud.app.GymBudApplication
 import com.gymbud.app.ui.navigation.WorkoutsRoutes
 import com.gymbud.app.ui.screens.workouts.ActiveWorkoutScreen
 import com.gymbud.app.ui.screens.workouts.TemplateDetailScreen
+import com.gymbud.app.ui.navigation.PickerRoutes
+import com.gymbud.app.ui.screens.picker.ExercisePickerScreen
+import com.gymbud.app.ui.screens.workouts.ActiveWorkoutViewModel
 
 @Composable
 fun MainScreen() {
@@ -112,11 +119,43 @@ fun MainScreen() {
                     val id = entry.arguments
                         ?.getLong(WorkoutsRoutes.ARG_WORKOUT_ID)
                         ?: return@composable
+
+
+                    val app = LocalContext.current.applicationContext as GymBudApplication
+                    val activeVm: ActiveWorkoutViewModel = viewModel(
+                        factory = ActiveWorkoutViewModel.Factory(id, app.workoutRepository),
+                        viewModelStoreOwner = entry
+                    )
+
+                    val pickedIds = entry.savedStateHandle
+                        .get<LongArray>(PickerRoutes.RESULT_KEY)
+                    LaunchedEffect(pickedIds) {
+                        if (pickedIds != null && pickedIds.isNotEmpty()) {
+                            activeVm.addExercises(pickedIds.toList())
+                            entry.savedStateHandle.remove<LongArray>(PickerRoutes.RESULT_KEY)
+                        }
+                    }
+
                     ActiveWorkoutScreen(
                         workoutId = id,
                         onExit = {
                             navController.popBackStack(WorkoutsRoutes.HOME, inclusive = false)
+                        },
+                        onAddExercisesClick = {
+                            navController.navigate(PickerRoutes.PICK_EXERCISES)
                         }
+                    )
+                }
+
+                composable(PickerRoutes.PICK_EXERCISES) {
+                    ExercisePickerScreen(
+                        onConfirm = { ids ->
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set(PickerRoutes.RESULT_KEY, ids.toLongArray())
+                            navController.popBackStack()
+                        },
+                        onCancel = { navController.popBackStack() }
                     )
                 }
             }

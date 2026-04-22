@@ -60,3 +60,9 @@ object WorkoutsRoutes {
 
     const val ARG_WORKOUT_ID = "workoutId"
 }
+
+object PickerRoutes {
+    const val PICK_EXERCISES = "picker/exercises"
+
+    const val RESULT_KEY = "pickedExerciseIds"
+}

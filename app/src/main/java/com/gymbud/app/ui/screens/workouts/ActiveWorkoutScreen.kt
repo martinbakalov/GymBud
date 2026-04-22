@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,7 +46,8 @@ import androidx.compose.ui.focus.onFocusChanged
 @Composable
 fun ActiveWorkoutScreen(
     workoutId: Long,
-    onExit: () -> Unit
+    onExit: () -> Unit,
+    onAddExercisesClick: () -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
     val viewModel: ActiveWorkoutViewModel = viewModel(
@@ -97,13 +98,11 @@ fun ActiveWorkoutScreen(
                 volumeKg = 0f
             )
 
-            androidx.compose.foundation.layout.Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
             if (exercises.isEmpty()) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+                    modifier = Modifier.fillMaxWidth().weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -114,30 +113,31 @@ fun ActiveWorkoutScreen(
             } else {
                 LazyColumn(
                     contentPadding = PaddingValues(bottom = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
                     items(items = exercises, key = { it.id }) { we ->
-                        Card(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                text = "Exercise #${we.exerciseId}",
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        }
+                        WorkoutExerciseCard(
+                            workoutExercise = we,
+                            app = app,
+                            onAddSet = { viewModel.addSet(we.id) },
+                            onUpdateSet = viewModel::updateSet,
+                            onDeleteSet = viewModel::deleteSet,
+                            onRemoveExercise = { viewModel.removeExercise(we) },
+                            observeSets = { viewModel.observeSets(we.id) }
+                        )
                     }
                 }
             }
 
             OutlinedButton(
-                onClick = { },
+                onClick = onAddExercisesClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(R.string.workout_add_exercise))
             }
 
-            androidx.compose.foundation.layout.Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
             Button(
                 onClick = { viewModel.finish(onFinished = onExit) },

@@ -72,4 +72,9 @@
     <string name="workout_no_exercises_yet">No exercises yet.</string>
     <string name="workouts_start_from_template">Start workout</string>
     <string name="template_detail_placeholder">No exercises in this template yet</string>
+    <string name="picker_add_exercises">Add exercises</string>
+    <string name="picker_add">Add</string>
+    <string name="picker_add_with_count">Add (%d)</string>
+    <string name="workout_set_completed">Set completed</string>
+    <string name="workout_set_incomplete">Mark set complete</string>
 </resources>

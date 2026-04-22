@@ -74,4 +74,9 @@
     <string name="workout_no_exercises_yet">Все още няма упражнения.</string>
     <string name="workouts_start_from_template">Започни тренировка</string>
     <string name="template_detail_placeholder">Този шаблон все още няма упражнения</string>
+    <string name="picker_add_exercises">Добави упражнения</string>
+    <string name="picker_add">Добави</string>
+    <string name="picker_add_with_count">Добави (%d)</string>
+    <string name="workout_set_completed">Серията е изпълнена</string>
+    <string name="workout_set_incomplete">Маркирай серията като изпълнена</string>
 </resources>
