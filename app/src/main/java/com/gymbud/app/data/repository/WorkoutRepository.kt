@@ -11,6 +11,7 @@ import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.domain.model.WorkoutStats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 
 class WorkoutRepository(
@@ -30,6 +31,11 @@ class WorkoutRepository(
 
     fun observeSetsForWorkoutExercise(workoutExerciseId: Long): Flow<List<WorkoutSet>> =
         workoutSetDao.observeForWorkoutExercise(workoutExerciseId)
+
+    fun observeHistoryWithStats(): Flow<List<Pair<Workout, WorkoutStats>>> =
+        workoutDao.observeHistory().map { workouts ->
+            workouts.map { w -> w to statsFor(w.id) }
+        }
 
     suspend fun getWorkout(id: Long): Workout? = workoutDao.getById(id)
 

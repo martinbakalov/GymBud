@@ -41,6 +41,7 @@ import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import kotlinx.coroutines.delay
 import androidx.compose.ui.focus.onFocusChanged
+import com.gymbud.app.ui.util.formatDurationTicking
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -182,7 +183,7 @@ private fun StatsStrip(
     ) {
         StatCell(
             label = stringResource(R.string.stats_duration),
-            value = formatDuration(durationMillis)
+            value = formatDurationTicking(durationMillis)
         )
         StatCell(
             label = stringResource(R.string.stats_sets),
@@ -208,13 +209,4 @@ private fun StatCell(label: String, value: String) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
-}
-
-private fun formatDuration(millis: Long): String {
-    val totalSeconds = millis / 1000
-    val h = totalSeconds / 3600
-    val m = (totalSeconds % 3600) / 60
-    val s = totalSeconds % 60
-    return if (h > 0) "%d:%02d:%02d".format(h, m, s)
-    else "%d:%02d".format(m, s)
 }

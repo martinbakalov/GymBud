@@ -32,8 +32,12 @@ import com.gymbud.app.ui.navigation.WorkoutsRoutes
 import com.gymbud.app.ui.screens.workouts.ActiveWorkoutScreen
 import com.gymbud.app.ui.screens.workouts.TemplateDetailScreen
 import com.gymbud.app.ui.navigation.PickerRoutes
+import com.gymbud.app.ui.screens.history.HistoryScreen
 import com.gymbud.app.ui.screens.picker.ExercisePickerScreen
 import com.gymbud.app.ui.screens.workouts.ActiveWorkoutViewModel
+import com.gymbud.app.ui.navigation.HistoryRoutes
+import com.gymbud.app.ui.screens.history.WorkoutDetailScreen
+
 
 @Composable
 fun MainScreen() {
@@ -178,7 +182,32 @@ fun MainScreen() {
                 }
             }
 
-            composable(TopDestination.History.route) { HistoryScreen() }
+            navigation(
+                route = HistoryRoutes.GRAPH,
+                startDestination = HistoryRoutes.LIST
+            ) {
+                composable(HistoryRoutes.LIST) {
+                    HistoryScreen(
+                        onWorkoutClick = { id ->
+                            navController.navigate(HistoryRoutes.detail(id))
+                        }
+                    )
+                }
+                composable(
+                    route = HistoryRoutes.DETAIL,
+                    arguments = listOf(
+                        navArgument(HistoryRoutes.ARG_WORKOUT_ID) { type = NavType.LongType }
+                    )
+                ) { entry ->
+                    val id = entry.arguments
+                        ?.getLong(HistoryRoutes.ARG_WORKOUT_ID)
+                        ?: return@composable
+                    WorkoutDetailScreen(
+                        workoutId = id,
+                        onExit = { navController.popBackStack() }
+                    )
+                }
+            }
         }
     }
 }

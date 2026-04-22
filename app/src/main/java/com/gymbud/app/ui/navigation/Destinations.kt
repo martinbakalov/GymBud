@@ -32,7 +32,7 @@ sealed class TopDestination(
     )
 
     data object History : TopDestination(
-        route = "history",
+        route = HistoryRoutes.GRAPH,
         labelRes = R.string.nav_history,
         iconOutlined = Icons.Outlined.History,
         iconFilled = Icons.Filled.History
@@ -65,4 +65,13 @@ object PickerRoutes {
     const val PICK_EXERCISES = "picker/exercises"
 
     const val RESULT_KEY = "pickedExerciseIds"
+}
+object HistoryRoutes {
+    const val GRAPH = "history"
+    const val LIST = "history/list"
+    const val DETAIL = "history/detail/{workoutId}"
+
+    fun detail(workoutId: Long): String = "history/detail/$workoutId"
+
+    const val ARG_WORKOUT_ID = "workoutId"
 }
