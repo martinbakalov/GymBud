@@ -12,6 +12,8 @@ import com.gymbud.app.domain.model.WorkoutStats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 
 
 class WorkoutRepository(
@@ -36,6 +38,40 @@ class WorkoutRepository(
         workoutDao.observeHistory().map { workouts ->
             workouts.map { w -> w to statsFor(w.id) }
         }
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    fun observeStats(workoutId: Long): Flow<WorkoutStats> =
+        workoutExerciseDao.observeForWorkout(workoutId)
+            .flatMapLatest { exercises ->
+                if (exercises.isEmpty()) {
+                    kotlinx.coroutines.flow.flowOf(emptyList<List<WorkoutSet>>())
+                } else {
+                    val setFlows = exercises.map { we ->
+                        workoutSetDao.observeForWorkoutExercise(we.id)
+                    }
+                    combine(setFlows) { arrayOfLists -> arrayOfLists.toList() }
+                }
+            }
+            .map { allSetLists ->
+                var totalSets = 0
+                var totalVolumeKg = 0f
+                for (setList in allSetLists) {
+                    for (s in setList) {
+                        if (!s.isCompleted) continue
+                        totalSets += 1
+                        val w = s.weightKg
+                        val r = s.reps
+                        if (w != null && r != null) {
+                            totalVolumeKg += w * r
+                        }
+                    }
+                }
+                WorkoutStats(
+                    totalSets = totalSets,
+                    totalVolumeKg = totalVolumeKg,
+                    durationMillis = null
+                )
+            }
 
     suspend fun getWorkout(id: Long): Workout? = workoutDao.getById(id)
 

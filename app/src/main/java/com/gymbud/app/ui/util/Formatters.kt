@@ -27,3 +27,8 @@ fun formatSessionDateTime(millis: Long?): String {
     val timeStr = DateFormat.getTimeInstance(DateFormat.SHORT).format(date)
     return "$dateStr · $timeStr"
 }
+
+fun formatVolume(kg: Float): String {
+    val asInt = kg.toInt()
+    return if (kg == asInt.toFloat()) asInt.toString() else "%.1f".format(kg)
+}

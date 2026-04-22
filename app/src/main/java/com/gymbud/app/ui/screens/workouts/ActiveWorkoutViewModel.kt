@@ -7,6 +7,7 @@ import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.repository.WorkoutRepository
 import com.gymbud.app.data.local.entity.WorkoutSet
+import com.gymbud.app.domain.model.WorkoutStats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +40,16 @@ class ActiveWorkoutViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
+        )
+    val stats: StateFlow<WorkoutStats> = repository.observeStats(workoutId)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = WorkoutStats(
+                totalSets = 0,
+                totalVolumeKg = 0f,
+                durationMillis = null
+            )
         )
 
     fun rename(newName: String) {

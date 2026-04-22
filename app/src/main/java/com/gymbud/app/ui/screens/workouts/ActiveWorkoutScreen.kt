@@ -42,6 +42,7 @@ import com.gymbud.app.R
 import kotlinx.coroutines.delay
 import androidx.compose.ui.focus.onFocusChanged
 import com.gymbud.app.ui.util.formatDurationTicking
+import com.gymbud.app.ui.util.formatVolume
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +57,7 @@ fun ActiveWorkoutScreen(
     )
     val workout by viewModel.workout.collectAsStateWithLifecycle()
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
+    val stats by viewModel.stats.collectAsStateWithLifecycle()
 
     var nowMillis by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(workout?.startedAt) {
@@ -95,8 +97,8 @@ fun ActiveWorkoutScreen(
 
             StatsStrip(
                 durationMillis = elapsedMillis,
-                sets = 0,
-                volumeKg = 0f
+                sets = stats.totalSets,
+                volumeKg = stats.totalVolumeKg
             )
 
             Spacer(Modifier.height(16.dp))
@@ -191,7 +193,7 @@ private fun StatsStrip(
         )
         StatCell(
             label = stringResource(R.string.stats_volume),
-            value = "${volumeKg.toInt()} ${stringResource(R.string.workout_kg)}"
+            value = "${formatVolume(volumeKg)} ${stringResource(R.string.workout_kg)}"
         )
     }
 }
