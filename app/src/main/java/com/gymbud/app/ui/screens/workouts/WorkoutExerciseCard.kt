@@ -39,16 +39,19 @@ import com.gymbud.app.data.local.entity.Exercise
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.domain.model.ExerciseType
+import com.gymbud.app.domain.model.WeightUnit
 import kotlinx.coroutines.flow.Flow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutExerciseCard(
     workoutExercise: WorkoutExercise,
     app: GymBudApplication,
+    unit: WeightUnit,                              // ← new
     onAddSet: () -> Unit,
     onUpdateSet: (WorkoutSet) -> Unit,
     onDeleteSet: (WorkoutSet) -> Unit,
     onRemoveExercise: () -> Unit,
+    onUnitToggle: () -> Unit,                      // ← new, toggles per-exercise
     observeSets: () -> Flow<List<WorkoutSet>>
 ) {
 
@@ -78,6 +81,16 @@ fun WorkoutExerciseCard(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
+                if (exercise?.type == ExerciseType.WEIGHT_REPS) {
+                    TextButton(onClick = onUnitToggle) {
+                        Text(
+                            text = when (unit) {
+                                WeightUnit.KG -> stringResource(R.string.workout_kg)
+                                WeightUnit.LBS -> stringResource(R.string.workout_lbs)
+                            }
+                        )
+                    }
+                }
                 IconButton(onClick = { menuOpen = true }) {
                     Icon(Icons.Default.MoreVert, contentDescription = null)
                 }
@@ -98,12 +111,16 @@ fun WorkoutExerciseCard(
 
             Spacer(Modifier.height(8.dp))
 
-            SetRowHeader(exerciseType = exercise?.type ?: ExerciseType.WEIGHT_REPS)
+            SetRowHeader(
+                exerciseType = exercise?.type ?: ExerciseType.WEIGHT_REPS,
+                unit = unit
+            )
 
             sets.forEach { set ->
                 SetRow(
                     set = set,
                     exerciseType = exercise?.type ?: ExerciseType.WEIGHT_REPS,
+                    unit = unit,
                     onUpdate = onUpdateSet,
                     onDelete = { onDeleteSet(set) }
                 )
@@ -119,7 +136,7 @@ fun WorkoutExerciseCard(
 }
 
 @Composable
-private fun SetRowHeader(exerciseType: ExerciseType) {
+private fun SetRowHeader(exerciseType: ExerciseType, unit: WeightUnit) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -128,7 +145,13 @@ private fun SetRowHeader(exerciseType: ExerciseType) {
         HeaderCell(text = stringResource(R.string.workout_previous), weight = 1.6f)
         when (exerciseType) {
             ExerciseType.WEIGHT_REPS -> {
-                HeaderCell(text = stringResource(R.string.workout_kg), weight = 1.2f)
+                HeaderCell(
+                    text = when (unit) {
+                        WeightUnit.KG -> stringResource(R.string.workout_kg)
+                        WeightUnit.LBS -> stringResource(R.string.workout_lbs)
+                    },
+                    weight = 1.2f
+                )
                 HeaderCell(text = stringResource(R.string.workout_reps), weight = 1.2f)
             }
             ExerciseType.TIME -> {
@@ -157,6 +180,7 @@ private fun androidx.compose.foundation.layout.RowScope.HeaderCell(
 private fun SetRow(
     set: WorkoutSet,
     exerciseType: ExerciseType,
+    unit: WeightUnit,
     onUpdate: (WorkoutSet) -> Unit,
     onDelete: () -> Unit
 ) {
@@ -181,10 +205,18 @@ private fun SetRow(
 
         when (exerciseType) {
             ExerciseType.WEIGHT_REPS -> {
+                // Display: convert stored kg to the display unit.
+                // Input: convert the display unit back to kg before saving.
+                val displayValue = set.weightKg?.let { kg ->
+                    val inUnit = WeightUnit.fromKg(kg, unit)
+                    trimZero(inUnit)
+                } ?: ""
+
                 NumberField(
-                    value = set.weightKg?.let { trimZero(it) } ?: "",
+                    value = displayValue,
                     onValueChange = { newText ->
-                        val newKg = newText.toFloatOrNull()
+                        val parsed = newText.toFloatOrNull()
+                        val newKg = parsed?.let { WeightUnit.toKg(it, unit) }
                         onUpdate(set.copy(weightKg = newKg))
                     },
                     modifier = Modifier.weight(1.2f)

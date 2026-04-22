@@ -36,6 +36,8 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises ORDER BY name COLLATE NOCASE ASC")
     fun observeAll(): Flow<List<Exercise>>
 
+    @Query("SELECT * FROM exercises WHERE id = :id")
+    fun observeById(id: Long): Flow<Exercise?>
 
     @Query(
         "SELECT * FROM exercises " +

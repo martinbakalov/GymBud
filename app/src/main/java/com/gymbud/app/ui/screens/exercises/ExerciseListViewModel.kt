@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 
 data class ExerciseListUiState(
@@ -55,6 +56,12 @@ class ExerciseListViewModel(
 
     fun onEquipmentFilterChange(equipment: Equipment?) {
         _uiState.value = _uiState.value.copy(equipmentFilter = equipment)
+    }
+
+    fun deleteCustom(exercise: Exercise) {
+        viewModelScope.launch {
+            repository.deleteCustom(exercise)
+        }
     }
 
     class Factory(

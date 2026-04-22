@@ -127,7 +127,12 @@ fun MainScreen() {
 
                     val app = LocalContext.current.applicationContext as GymBudApplication
                     val activeVm: ActiveWorkoutViewModel = viewModel(
-                        factory = ActiveWorkoutViewModel.Factory(id, app.workoutRepository),
+                        factory = ActiveWorkoutViewModel.Factory(
+                            workoutId = id,
+                            repository = app.workoutRepository,
+                            exerciseRepository = app.exerciseRepository,
+                            preferences = app.preferences
+                        ),
                         viewModelStoreOwner = entry
                     )
 

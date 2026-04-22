@@ -43,6 +43,7 @@ import kotlinx.coroutines.delay
 import androidx.compose.ui.focus.onFocusChanged
 import com.gymbud.app.ui.util.formatDurationTicking
 import com.gymbud.app.ui.util.formatVolume
+import com.gymbud.app.domain.model.WeightUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,11 +54,17 @@ fun ActiveWorkoutScreen(
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
     val viewModel: ActiveWorkoutViewModel = viewModel(
-        factory = ActiveWorkoutViewModel.Factory(workoutId, app.workoutRepository)
+        factory = ActiveWorkoutViewModel.Factory(
+            workoutId = workoutId,
+            repository = app.workoutRepository,
+            exerciseRepository = app.exerciseRepository,
+            preferences = app.preferences
+        )
     )
     val workout by viewModel.workout.collectAsStateWithLifecycle()
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
     val stats by viewModel.stats.collectAsStateWithLifecycle()
+    val globalUnit by viewModel.globalUnit.collectAsStateWithLifecycle(initialValue = WeightUnit.KG)
 
     var nowMillis by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(workout?.startedAt) {
@@ -120,13 +127,18 @@ fun ActiveWorkoutScreen(
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
                     items(items = exercises, key = { it.id }) { we ->
+                        val exerciseUnit = viewModel.unitForExercise(we.exerciseId, globalUnit)
+                            .collectAsStateWithLifecycle(initialValue = globalUnit).value
+
                         WorkoutExerciseCard(
                             workoutExercise = we,
                             app = app,
+                            unit = exerciseUnit,
                             onAddSet = { viewModel.addSet(we.id) },
                             onUpdateSet = viewModel::updateSet,
                             onDeleteSet = viewModel::deleteSet,
                             onRemoveExercise = { viewModel.removeExercise(we) },
+                            onUnitToggle = { viewModel.toggleUnitForExercise(we.exerciseId, exerciseUnit) },
                             observeSets = { viewModel.observeSets(we.id) }
                         )
                     }

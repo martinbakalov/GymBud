@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import com.gymbud.app.data.repository.ExerciseRepository
 import com.gymbud.app.data.repository.WorkoutRepository
+import com.gymbud.app.data.prefs.AppPreferences
 
 class GymBudApplication : Application() {
 
@@ -16,6 +17,9 @@ class GymBudApplication : Application() {
     }
     val exerciseRepository: ExerciseRepository by lazy {
         ExerciseRepository(database.exerciseDao())
+    }
+    val preferences: AppPreferences by lazy {
+        AppPreferences(this)
     }
 
     val workoutRepository: WorkoutRepository by lazy {

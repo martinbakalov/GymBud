@@ -13,9 +13,6 @@ class ExerciseRepository(
     private val dao: ExerciseDao
 ) {
 
-    fun observeAll(): Flow<List<Exercise>> = dao.observeAll()
-
-
     fun observeFiltered(
         query: String?,
         muscle: MuscleGroup?,
@@ -40,6 +37,7 @@ class ExerciseRepository(
 
     suspend fun getById(id: Long): Exercise? = dao.getById(id)
 
+    fun observeById(id: Long): Flow<Exercise?> = dao.observeById(id)
     suspend fun createCustom(exercise: Exercise): Long =
         dao.insert(exercise.copy(isCustom = true))
 

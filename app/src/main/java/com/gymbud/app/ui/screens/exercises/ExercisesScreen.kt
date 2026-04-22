@@ -42,6 +42,7 @@ import com.gymbud.app.domain.model.MuscleGroup
 import com.gymbud.app.ui.util.labelRes
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.FloatingActionButton
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +59,9 @@ fun ExercisesScreen(onCreateExerciseClick: () -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.exercises_title)) })
+            TopAppBar(
+                title = { Text(stringResource(R.string.exercises_title)) },
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onCreateExerciseClick) {
@@ -117,7 +120,12 @@ fun ExercisesScreen(onCreateExerciseClick: () -> Unit) {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(items = exercises, key = { it.id }) { exercise ->
-                        ExerciseRow(exercise = exercise)
+                        ExerciseRow(
+                            exercise = exercise,
+                            onDelete = if (exercise.isCustom) {
+                                { viewModel.deleteCustom(exercise) }
+                            } else null
+                        )
                         HorizontalDivider()
                     }
                 }
@@ -158,22 +166,37 @@ private fun <T> FilterChipsRow(
 }
 
 @Composable
-private fun ExerciseRow(exercise: Exercise) {
-    Column(
+private fun ExerciseRow(
+    exercise: Exercise,
+    onDelete: (() -> Unit)? = null
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = exercise.name,
-            style = MaterialTheme.typography.bodyLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Text(
-            text = "${stringResource(exercise.primaryMuscle.labelRes())} · ${stringResource(exercise.equipment.labelRes())}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = exercise.name,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = "${stringResource(exercise.primaryMuscle.labelRes())} · ${stringResource(exercise.equipment.labelRes())}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        if (onDelete != null) {
+            IconButton(onClick = onDelete) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.action_delete),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 }

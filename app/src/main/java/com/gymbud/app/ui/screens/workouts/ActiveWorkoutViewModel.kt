@@ -8,20 +8,28 @@ import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.repository.WorkoutRepository
 import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.data.prefs.AppPreferences
+import com.gymbud.app.data.repository.ExerciseRepository
+import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.ui.util.effectiveUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
 
 
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class ActiveWorkoutViewModel(
     private val workoutId: Long,
-    private val repository: WorkoutRepository
+    private val repository: WorkoutRepository,
+    private val exerciseRepository: ExerciseRepository,
+    preferences: AppPreferences
 ) : ViewModel() {
 
     val workout: StateFlow<Workout?> = flowOf(workoutId)
@@ -103,12 +111,35 @@ class ActiveWorkoutViewModel(
 
     class Factory(
         private val workoutId: Long,
-        private val repository: WorkoutRepository
+        private val repository: WorkoutRepository,
+        private val exerciseRepository: ExerciseRepository,
+        private val preferences: AppPreferences
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             require(modelClass.isAssignableFrom(ActiveWorkoutViewModel::class.java))
-            return ActiveWorkoutViewModel(workoutId, repository) as T
+            return ActiveWorkoutViewModel(
+                workoutId, repository, exerciseRepository, preferences
+            ) as T
+        }
+    }
+
+    val globalUnit: StateFlow<WeightUnit> = preferences.weightUnit
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = WeightUnit.KG
+        )
+
+    fun unitForExercise(exerciseId: Long, globalDefault: WeightUnit): Flow<WeightUnit> =
+        exerciseRepository.observeById(exerciseId)
+            .map { ex -> effectiveUnit(ex, globalDefault) }
+
+    fun toggleUnitForExercise(exerciseId: Long, currentlyDisplayed: WeightUnit) {
+        viewModelScope.launch {
+            val ex = exerciseRepository.getById(exerciseId) ?: return@launch
+            val newUnit = if (currentlyDisplayed == WeightUnit.KG) WeightUnit.LBS else WeightUnit.KG
+            exerciseRepository.update(ex.copy(preferredUnit = newUnit))
         }
     }
 
