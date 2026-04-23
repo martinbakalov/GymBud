@@ -39,6 +39,8 @@ import com.gymbud.app.ui.navigation.HistoryRoutes
 import com.gymbud.app.ui.screens.history.WorkoutDetailScreen
 import androidx.compose.foundation.layout.Column
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gymbud.app.ui.screens.banner.ActiveWorkoutBanner
+import com.gymbud.app.ui.screens.banner.ActiveWorkoutBannerViewModel
 
 
 @Composable

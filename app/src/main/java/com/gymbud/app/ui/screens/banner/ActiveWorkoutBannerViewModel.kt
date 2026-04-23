@@ -1,4 +1,4 @@
-package com.gymbud.app.ui.screens
+package com.gymbud.app.ui.screens.banner
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

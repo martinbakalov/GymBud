@@ -27,7 +27,7 @@ import com.gymbud.app.data.local.entity.WorkoutSet
         WorkoutExercise::class,
         WorkoutSet::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

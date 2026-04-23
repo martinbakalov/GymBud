@@ -1,4 +1,4 @@
-package com.gymbud.app.ui.screens
+package com.gymbud.app.ui.screens.banner
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

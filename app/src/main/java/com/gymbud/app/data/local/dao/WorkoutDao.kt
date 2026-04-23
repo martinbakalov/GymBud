@@ -30,6 +30,9 @@ interface WorkoutDao {
     @Query("SELECT * FROM workouts WHERE id = :id")
     suspend fun getById(id: Long): Workout?
 
+    @Query("UPDATE workouts SET photoPath = :path WHERE id = :id")
+    suspend fun updatePhotoPath(id: Long, path: String?): Int
+
     @Query(
         "SELECT * FROM workouts " +
                 "WHERE isTemplate = 1 " +

@@ -69,11 +69,14 @@ class ActiveWorkoutViewModel(
         }
     }
 
-    fun finish(notes: String?, onFinished: () -> Unit) {
+    fun finish(notes: String?, photoPath: String?, onFinished: () -> Unit) {
         viewModelScope.launch {
-            val trimmed = notes?.trim()?.takeIf { it.isNotBlank() }
-            if (trimmed != null) {
-                repository.updateWorkoutNotes(workoutId, trimmed)
+            val trimmedNotes = notes?.trim()?.takeIf { it.isNotBlank() }
+            if (trimmedNotes != null) {
+                repository.updateWorkoutNotes(workoutId, trimmedNotes)
+            }
+            if (photoPath != null) {
+                repository.updateWorkoutPhoto(workoutId, photoPath)
             }
             repository.finishWorkout(workoutId)
             onFinished()

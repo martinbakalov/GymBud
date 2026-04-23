@@ -186,6 +186,10 @@ class WorkoutRepository(
         workoutDao.updateNotes(workoutId, notes)
     }
 
+    suspend fun updateWorkoutPhoto(workoutId: Long, photoPath: String?) {
+        workoutDao.updatePhotoPath(workoutId, photoPath)
+    }
+
     suspend fun statsFor(workoutId: Long): WorkoutStats {
         val workout = workoutDao.getById(workoutId)
         val exercises = workoutExerciseDao.observeForWorkout(workoutId).firstValueOrEmpty()

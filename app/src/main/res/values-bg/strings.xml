@@ -92,4 +92,7 @@
     <string name="blocker_body">Трябва да завършиш или откажеш текущата тренировка, преди да започнеш нова.</string>
     <string name="blocker_resume">Отвори текущата</string>
     <string name="blocker_discard_and_start">Откажи и започни нова</string>
+    <string name="finish_dialog_take_photo">Направи снимка</string>
+    <string name="finish_dialog_gallery_photo">Галерия</string>
+    <string name="finish_dialog_remove_photo">Премахни снимката</string>
 </resources>

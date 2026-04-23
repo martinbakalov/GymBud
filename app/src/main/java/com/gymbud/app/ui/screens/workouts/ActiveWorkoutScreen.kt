@@ -183,9 +183,13 @@ fun ActiveWorkoutScreen(
         FinishWorkoutDialog(
             durationMillis = elapsedMillis,
             stats = stats,
-            onSave = { notes ->
+            onSave = { notes, photoPath ->
                 showFinishDialog = false
-                viewModel.finish(notes = notes, onFinished = onExit)
+                viewModel.finish(
+                    notes = notes,
+                    photoPath = photoPath,
+                    onFinished = onExit
+                )
             },
             onResume = { showFinishDialog = false }
         )

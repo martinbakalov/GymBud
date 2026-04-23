@@ -1,46 +1,101 @@
 package com.gymbud.app.ui.screens.workouts
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gymbud.app.R
 import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.ui.util.copyUriToWorkoutPhoto
+import com.gymbud.app.ui.util.createWorkoutPhotoFile
 import com.gymbud.app.ui.util.formatDurationCompact
 import com.gymbud.app.ui.util.formatVolume
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinishWorkoutDialog(
     durationMillis: Long,
     stats: WorkoutStats,
-    onSave: (notes: String?) -> Unit,
+    onSave: (notes: String?, photoPath: String?) -> Unit,
     onResume: () -> Unit
 ) {
+    val context = LocalContext.current
+
     var notes by remember { mutableStateOf("") }
+    var photoFile by remember { mutableStateOf<File?>(null) }
+    var pendingUri by remember { mutableStateOf<Uri?>(null) }
+    var pendingFile by remember { mutableStateOf<File?>(null) }
+
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        val file = pendingFile
+        if (success && file != null) {
+            photoFile = file
+        } else {
+            file?.delete()
+        }
+        pendingFile = null
+        pendingUri = null
+    }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            val copied = copyUriToWorkoutPhoto(context, uri)
+            if (copied != null) {
+                photoFile = copied
+            }
+        }
+    }
+
+    LaunchedEffect(pendingUri) {
+        pendingUri?.let { cameraLauncher.launch(it) }
+    }
 
     AlertDialog(
         onDismissRequest = onResume,
         title = { Text(stringResource(R.string.finish_dialog_title)) },
         text = {
             Column {
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -69,18 +124,89 @@ fun FinishWorkoutDialog(
                     maxLines = 4,
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Spacer(Modifier.height(12.dp))
+
+                val photo = photoFile
+                if (photo == null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                val (file, uri) = createWorkoutPhotoFile(context)
+                                pendingFile = file
+                                pendingUri = uri
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.PhotoCamera, contentDescription = null)
+                            Spacer(Modifier.size(6.dp))
+                            Text(stringResource(R.string.finish_dialog_take_photo))
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                galleryLauncher.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.PhotoLibrary, contentDescription = null)
+                            Spacer(Modifier.size(6.dp))
+                            Text(stringResource(R.string.finish_dialog_gallery_photo))
+                        }
+                    }
+                } else {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        coil.compose.AsyncImage(
+                            model = photo,
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(160.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.outline,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                        )
+                        IconButton(
+                            onClick = {
+                                photo.delete()
+                                photoFile = null
+                            },
+                            modifier = Modifier.align(Alignment.TopEnd)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(R.string.finish_dialog_remove_photo),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
-            TextButton(onClick = { onSave(notes.ifBlank { null }) }) {
+            TextButton(onClick = {
+                onSave(
+                    notes.ifBlank { null },
+                    photoFile?.absolutePath
+                )
+            }) {
                 Text(stringResource(R.string.finish_dialog_save))
             }
         },
         dismissButton = {
-                TextButton(onClick = onResume) {
-                    Text(stringResource(R.string.finish_dialog_resume))
-                }
-
+            TextButton(onClick = onResume) {
+                Text(stringResource(R.string.finish_dialog_resume))
+            }
         }
     )
 }
