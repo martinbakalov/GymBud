@@ -51,13 +51,16 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinishWorkoutDialog(
+    initialName: String,
+    nameFallback: String,
     durationMillis: Long,
     stats: WorkoutStats,
-    onSave: (notes: String?, photoPath: String?) -> Unit,
+    onSave: (name: String, notes: String?, photoPath: String?) -> Unit,
     onResume: () -> Unit
 ) {
     val context = LocalContext.current
 
+    var name by remember { mutableStateOf(initialName) }
     var notes by remember { mutableStateOf("") }
     var photoFile by remember { mutableStateOf<File?>(null) }
     var pendingUri by remember { mutableStateOf<Uri?>(null) }
@@ -96,6 +99,16 @@ fun FinishWorkoutDialog(
         title = { Text(stringResource(R.string.finish_dialog_title)) },
         text = {
             Column {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(R.string.finish_dialog_name_label)) },
+                    placeholder = { Text(nameFallback) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -196,6 +209,7 @@ fun FinishWorkoutDialog(
         confirmButton = {
             TextButton(onClick = {
                 onSave(
+                    name.trim(),
                     notes.ifBlank { null },
                     photoFile?.absolutePath
                 )

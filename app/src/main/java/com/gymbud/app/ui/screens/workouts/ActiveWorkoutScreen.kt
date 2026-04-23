@@ -21,13 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +45,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import com.gymbud.app.ui.util.formatDurationTicking
 import com.gymbud.app.ui.util.formatVolume
 import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.notifications.NotificationHelper.cancelWorkoutInProgress
 import com.gymbud.app.notifications.NotificationHelper.showWorkoutInProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,9 +94,10 @@ fun ActiveWorkoutScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    WorkoutNameField(
-                        initialName = workout?.name.orEmpty(),
-                        onRename = viewModel::rename
+                    Text(
+                        text = workout?.name.orEmpty().ifBlank {
+                            stringResource(R.string.workout_empty_name)
+                        }
                     )
                 },
                 navigationIcon = {
@@ -190,12 +190,17 @@ fun ActiveWorkoutScreen(
         }
     }
     if (showFinishDialog) {
+        val defaultName = stringResource(R.string.workout_empty_name)
         FinishWorkoutDialog(
+            initialName = workout?.name.orEmpty(),
+            nameFallback = defaultName,
             durationMillis = elapsedMillis,
             stats = stats,
-            onSave = { notes, photoPath ->
+            onSave = { name, notes, photoPath ->
                 showFinishDialog = false
+                cancelWorkoutInProgress(context)
                 viewModel.finish(
+                    name = name,
                     notes = notes,
                     photoPath = photoPath,
                     onFinished = onExit
@@ -208,32 +213,12 @@ fun ActiveWorkoutScreen(
         DiscardWorkoutDialog(
             onConfirm = {
                 showDiscardDialog = false
+                cancelWorkoutInProgress(context)
                 viewModel.discard(onDiscarded = onExit)
             },
             onCancel = { showDiscardDialog = false }
         )
     }
-}
-
-@Composable
-private fun WorkoutNameField(
-    initialName: String,
-    onRename: (String) -> Unit
-) {
-
-    var text by remember(initialName) { mutableStateOf(initialName) }
-
-    OutlinedTextField(
-        value = text,
-        onValueChange = { text = it },
-        placeholder = { Text(stringResource(R.string.workout_empty_name)) },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .onFocusChanged { state ->
-                if (!state.hasFocus && text != initialName) onRename(text)
-            }
-    )
 }
 
 @Composable

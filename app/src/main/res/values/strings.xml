@@ -42,7 +42,7 @@
     <string name="workout_time">Time</string>
     <string name="workout_add_set">Add set</string>
     <string name="workout_remove_exercise">Remove exercise</string>
-    <string name="workout_empty_name">Unnamed workout</string>
+    <string name="workout_empty_name">Workout</string>
     <string name="stats_sets">Sets</string>
     <string name="stats_volume">Volume</string>
     <string name="stats_duration">Duration</string>
@@ -100,4 +100,5 @@
     <string name="notif_channel_daily_title">Daily motivation</string>
     <string name="notif_channel_daily_desc">One reminder per day with your custom message.</string>
     <string name="notif_permission_denied">Enable notifications in Settings to get reminders.</string>
+    <string name="finish_dialog_name_label">Workout name</string>
 </resources>
