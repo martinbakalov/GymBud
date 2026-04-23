@@ -95,4 +95,9 @@
     <string name="finish_dialog_remove_photo">Remove photo</string>
     <string name="history_delete_title">Delete this workout?</string>
     <string name="history_delete_body">The workout will be permanently removed.</string>
+    <string name="notif_channel_workout_title">Active workout</string>
+    <string name="notif_channel_workout_desc">Notification for when a workout is in progress.</string>
+    <string name="notif_channel_daily_title">Daily motivation</string>
+    <string name="notif_channel_daily_desc">One reminder per day with your custom message.</string>
+    <string name="notif_permission_denied">Enable notifications in Settings to get reminders.</string>
 </resources>
