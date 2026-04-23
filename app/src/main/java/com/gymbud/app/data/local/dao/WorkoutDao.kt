@@ -24,6 +24,8 @@ interface WorkoutDao {
     @Query("UPDATE workouts SET name = :newName WHERE id = :id")
     suspend fun updateName(id: Long, newName: String): Int
 
+    @Query("UPDATE workouts SET notes = :notes WHERE id = :id")
+    suspend fun updateNotes(id: Long, notes: String?): Int
 
     @Query("SELECT * FROM workouts WHERE id = :id")
     suspend fun getById(id: Long): Workout?

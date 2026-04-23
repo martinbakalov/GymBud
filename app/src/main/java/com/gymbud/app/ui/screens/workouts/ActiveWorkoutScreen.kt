@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +24,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,6 +67,8 @@ fun ActiveWorkoutScreen(
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
     val stats by viewModel.stats.collectAsStateWithLifecycle()
     val globalUnit by viewModel.globalUnit.collectAsStateWithLifecycle(initialValue = WeightUnit.KG)
+    var showFinishDialog by remember { mutableStateOf(false) }
+    var showDiscardDialog by remember { mutableStateOf(false) }
 
     var nowMillis by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(workout?.startedAt) {
@@ -98,7 +102,7 @@ fun ActiveWorkoutScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)
         ) {
 
             StatsStrip(
@@ -153,13 +157,47 @@ fun ActiveWorkoutScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            Button(
-                onClick = { viewModel.finish(onFinished = onExit) },
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(stringResource(R.string.workout_finish))
+                Button(
+                    onClick = { showFinishDialog = true },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(stringResource(R.string.workout_finish))
+                }
+                TextButton(
+                    onClick = { showDiscardDialog = true },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(stringResource(R.string.workout_discard))
+                }
             }
         }
+    }
+    if (showFinishDialog) {
+        FinishWorkoutDialog(
+            durationMillis = elapsedMillis,
+            stats = stats,
+            onSave = { notes ->
+                showFinishDialog = false
+                viewModel.finish(notes = notes, onFinished = onExit)
+            },
+            onResume = { showFinishDialog = false }
+        )
+    }
+    if (showDiscardDialog) {
+        DiscardWorkoutDialog(
+            onConfirm = {
+                showDiscardDialog = false
+                viewModel.discard(onDiscarded = onExit)
+            },
+            onCancel = { showDiscardDialog = false }
+        )
     }
 }
 

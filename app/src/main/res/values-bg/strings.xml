@@ -80,4 +80,12 @@
     <string name="workout_set_completed">Серията е изпълнена</string>
     <string name="workout_set_incomplete">Маркирай серията като изпълнена</string>
     <string name="workout_in_progress_hint">Върни се към тренировката</string>
+    <string name="finish_dialog_title">Край на тренировката?</string>
+    <string name="finish_dialog_notes_hint">Бележки (по желание)</string>
+    <string name="finish_dialog_save">Запази</string>
+    <string name="finish_dialog_resume">Продължи</string>
+    <string name="discard_confirm_title">Изтриване на тренировката?</string>
+    <string name="discard_confirm_body">Тренировката ще бъде изтрита завинаги.</string>
+    <string name="discard_confirm_delete">Изтрий</string>
+    <string name="workout_discard">Отмени тренировката</string>
 </resources>

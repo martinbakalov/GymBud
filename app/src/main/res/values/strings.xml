@@ -78,4 +78,12 @@
     <string name="workout_set_completed">Set completed</string>
     <string name="workout_set_incomplete">Mark set complete</string>
     <string name="workout_in_progress_hint">Return to workout</string>
+    <string name="finish_dialog_title">Finish workout?</string>
+    <string name="finish_dialog_notes_hint">Notes (optional)</string>
+    <string name="finish_dialog_save">Save</string>
+    <string name="finish_dialog_resume">Resume</string>
+    <string name="discard_confirm_title">Discard workout?</string>
+    <string name="discard_confirm_body">This will permanently delete the workout.</string>
+    <string name="discard_confirm_delete">Delete</string>
+    <string name="workout_discard">Discard workout</string>
 </resources>

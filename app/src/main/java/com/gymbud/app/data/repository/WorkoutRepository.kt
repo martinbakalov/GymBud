@@ -177,6 +177,15 @@ class WorkoutRepository(
         workoutDao.update(workout.copy(endedAt = System.currentTimeMillis()))
     }
 
+    suspend fun discardWorkout(workoutId: Long) {
+        val workout = workoutDao.getById(workoutId) ?: return
+        workoutDao.delete(workout)
+    }
+
+    suspend fun updateWorkoutNotes(workoutId: Long, notes: String?) {
+        workoutDao.updateNotes(workoutId, notes)
+    }
+
     suspend fun statsFor(workoutId: Long): WorkoutStats {
         val workout = workoutDao.getById(workoutId)
         val exercises = workoutExerciseDao.observeForWorkout(workoutId).firstValueOrEmpty()
