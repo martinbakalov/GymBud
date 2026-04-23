@@ -80,8 +80,7 @@ class WorkoutRepository(
         workoutDao.insert(Workout(name = name, isTemplate = true))
 
     suspend fun renameWorkout(workoutId: Long, newName: String) {
-        val workout = workoutDao.getById(workoutId) ?: return
-        workoutDao.update(workout.copy(name = newName))
+        workoutDao.updateName(workoutId, newName)
     }
 
     suspend fun deleteWorkout(workout: Workout): Int = workoutDao.delete(workout)
@@ -174,7 +173,7 @@ class WorkoutRepository(
 
     suspend fun finishWorkout(workoutId: Long) {
         val workout = workoutDao.getById(workoutId) ?: return
-        if (workout.endedAt != null) return // already finished
+        if (workout.endedAt != null) return
         workoutDao.update(workout.copy(endedAt = System.currentTimeMillis()))
     }
 

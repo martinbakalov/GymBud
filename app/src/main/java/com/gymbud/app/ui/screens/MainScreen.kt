@@ -37,38 +37,59 @@ import com.gymbud.app.ui.screens.picker.ExercisePickerScreen
 import com.gymbud.app.ui.screens.workouts.ActiveWorkoutViewModel
 import com.gymbud.app.ui.navigation.HistoryRoutes
 import com.gymbud.app.ui.screens.history.WorkoutDetailScreen
+import androidx.compose.foundation.layout.Column
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
-
+    val app = LocalContext.current.applicationContext as GymBudApplication
+    val bannerVm: ActiveWorkoutBannerViewModel = viewModel(
+        factory = ActiveWorkoutBannerViewModel.Factory(app.workoutRepository)
+    )
+    val activeWorkout by bannerVm.activeWorkout.collectAsStateWithLifecycle()
+    val currentRoute = backStackEntry?.destination?.route
+    val showBanner = activeWorkout != null &&
+            currentRoute != WorkoutsRoutes.ACTIVE
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                TopDestination.all.forEach { dest ->
-                    val selected = backStackEntry?.destination?.hierarchy
-                        ?.any { it.route == dest.route } == true
-                    NavigationBarItem(
-                        selected = selected,
+            Column {
+                if (showBanner) {
+                    ActiveWorkoutBanner(
+                        workout = activeWorkout!!,
                         onClick = {
-                            navController.navigate(dest.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
+                            navController.navigate(WorkoutsRoutes.active(activeWorkout!!.id)) {
                                 launchSingleTop = true
-                                restoreState = true
                             }
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = if (selected) dest.iconFilled else dest.iconOutlined,
-                                contentDescription = null
-                            )
-                        },
-                        label = { Text(stringResource(dest.labelRes)) }
+                        }
                     )
+                }
+                NavigationBar {
+                    TopDestination.all.forEach { dest ->
+                        val selected = backStackEntry?.destination?.hierarchy
+                            ?.any { it.route == dest.route } == true
+                        NavigationBarItem(
+                            selected = selected,
+                            onClick = {
+                                navController.navigate(dest.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = if (selected) dest.iconFilled else dest.iconOutlined,
+                                    contentDescription = null
+                                )
+                            },
+                            label = { Text(stringResource(dest.labelRes)) }
+                        )
+                    }
                 }
             }
         }

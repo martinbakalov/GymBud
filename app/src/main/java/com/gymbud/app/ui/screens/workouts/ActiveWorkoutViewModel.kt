@@ -63,6 +63,8 @@ class ActiveWorkoutViewModel(
     fun rename(newName: String) {
         val trimmed = newName.trim()
         viewModelScope.launch {
+            val current = repository.getWorkout(workoutId)
+            if (current?.endedAt != null) return@launch
             repository.renameWorkout(workoutId, trimmed)
         }
     }

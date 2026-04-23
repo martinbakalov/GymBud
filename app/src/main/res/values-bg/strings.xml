@@ -79,4 +79,5 @@
     <string name="picker_add_with_count">Добави (%d)</string>
     <string name="workout_set_completed">Серията е изпълнена</string>
     <string name="workout_set_incomplete">Маркирай серията като изпълнена</string>
+    <string name="workout_in_progress_hint">Върни се към тренировката</string>
 </resources>

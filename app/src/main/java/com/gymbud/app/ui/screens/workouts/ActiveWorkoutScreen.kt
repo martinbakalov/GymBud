@@ -81,7 +81,6 @@ fun ActiveWorkoutScreen(
         topBar = {
             TopAppBar(
                 title = {
-
                     WorkoutNameField(
                         initialName = workout?.name.orEmpty(),
                         onRename = viewModel::rename
