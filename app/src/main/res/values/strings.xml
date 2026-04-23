@@ -93,4 +93,6 @@
     <string name="finish_dialog_take_photo">Take photo</string>
     <string name="finish_dialog_gallery_photo">Gallery</string>
     <string name="finish_dialog_remove_photo">Remove photo</string>
+    <string name="history_delete_title">Delete this workout?</string>
+    <string name="history_delete_body">The workout will be permanently removed.</string>
 </resources>

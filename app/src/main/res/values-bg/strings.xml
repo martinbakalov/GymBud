@@ -95,4 +95,6 @@
     <string name="finish_dialog_take_photo">Направи снимка</string>
     <string name="finish_dialog_gallery_photo">Галерия</string>
     <string name="finish_dialog_remove_photo">Премахни снимката</string>
+    <string name="history_delete_title">Желаете ли да изтриете тренировката?</string>
+    <string name="history_delete_body">Тренировката ще бъде премахната завинаги.</string>
 </resources>

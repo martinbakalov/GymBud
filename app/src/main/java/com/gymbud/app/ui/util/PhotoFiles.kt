@@ -10,7 +10,7 @@ fun createWorkoutPhotoFile(context: Context): Pair<File, Uri> {
     val file = File(picturesDir, "workout_${System.currentTimeMillis()}.jpg")
     val uri = FileProvider.getUriForFile(
         context,
-        "${context.packageName}.file_provider",
+        "${context.packageName}.fileprovider",
         file
     )
     return file to uri

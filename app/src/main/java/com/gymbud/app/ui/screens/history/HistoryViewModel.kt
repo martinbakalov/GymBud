@@ -9,9 +9,10 @@ import com.gymbud.app.domain.model.WorkoutStats
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class HistoryViewModel(
-    repository: WorkoutRepository
+    private val repository: WorkoutRepository
 ) : ViewModel() {
 
     val history: StateFlow<List<Pair<Workout, WorkoutStats>>> =
@@ -21,6 +22,12 @@ class HistoryViewModel(
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptyList()
             )
+
+    fun deleteWorkout(workout: Workout) {
+        viewModelScope.launch {
+            repository.discardWorkout(workout.id)
+        }
+    }
 
     class Factory(
         private val repository: WorkoutRepository
