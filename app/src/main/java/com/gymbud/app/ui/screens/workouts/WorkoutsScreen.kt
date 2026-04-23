@@ -47,6 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Workout
+import com.gymbud.app.notifications.NotificationHelper.cancelWorkoutInProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -156,6 +157,7 @@ fun WorkoutsScreen(
     }
     if (pendingStart != null) {
         val active = activeWorkout
+        val context = LocalContext.current
         ActiveWorkoutBlockerDialog(
             onResume = {
                 pendingStart = null
@@ -164,6 +166,7 @@ fun WorkoutsScreen(
             onDiscardAndStart = {
                 val action = pendingStart
                 pendingStart = null
+                cancelWorkoutInProgress(context)
                 action?.invoke()
             },
             onCancel = { pendingStart = null }

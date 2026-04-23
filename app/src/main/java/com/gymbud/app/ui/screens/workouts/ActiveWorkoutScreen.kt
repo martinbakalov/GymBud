@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import com.gymbud.app.ui.util.formatDurationTicking
 import com.gymbud.app.ui.util.formatVolume
 import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.notifications.NotificationHelper.showWorkoutInProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +57,7 @@ fun ActiveWorkoutScreen(
     onAddExercisesClick: () -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
+    val context = LocalContext.current
     val viewModel: ActiveWorkoutViewModel = viewModel(
         factory = ActiveWorkoutViewModel.Factory(
             workoutId = workoutId,
@@ -69,17 +72,24 @@ fun ActiveWorkoutScreen(
     val globalUnit by viewModel.globalUnit.collectAsStateWithLifecycle(initialValue = WeightUnit.KG)
     var showFinishDialog by remember { mutableStateOf(false) }
     var showDiscardDialog by remember { mutableStateOf(false) }
-
     var nowMillis by remember { mutableStateOf(System.currentTimeMillis()) }
+    val startedAt = workout?.startedAt
+    val elapsedMillis = if (startedAt != null) (nowMillis - startedAt).coerceAtLeast(0L) else 0L
+
     LaunchedEffect(workout?.startedAt) {
         while (true) {
             nowMillis = System.currentTimeMillis()
             delay(1000L)
         }
     }
-
-    val startedAt = workout?.startedAt
-    val elapsedMillis = if (startedAt != null) (nowMillis - startedAt).coerceAtLeast(0L) else 0L
+    LaunchedEffect(workout?.id, nowMillis / 5000) {
+        val w = workout ?: return@LaunchedEffect
+        showWorkoutInProgress(
+            context = context,
+            workoutName = w.name,
+            elapsedText = formatDurationTicking(elapsedMillis)
+        )
+    }
 
     Scaffold(
         topBar = {
