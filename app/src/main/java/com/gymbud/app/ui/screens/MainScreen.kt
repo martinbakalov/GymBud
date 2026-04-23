@@ -51,8 +51,11 @@ fun MainScreen() {
     )
     val activeWorkout by bannerVm.activeWorkout.collectAsStateWithLifecycle()
     val currentRoute = backStackEntry?.destination?.route
-    val showBanner = activeWorkout != null &&
-            currentRoute != WorkoutsRoutes.ACTIVE
+    val bannerHiddenRoutes = setOf(
+        WorkoutsRoutes.ACTIVE,
+        PickerRoutes.PICK_EXERCISES
+    )
+    val showBanner = activeWorkout != null && currentRoute !in bannerHiddenRoutes
     Scaffold(
         bottomBar = {
             Column {
@@ -107,7 +110,9 @@ fun MainScreen() {
                 composable(WorkoutsRoutes.HOME) {
                     WorkoutsScreen(
                         onStartEmptyWorkout = { workoutId ->
-                            navController.navigate(WorkoutsRoutes.active(workoutId))
+                            navController.navigate(WorkoutsRoutes.active(workoutId)) {
+                                popUpTo(WorkoutsRoutes.HOME) { inclusive = false }
+                            }
                         },
                         onOpenTemplate = { templateId ->
                             navController.navigate(WorkoutsRoutes.template(templateId))

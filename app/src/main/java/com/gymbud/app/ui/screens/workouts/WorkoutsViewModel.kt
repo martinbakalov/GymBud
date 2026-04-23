@@ -20,6 +20,12 @@ class WorkoutsViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
         )
+    val activeWorkout: StateFlow<Workout?> = repository.observeActiveWorkout()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
+        )
 
     fun createTemplate(name: String, onDone: () -> Unit = {}) {
         val trimmed = name.trim()
@@ -44,6 +50,22 @@ class WorkoutsViewModel(
 
     fun startFromTemplate(templateId: Long, onStarted: (Long) -> Unit) {
         viewModelScope.launch {
+            val newId = repository.startFromTemplate(templateId)
+            onStarted(newId)
+        }
+    }
+
+    fun discardActiveAndStartEmpty(onStarted: (Long) -> Unit) {
+        viewModelScope.launch {
+            activeWorkout.value?.let { repository.discardWorkout(it.id) }
+            val newId = repository.startEmptyWorkout()
+            onStarted(newId)
+        }
+    }
+
+    fun discardActiveAndStartFromTemplate(templateId: Long, onStarted: (Long) -> Unit) {
+        viewModelScope.launch {
+            activeWorkout.value?.let { repository.discardWorkout(it.id) }
             val newId = repository.startFromTemplate(templateId)
             onStarted(newId)
         }

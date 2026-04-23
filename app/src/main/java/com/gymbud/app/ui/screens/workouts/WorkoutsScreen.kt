@@ -59,8 +59,10 @@ fun WorkoutsScreen(
         factory = WorkoutsViewModel.Factory(app.workoutRepository)
     )
     val templates by viewModel.templates.collectAsStateWithLifecycle()
+    val activeWorkout by viewModel.activeWorkout.collectAsStateWithLifecycle()
 
     var showNewTemplateDialog by remember { mutableStateOf(false) }
+    var pendingStart by remember { mutableStateOf<(() -> Unit)?>(null) }
 
     Scaffold(
         topBar = {
@@ -76,7 +78,13 @@ fun WorkoutsScreen(
 
             Button(
                 onClick = {
-                    viewModel.startEmptyWorkout(onStarted = onStartEmptyWorkout)
+                    if (activeWorkout != null) {
+                        pendingStart = {
+                            viewModel.discardActiveAndStartEmpty(onStarted = onStartEmptyWorkout)
+                        }
+                    } else {
+                        viewModel.startEmptyWorkout(onStarted = onStartEmptyWorkout)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
@@ -144,6 +152,21 @@ fun WorkoutsScreen(
                     showNewTemplateDialog = false
                 }
             }
+        )
+    }
+    if (pendingStart != null) {
+        val active = activeWorkout
+        ActiveWorkoutBlockerDialog(
+            onResume = {
+                pendingStart = null
+                active?.let { onStartEmptyWorkout(it.id) }
+            },
+            onDiscardAndStart = {
+                val action = pendingStart
+                pendingStart = null
+                action?.invoke()
+            },
+            onCancel = { pendingStart = null }
         )
     }
 }

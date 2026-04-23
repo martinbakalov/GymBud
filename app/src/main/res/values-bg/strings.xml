@@ -88,4 +88,8 @@
     <string name="discard_confirm_body">Тренировката ще бъде изтрита завинаги.</string>
     <string name="discard_confirm_delete">Изтрий</string>
     <string name="workout_discard">Отмени тренировката</string>
+    <string name="blocker_title">Имаш незавършена тренировка</string>
+    <string name="blocker_body">Трябва да завършиш или откажеш текущата тренировка, преди да започнеш нова.</string>
+    <string name="blocker_resume">Отвори текущата</string>
+    <string name="blocker_discard_and_start">Откажи и започни нова</string>
 </resources>

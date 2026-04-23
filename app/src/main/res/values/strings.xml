@@ -86,4 +86,8 @@
     <string name="discard_confirm_body">This will permanently delete the workout.</string>
     <string name="discard_confirm_delete">Delete</string>
     <string name="workout_discard">Discard workout</string>
+    <string name="blocker_title">You have a workout in progress</string>
+    <string name="blocker_body">Finish or discard your current workout before starting a new one.</string>
+    <string name="blocker_resume">Resume current</string>
+    <string name="blocker_discard_and_start">Discard &amp; start new</string>
 </resources>

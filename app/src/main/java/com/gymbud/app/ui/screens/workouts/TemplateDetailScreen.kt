@@ -21,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -44,8 +47,10 @@ fun TemplateDetailScreen(
     )
 
     val templateFlow = app.workoutRepository.observeTemplates()
+    val activeWorkout by viewModel.activeWorkout.collectAsStateWithLifecycle()
     val templates by templateFlow.collectAsStateWithLifecycle(initialValue = emptyList())
     val template = templates.firstOrNull { it.id == templateId }
+    var pendingStart by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -85,7 +90,11 @@ fun TemplateDetailScreen(
 
             Button(
                 onClick = {
-                    viewModel.startFromTemplate(templateId, onStarted = onStartWorkout)
+                    if (activeWorkout != null) {
+                        pendingStart = true
+                    } else {
+                        viewModel.startFromTemplate(templateId, onStarted = onStartWorkout)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
@@ -97,5 +106,19 @@ fun TemplateDetailScreen(
                 Text(stringResource(R.string.workouts_start_from_template))
             }
         }
+    }
+    if (pendingStart) {
+        val active = activeWorkout
+        ActiveWorkoutBlockerDialog(
+            onResume = {
+                pendingStart = false
+                active?.let { onStartWorkout(it.id) }
+            },
+            onDiscardAndStart = {
+                pendingStart = false
+                viewModel.discardActiveAndStartFromTemplate(templateId, onStarted = onStartWorkout)
+            },
+            onCancel = { pendingStart = false }
+        )
     }
 }
