@@ -7,6 +7,7 @@ import kotlinx.coroutines.SupervisorJob
 import com.gymbud.app.data.repository.ExerciseRepository
 import com.gymbud.app.data.repository.WorkoutRepository
 import com.gymbud.app.data.prefs.AppPreferences
+import com.gymbud.app.notifications.DailyNotificationScheduler
 import com.gymbud.app.notifications.NotificationHelper
 
 class GymBudApplication : Application() {
@@ -34,5 +35,6 @@ class GymBudApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         NotificationHelper.createChannels(this)
+        DailyNotificationScheduler.scheduleNext(this)
     }
 }

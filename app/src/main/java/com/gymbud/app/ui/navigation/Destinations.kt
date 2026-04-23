@@ -49,6 +49,11 @@ object ExercisesRoutes {
     const val NEW = "exercises/new"
 }
 
+object SettingsRoutes {
+    const val GRAPH = "settings"
+    const val HOME = "settings/home"
+    const val NOTIFICATIONS = "settings/notifications"
+}
 object WorkoutsRoutes {
     const val GRAPH = "workouts"
     const val HOME = "workouts/home"

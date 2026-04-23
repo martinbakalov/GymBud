@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,11 +41,15 @@ import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.domain.model.WorkoutStats
 import com.gymbud.app.ui.util.formatDurationCompact
 import com.gymbud.app.ui.util.formatSessionDateTime
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HistoryScreen(
-    onWorkoutClick: (Long) -> Unit
+    onWorkoutClick: (Long) -> Unit,
+    onOpenNotificationsSettings: () -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
     val viewModel: HistoryViewModel = viewModel(
@@ -55,7 +60,17 @@ fun HistoryScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.history_title)) })
+            TopAppBar(
+                title = { Text(stringResource(R.string.history_title)) },
+                actions = {
+                    IconButton(onClick = onOpenNotificationsSettings) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = stringResource(R.string.settings_notifications_title)
+                        )
+                    }
+                }
+            )
         }
     ) { innerPadding ->
         if (history.isEmpty()) {

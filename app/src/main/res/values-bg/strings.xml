@@ -98,9 +98,19 @@
     <string name="history_delete_title">Желаете ли да изтриете тренировката?</string>
     <string name="history_delete_body">Тренировката ще бъде премахната завинаги.</string>
     <string name="notif_channel_workout_title">Активна тренировка</string>
-    <string name="notif_channel_workout_desc">Нотификация по време на активна тренировка.</string>
+    <string name="notif_channel_workout_desc">Известие по време на активна тренировка.</string>
     <string name="notif_channel_daily_title">Дневна мотивация</string>
-    <string name="notif_channel_daily_desc">Една нотификация на ден с твое съобщение.</string>
-    <string name="notif_permission_denied">Разреши нотификациите от настройките, за да получаваш напомняния.</string>
+    <string name="notif_channel_daily_desc">Едно известие на ден с твое съобщение.</string>
+    <string name="notif_permission_denied">Разреши известията от настройките.</string>
     <string name="finish_dialog_name_label">Име на тренировката</string>
+    <string name="settings_notifications_title">Известия</string>
+    <string name="settings_daily_enabled">Дневна мотивация</string>
+    <string name="settings_daily_enabled_desc">Изпраща известие веднъж на ден.</string>
+    <string name="settings_daily_time">Време</string>
+    <string name="settings_daily_save_time">Запази Времето</string>
+    <string name="settings_daily_message">Твоето съобщение</string>
+    <string name="settings_daily_message_desc">Остави празно за получаване на стандартното съобщение.</string>
+    <string name="settings_daily_save_message">Запази съобщението</string>
+    <string name="daily_default_message">Не забравяй за ежедневната си тренировка! (Ако днес имаш почивен ден, помни да включиш някаква активност към деня си като например разходка!)</string>
+    <string name="settings_daily_test">Тестово известие</string>
 </resources>

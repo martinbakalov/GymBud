@@ -41,6 +41,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymbud.app.ui.screens.banner.ActiveWorkoutBanner
 import com.gymbud.app.ui.screens.banner.ActiveWorkoutBannerViewModel
+import com.gymbud.app.ui.navigation.SettingsRoutes
+import com.gymbud.app.ui.screens.settings.NotificationsSettingsScreen
 
 
 @Composable
@@ -223,6 +225,9 @@ fun MainScreen() {
                     HistoryScreen(
                         onWorkoutClick = { id ->
                             navController.navigate(HistoryRoutes.detail(id))
+                        },
+                        onOpenNotificationsSettings = {
+                            navController.navigate(SettingsRoutes.NOTIFICATIONS)
                         }
                     )
                 }
@@ -237,6 +242,11 @@ fun MainScreen() {
                         ?: return@composable
                     WorkoutDetailScreen(
                         workoutId = id,
+                        onExit = { navController.popBackStack() }
+                    )
+                }
+                composable(SettingsRoutes.NOTIFICATIONS) {
+                    NotificationsSettingsScreen(
                         onExit = { navController.popBackStack() }
                     )
                 }
