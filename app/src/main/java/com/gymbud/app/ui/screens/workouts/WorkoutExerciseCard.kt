@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
@@ -43,6 +45,8 @@ import com.gymbud.app.domain.model.ExerciseType
 import com.gymbud.app.domain.model.WeightUnit
 import kotlinx.coroutines.flow.Flow
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.ui.util.displayName
 
@@ -282,15 +286,24 @@ private fun NumberField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var localText by remember(value) { mutableStateOf(value) }
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        singleLine = true,
-        textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center),
-        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-            keyboardType = KeyboardType.Number
+        value = localText,
+        onValueChange = { localText = it },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,  imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                if (localText != value) onValueChange(localText)
+                focusManager.clearFocus()
+            }
         ),
-        modifier = modifier.padding(horizontal = 2.dp)
+        singleLine = true,
+        modifier = modifier.onFocusChanged { state ->
+            if (!state.hasFocus && localText != value) {
+                onValueChange(localText)
+            }
+        }
     )
 }
 
