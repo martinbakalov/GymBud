@@ -48,6 +48,7 @@ import com.gymbud.app.ui.screens.settings.NotificationsSettingsScreen
 import com.gymbud.app.ui.screens.settings.LanguageSettingsScreen
 import com.gymbud.app.ui.screens.settings.SettingsHomeScreen
 import com.gymbud.app.ui.screens.settings.ThemeSettingsScreen
+import com.gymbud.app.ui.screens.workouts.TemplateEditorViewModel
 
 
 @Composable
@@ -62,6 +63,7 @@ fun MainScreen() {
     val currentRoute = backStackEntry?.destination?.route
     val bannerHiddenRoutes = setOf(
         WorkoutsRoutes.ACTIVE,
+        WorkoutsRoutes.TEMPLATE,
         PickerRoutes.PICK_EXERCISES
     )
     val showBanner = activeWorkout != null && currentRoute !in bannerHiddenRoutes
@@ -87,10 +89,10 @@ fun MainScreen() {
                             onClick = {
                                 navController.navigate(dest.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                        saveState = false
                                     }
                                     launchSingleTop = true
-                                    restoreState = true
+                                    restoreState = false
                                 }
                             },
                             icon = {
@@ -138,12 +140,32 @@ fun MainScreen() {
                     val id = entry.arguments
                         ?.getLong(WorkoutsRoutes.ARG_WORKOUT_ID)
                         ?: return@composable
+
+                    val tempVm: TemplateEditorViewModel = viewModel(
+                        factory = TemplateEditorViewModel.Factory(
+                            templateId = id,
+                            repository = app.workoutRepository,
+                        ),
+                        viewModelStoreOwner = entry
+                    )
+
+                    val pickedIds = entry.savedStateHandle.get<LongArray>(PickerRoutes.RESULT_KEY)
+                    LaunchedEffect(pickedIds) {
+                        if (pickedIds != null && pickedIds.isNotEmpty()) {
+                            tempVm.addExercises(pickedIds.toList())
+                            entry.savedStateHandle.remove<LongArray>(PickerRoutes.RESULT_KEY)
+                        }
+                    }
+
                     TemplateDetailScreen(
                         templateId = id,
                         onStartWorkout = { workoutId ->
                             navController.navigate(WorkoutsRoutes.active(workoutId)) {
                                 popUpTo(WorkoutsRoutes.HOME) { inclusive = false }
                             }
+                        },
+                        onAddExercisesClick = {
+                            navController.navigate(PickerRoutes.PICK_EXERCISES)
                         },
                         onExit = { navController.popBackStack() }
                     )

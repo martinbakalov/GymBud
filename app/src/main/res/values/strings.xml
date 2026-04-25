@@ -198,4 +198,7 @@
     <string name="exercise_exercise_bike">Exercise Bike</string>
     <string name="exercise_hanging_leg_raise">Hanging Leg Raise</string>
     <string name="exercise_cable_crunch">Cable Crunch</string>
+    <string name="template_no_exercises_yet">No exercises yet</string>
+    <string name="template_set_label">Set %1$d</string>
+    <string name="template_start_workout">Start workout</string>
 </resources>

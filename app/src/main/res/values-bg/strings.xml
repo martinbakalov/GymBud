@@ -187,7 +187,6 @@
     <string name="exercise_triceps_pushdown">Трицепсово разгъване</string>
     <string name="exercise_skull_crusher">Френска преса</string>
     <string name="exercise_triceps_dips">Кофички за трицепс</string>
-
     <string name="exercise_back_squat">Заден клек</string>
     <string name="exercise_front_squat">Преден клек</string>
     <string name="exercise_romanian_deadlift">Румънска тяга</string>
@@ -196,10 +195,12 @@
     <string name="exercise_leg_curl">Сгъване на крака</string>
     <string name="exercise_hip_thrust">Изтласкване с таза</string>
     <string name="exercise_standing_calf_raise">Прасец</string>
-
     <string name="exercise_plank">Планк</string>
     <string name="exercise_treadmill">Бягаща пътека</string>
     <string name="exercise_exercise_bike">Колело</string>
     <string name="exercise_hanging_leg_raise">Повдигане на крака</string>
     <string name="exercise_cable_crunch">Молитва</string>
+    <string name="template_no_exercises_yet">Все още няма упражнения</string>
+    <string name="template_set_label">Серия %1$d</string>
+    <string name="template_start_workout">Започни тренировка</string>
 </resources>
