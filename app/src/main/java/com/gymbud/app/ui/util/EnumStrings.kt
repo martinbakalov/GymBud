@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import com.gymbud.app.R
 import com.gymbud.app.domain.model.Equipment
 import com.gymbud.app.domain.model.MuscleGroup
+import com.gymbud.app.domain.model.Sex
 
 
 @StringRes
@@ -33,4 +34,11 @@ fun MuscleGroup.labelRes(): Int = when (this) {
     MuscleGroup.CALVES      -> R.string.muscle_calves
     MuscleGroup.FULL_BODY   -> R.string.muscle_full_body
     MuscleGroup.OTHER       -> R.string.muscle_other
+}
+
+@StringRes
+fun Sex.labelRes(): Int = when (this) {
+    Sex.MALE -> R.string.sex_male
+    Sex.FEMALE -> R.string.sex_female
+    Sex.PREFER_NOT_TO_SAY -> R.string.sex_prefer_not_to_say
 }

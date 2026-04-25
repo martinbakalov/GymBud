@@ -39,7 +39,7 @@
     <string name="workout_set">Серия</string>
     <string name="workout_previous">Предишна</string>
     <string name="workout_kg">кг</string>
-    <string name="workout_lbs">фунт</string>
+    <string name="workout_lbs">паунда</string>
     <string name="workout_reps">Повт</string>
     <string name="workout_time">Време</string>
     <string name="workout_add_set">Добави серия</string>
@@ -50,8 +50,9 @@
     <string name="stats_duration">Продължителност</string>
     <string name="profile_title">Профил</string>
     <string name="profile_default_name">Атлет</string>
-    <string name="profile_workouts_count_label">Тренировки</string>
+    <string name="profile_workouts_count_label">Брой тренировки</string>
     <string name="profile_edit">Редакция</string>
+    <string name="profile_workout_history">История на тренировките</string>
     <string name="profile_empty_history">Все още няма завършени тренировки</string>
     <string name="muscle_chest">Гърди</string>
     <string name="muscle_back">Гръб</string>
@@ -116,4 +117,19 @@
     <string name="settings_daily_save_message">Запази съобщението</string>
     <string name="daily_default_message">Не забравяй за ежедневната си тренировка! (Ако днес имаш почивен ден, помни да включиш някаква активност към деня си като например разходка!)</string>
     <string name="settings_daily_test">Тестово известие</string>
+    <string name="edit_profile_title">Редакция на профил</string>
+    <string name="edit_profile_save">Запази</string>
+    <string name="edit_profile_change_avatar">Смени профилна снимка</string>
+    <string name="edit_profile_take_photo">Снимай</string>
+    <string name="edit_profile_gallery_photo">Галерия</string>
+    <string name="edit_profile_remove_photo">Премахни снимката</string>
+    <string name="edit_profile_name">Профилно име</string>
+    <string name="edit_profile_bio">Биография</string>
+    <string name="edit_profile_sex">Пол</string>
+    <string name="edit_profile_birthday">Рожден ден</string>
+    <string name="edit_profile_birthday_not_set">Не е зададен</string>
+    <string name="edit_profile_birthday_clear">Изчисти</string>
+    <string name="sex_male">Мъж</string>
+    <string name="sex_female">Жена</string>
+    <string name="sex_prefer_not_to_say">Не е ваша работа</string>
 </resources>

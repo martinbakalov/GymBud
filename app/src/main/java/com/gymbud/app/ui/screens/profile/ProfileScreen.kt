@@ -48,6 +48,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Profile
@@ -100,6 +102,14 @@ fun ProfileScreen(
                 profile = profile,
                 workoutCount = workoutCount,
                 onClick = onEditProfileClick
+            )
+
+            HorizontalDivider()
+
+            Text(
+                text = stringResource(R.string.profile_workout_history),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
             )
 
             HorizontalDivider()
@@ -170,11 +180,15 @@ private fun ProfileHeader(
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Avatar — photo if set, generic silhouette otherwise.
+
         val avatarPath = profile?.avatarPath
         if (avatarPath != null && File(avatarPath).exists()) {
             AsyncImage(
-                model = File(avatarPath),
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(File(avatarPath))
+                    .memoryCachePolicy(CachePolicy.DISABLED)
+                    .diskCachePolicy(CachePolicy.DISABLED)
+                    .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -219,11 +233,11 @@ private fun ProfileHeader(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Spacer(Modifier.size(4.dp))
+            Spacer(Modifier.size(6.dp))
             Text(
-                text = "$workoutCount ${stringResource(R.string.profile_workouts_count_label)}",
+                text = "${stringResource(R.string.profile_workouts_count_label)} $workoutCount",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.secondary
             )
         }
     }
