@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -45,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.Settings
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -65,7 +65,7 @@ import java.io.File
 fun ProfileScreen(
     onWorkoutClick: (Long) -> Unit,
     onEditProfileClick: () -> Unit,
-    onOpenNotificationsSettings: () -> Unit
+    onOpenSettings: () -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
     val viewModel: ProfileViewModel = viewModel(
@@ -86,10 +86,10 @@ fun ProfileScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.profile_title)) },
                 actions = {
-                    IconButton(onClick = onOpenNotificationsSettings) {
+                    IconButton(onClick = onOpenSettings) {
                         Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = stringResource(R.string.settings_notifications_title)
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.settings_title)
                         )
                     }
                 }

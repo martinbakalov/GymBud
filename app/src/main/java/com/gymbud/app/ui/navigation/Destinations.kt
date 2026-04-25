@@ -53,6 +53,9 @@ object SettingsRoutes {
     const val GRAPH = "settings"
     const val HOME = "settings/home"
     const val NOTIFICATIONS = "settings/notifications"
+    const val THEME = "settings/theme"
+    const val LANGUAGE = "settings/language"
+    const val ABOUT = "settings/about"
 }
 object WorkoutsRoutes {
     const val GRAPH = "workouts"

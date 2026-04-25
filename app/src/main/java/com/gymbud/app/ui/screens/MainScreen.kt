@@ -44,6 +44,9 @@ import com.gymbud.app.ui.screens.banner.ActiveWorkoutBanner
 import com.gymbud.app.ui.screens.banner.ActiveWorkoutBannerViewModel
 import com.gymbud.app.ui.navigation.SettingsRoutes
 import com.gymbud.app.ui.screens.settings.NotificationsSettingsScreen
+import com.gymbud.app.ui.screens.settings.LanguageSettingsScreen
+import com.gymbud.app.ui.screens.settings.SettingsHomeScreen
+import com.gymbud.app.ui.screens.settings.ThemeSettingsScreen
 
 
 @Composable
@@ -230,8 +233,8 @@ fun MainScreen() {
                         onEditProfileClick = {
                             navController.navigate(ProfileRoutes.EDIT)
                         },
-                        onOpenNotificationsSettings = {
-                            navController.navigate(SettingsRoutes.NOTIFICATIONS)
+                        onOpenSettings = {
+                            navController.navigate(SettingsRoutes.HOME)
                         }
                     )
                 }
@@ -254,11 +257,33 @@ fun MainScreen() {
                         onExit = { navController.popBackStack() }
                     )
                 }
-                composable(SettingsRoutes.NOTIFICATIONS) {
-                    NotificationsSettingsScreen(
-                        onExit = { navController.popBackStack() }
+            }
+            navigation(
+                route = SettingsRoutes.GRAPH,
+                startDestination = SettingsRoutes.HOME
+            ) {
+                composable(SettingsRoutes.HOME) {
+                    SettingsHomeScreen(
+                        onExit = { navController.popBackStack() },
+                        onOpenNotifications = { navController.navigate(SettingsRoutes.NOTIFICATIONS) },
+                        onOpenTheme = { navController.navigate(SettingsRoutes.THEME) },
+                        onOpenLanguage = { navController.navigate(SettingsRoutes.LANGUAGE) },
+                        onOpenAbout = { navController.navigate(SettingsRoutes.ABOUT) }
                     )
                 }
+                composable(SettingsRoutes.NOTIFICATIONS) {
+                    NotificationsSettingsScreen(onExit = { navController.popBackStack() })
+                }
+                composable(SettingsRoutes.THEME) {
+                    ThemeSettingsScreen(onExit = { navController.popBackStack() })
+                }
+                composable(SettingsRoutes.LANGUAGE) {
+                    LanguageSettingsScreen(onExit = { navController.popBackStack() })
+                }
+               /*  composable(SettingsRoutes.ABOUT) {
+                    AboutScreen(onExit = { navController.popBackStack() })
+                }
+                */
             }
         }
     }
