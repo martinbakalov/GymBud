@@ -91,6 +91,14 @@ class ActiveWorkoutViewModel(
         }
     }
 
+    fun updateExerciseNotes(workoutExerciseId: Long, notes: String?) {
+        viewModelScope.launch {
+            val trimmed = notes?.trim()?.takeIf { it.isNotBlank() }
+            repository.updateExerciseNotes(workoutExerciseId, trimmed)
+        }
+    }
+
+
     fun discard(onDiscarded: () -> Unit) {
         viewModelScope.launch {
             repository.discardWorkout(workoutId)

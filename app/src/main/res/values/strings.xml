@@ -156,4 +156,8 @@
     <string name="about_description">A minimalistic workout tracking app. Built as a coursework project for a mobile programming course at the Technical University of Sofia.</string>
     <string name="about_tech_label">Built with</string>
     <string name="about_tech_value">Kotlin, Jetpack Compose, Room, Material 3</string>
+    <string name="detail_section_photo">Photo</string>
+    <string name="detail_section_notes">Notes</string>
+    <string name="detail_section_exercises">Exercises</string>
+    <string name="workout_exercise_notes_hint">Notes (optional)</string>
 </resources>

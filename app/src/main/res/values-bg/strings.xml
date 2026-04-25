@@ -158,4 +158,8 @@
     <string name="about_description">Минималистично приложение за тренировки. Направено за курсов проект по програмиране на мобилни устройства в Технически университет - София.</string>
     <string name="about_tech_label">Използвани технологии</string>
     <string name="about_tech_value">Kotlin, Jetpack Compose, Room, Material 3</string>
+    <string name="detail_section_photo">Снимка</string>
+    <string name="detail_section_notes">Бележки</string>
+    <string name="detail_section_exercises">Упражнения</string>
+    <string name="workout_exercise_notes_hint">Бележки (по желание)</string>
 </resources>

@@ -41,12 +41,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import kotlinx.coroutines.delay
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import com.gymbud.app.ui.util.formatDurationTicking
 import com.gymbud.app.ui.util.formatVolume
 import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.notifications.NotificationHelper.cancelWorkoutInProgress
 import com.gymbud.app.notifications.NotificationHelper.showWorkoutInProgress
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,10 +110,14 @@ fun ActiveWorkoutScreen(
             )
         }
     ) { innerPadding ->
+        val focusManager = LocalFocusManager.current
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
+                }
                 .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)
         ) {
 
@@ -152,6 +158,9 @@ fun ActiveWorkoutScreen(
                             onDeleteSet = viewModel::deleteSet,
                             onRemoveExercise = { viewModel.removeExercise(we) },
                             onUnitToggle = { viewModel.toggleUnitForExercise(we.exerciseId, exerciseUnit) },
+                            onUpdateNotes = { notes ->                              // ← new
+                                viewModel.updateExerciseNotes(we.id, notes)
+                            },
                             observeSets = { viewModel.observeSets(we.id) }
                         )
                     }

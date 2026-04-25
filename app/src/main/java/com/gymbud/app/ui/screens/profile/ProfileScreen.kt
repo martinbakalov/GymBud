@@ -59,7 +59,7 @@ import com.gymbud.app.ui.util.formatDurationCompact
 import com.gymbud.app.ui.util.formatSessionDateTime
 import com.gymbud.app.ui.util.formatVolume
 import java.io.File
-
+import androidx.compose.foundation.shape.RoundedCornerShape
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ProfileScreen(
@@ -258,35 +258,58 @@ private fun HistoryRow(
                 onLongClick = onLongPress
             )
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = workout.name.ifBlank { stringResource(R.string.workout_empty_name) },
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = formatSessionDateTime(workout.endedAt),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(Modifier.size(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                StatInline(
-                    label = stringResource(R.string.stats_duration),
-                    value = formatDurationCompact(stats.durationMillis)
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            val photoPath = workout.photoPath
+            if (photoPath != null && File(photoPath).exists()) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(File(photoPath))
+                        .memoryCachePolicy(CachePolicy.DISABLED)
+                        .diskCachePolicy(CachePolicy.DISABLED)
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(8.dp))
                 )
-                StatInline(
-                    label = stringResource(R.string.stats_sets),
-                    value = stats.totalSets.toString()
+                Spacer(Modifier.size(12.dp))
+            }
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = workout.name.ifBlank { stringResource(R.string.workout_empty_name) },
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-                StatInline(
-                    label = stringResource(R.string.stats_volume),
-                    value = "${formatVolume(stats.totalVolumeKg)} ${stringResource(R.string.workout_kg)}"
+                Text(
+                    text = formatSessionDateTime(workout.endedAt),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(Modifier.size(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    StatInline(
+                        label = stringResource(R.string.stats_duration),
+                        value = formatDurationCompact(stats.durationMillis)
+                    )
+                    StatInline(
+                        label = stringResource(R.string.stats_sets),
+                        value = stats.totalSets.toString()
+                    )
+                    StatInline(
+                        label = stringResource(R.string.stats_volume),
+                        value = "${formatVolume(stats.totalVolumeKg)} ${stringResource(R.string.workout_kg)}"
+                    )
+                }
             }
         }
     }

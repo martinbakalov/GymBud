@@ -33,6 +33,9 @@ interface WorkoutExerciseDao {
     )
     fun observeForWorkout(workoutId: Long): Flow<List<WorkoutExercise>>
 
+    @Query("UPDATE workout_exercises SET notes = :notes WHERE id = :id")
+    suspend fun updateNotes(id: Long, notes: String?): Int
+
     @Query("SELECT COALESCE(MAX(position) + 1, 0) FROM workout_exercises WHERE workoutId = :workoutId")
     suspend fun nextPosition(workoutId: Long): Int
 }

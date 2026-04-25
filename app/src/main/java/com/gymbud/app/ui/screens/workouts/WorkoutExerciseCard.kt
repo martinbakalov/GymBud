@@ -41,17 +41,20 @@ import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.domain.model.ExerciseType
 import com.gymbud.app.domain.model.WeightUnit
 import kotlinx.coroutines.flow.Flow
+import androidx.compose.ui.focus.onFocusChanged
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutExerciseCard(
     workoutExercise: WorkoutExercise,
     app: GymBudApplication,
-    unit: WeightUnit,                              // ← new
+    unit: WeightUnit,
     onAddSet: () -> Unit,
     onUpdateSet: (WorkoutSet) -> Unit,
     onDeleteSet: (WorkoutSet) -> Unit,
     onRemoveExercise: () -> Unit,
-    onUnitToggle: () -> Unit,                      // ← new, toggles per-exercise
+    onUnitToggle: () -> Unit,
+    onUpdateNotes: (String?) -> Unit,
     observeSets: () -> Flow<List<WorkoutSet>>
 ) {
 
@@ -110,6 +113,11 @@ fun WorkoutExerciseCard(
             }
 
             Spacer(Modifier.height(8.dp))
+
+            NotesField(
+                initialNotes = workoutExercise.notes.orEmpty(),
+                onSave = onUpdateNotes
+            )
 
             SetRowHeader(
                 exerciseType = exercise?.type ?: ExerciseType.WEIGHT_REPS,
@@ -286,3 +294,33 @@ private fun trimZero(value: Float): String {
 @Composable
 private fun stringResource(id: Int, vararg args: Any): String =
     androidx.compose.ui.res.stringResource(id = id, formatArgs = args)
+
+@Composable
+private fun NotesField(
+    initialNotes: String,
+    onSave: (String?) -> Unit
+) {
+    var text by remember(initialNotes) { mutableStateOf(initialNotes) }
+
+    OutlinedTextField(
+        value = text,
+        onValueChange = { text = it },
+        placeholder = {
+            Text(
+                text = stringResource(R.string.workout_exercise_notes_hint),
+                style = MaterialTheme.typography.bodySmall
+            )
+        },
+        textStyle = MaterialTheme.typography.bodySmall,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .onFocusChanged { state ->
+                if (!state.hasFocus && text != initialNotes) {
+                    onSave(text.ifBlank { null })
+                }
+            },
+        minLines = 1,
+        maxLines = 3
+    )
+}

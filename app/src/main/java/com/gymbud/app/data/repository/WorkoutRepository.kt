@@ -157,6 +157,9 @@ class WorkoutRepository(
         workoutExerciseDao.update(workoutExercise.copy(notes = notes))
     }
 
+    suspend fun updateExerciseNotes(workoutExerciseId: Long, notes: String?) {
+        workoutExerciseDao.updateNotes(workoutExerciseId, notes)
+    }
     suspend fun addSet(workoutExerciseId: Long): Long {
         val position = workoutSetDao.nextPosition(workoutExerciseId)
         return workoutSetDao.insert(

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,10 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,15 +33,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
-import com.gymbud.app.data.local.entity.Exercise
-import com.gymbud.app.data.local.entity.Workout
-import com.gymbud.app.data.local.entity.WorkoutExercise
-import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.domain.model.WorkoutStats
 import com.gymbud.app.ui.util.formatDurationCompact
 import com.gymbud.app.ui.util.formatSessionDateTime
-import kotlinx.coroutines.flow.first
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,28 +53,18 @@ fun WorkoutDetailScreen(
     onExit: () -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
-    val repo = app.workoutRepository
+    val viewModel: WorkoutDetailViewModel = viewModel(
+        factory = WorkoutDetailViewModel.Factory(
+            workoutId = workoutId,
+            workoutRepository = app.workoutRepository,
+            exerciseRepository = app.exerciseRepository
+        )
+    )
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var workout by remember { mutableStateOf<Workout?>(null) }
-    var stats by remember { mutableStateOf<WorkoutStats?>(null) }
-    var blocks by remember { mutableStateOf<List<ExerciseBlock>>(emptyList()) }
-
-    LaunchedEffect(workoutId) {
-        workout = repo.getWorkout(workoutId)
-        stats = repo.statsFor(workoutId)
-
-        val weList = repo.observeExercisesForWorkout(workoutId).first()
-
-        blocks = weList.map { we ->
-            val setList = repo.observeSetsForWorkoutExercise(we.id).first()
-            val ex = app.exerciseRepository.getById(we.exerciseId)
-            ExerciseBlock(
-                workoutExercise = we,
-                exercise = ex,
-                sets = setList
-            )
-        }
-    }
+    val workout = state.workout
+    val stats = state.stats
+    val blocks = state.blocks
 
     Scaffold(
         topBar = {
@@ -90,72 +80,103 @@ fun WorkoutDetailScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
-                .padding(16.dp)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = formatSessionDateTime(workout?.endedAt),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(Modifier.height(12.dp))
+            item (key = "date") {
+                Text(
+                    text = formatSessionDateTime(workout?.endedAt),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
             val s = stats
             if (s != null) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    DetailStat(
-                        label = stringResource(R.string.stats_duration),
-                        value = formatDurationCompact(s.durationMillis)
-                    )
-                    DetailStat(
-                        label = stringResource(R.string.stats_sets),
-                        value = s.totalSets.toString()
-                    )
-                    DetailStat(
-                        label = stringResource(R.string.stats_volume),
-                        value = "${s.totalVolumeKg.toInt()} ${stringResource(R.string.workout_kg)}"
+                item (key = "stats"){
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        DetailStat(
+                            label = stringResource(R.string.stats_duration),
+                            value = formatDurationCompact(s.durationMillis)
+                        )
+                        DetailStat(
+                            label = stringResource(R.string.stats_sets),
+                            value = s.totalSets.toString()
+                        )
+                        DetailStat(
+                            label = stringResource(R.string.stats_volume),
+                            value = "${s.totalVolumeKg.toInt()} ${stringResource(R.string.workout_kg)}"
+                        )
+                    }
+                }
+            }
+
+            val photoPath = workout?.photoPath
+            if (photoPath != null && File(photoPath).exists()) {
+                item(key = "photo_header") {
+                    SectionHeader(stringResource(R.string.detail_section_photo))
+                }
+                item (key = "photo"){
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(File(photoPath))
+                            .memoryCachePolicy(CachePolicy.DISABLED)
+                            .diskCachePolicy(CachePolicy.DISABLED)
+                            .build(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(3f / 4f)
+                            .clip(RoundedCornerShape(12.dp))
                     )
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
-
-            if (blocks.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+            val notes = workout?.notes
+            if (!notes.isNullOrBlank()) {
+                item(key = "notes_header") {
+                    SectionHeader(stringResource(R.string.detail_section_notes))
+                }
+                item (key = "notes"){
                     Text(
-                        text = stringResource(R.string.workout_no_exercises_yet),
+                        text = notes,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(bottom = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(items = blocks, key = { it.workoutExercise.id }) { block ->
-                        ExerciseReadOnlyCard(block)
+            }
+
+            if (blocks.isEmpty()) {
+                item(key = "empty"){
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.workout_no_exercises_yet),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
+                }
+            } else {
+                item(key = "exercises_header") {
+                    SectionHeader(stringResource(R.string.detail_section_exercises))
+                }
+                items(items = blocks, key = { it.workoutExercise.id }) { block ->
+                    ExerciseReadOnlyCard(block)
                 }
             }
         }
     }
 }
-
-private data class ExerciseBlock(
-    val workoutExercise: WorkoutExercise,
-    val exercise: Exercise?,
-    val sets: List<WorkoutSet>
-)
 
 @Composable
 private fun ExerciseReadOnlyCard(block: ExerciseBlock) {
@@ -170,7 +191,19 @@ private fun ExerciseReadOnlyCard(block: ExerciseBlock) {
                 text = block.exercise?.name ?: "—",
                 style = MaterialTheme.typography.titleMedium
             )
+
+            val exerciseNotes = block.workoutExercise.notes
+            if (!exerciseNotes.isNullOrBlank()) {
+                Text(
+                    text = exerciseNotes,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
             Spacer(Modifier.height(6.dp))
+
             val type = block.exercise?.type ?: ExerciseType.WEIGHT_REPS
             block.sets.forEach { set ->
                 val line = when (type) {
@@ -213,4 +246,13 @@ private fun DetailStat(label: String, value: String) {
 private fun trimZero(value: Float): String {
     val asInt = value.toInt()
     return if (value == asInt.toFloat()) asInt.toString() else value.toString()
+}
+
+@Composable
+private fun SectionHeader(text: String) {
+    Text(
+        text = text.uppercase(),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 }
