@@ -3,10 +3,10 @@ package com.gymbud.app.ui.navigation
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.FitnessCenter
-import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.gymbud.app.R
@@ -31,16 +31,16 @@ sealed class TopDestination(
         iconFilled = Icons.Filled.FitnessCenter
     )
 
-    data object History : TopDestination(
-        route = HistoryRoutes.GRAPH,
-        labelRes = R.string.nav_history,
-        iconOutlined = Icons.Outlined.History,
-        iconFilled = Icons.Filled.History
+    data object Profile : TopDestination(
+        route = ProfileRoutes.GRAPH,
+        labelRes = R.string.nav_profile,
+        iconOutlined = Icons.Outlined.Person,
+        iconFilled = Icons.Filled.Person
     )
 
 
     companion object {
-        val all = listOf(Workouts, Exercises, History)
+        val all = listOf(Workouts, Exercises, Profile)
     }
 }
 object ExercisesRoutes {
@@ -71,12 +71,13 @@ object PickerRoutes {
 
     const val RESULT_KEY = "pickedExerciseIds"
 }
-object HistoryRoutes {
-    const val GRAPH = "history"
-    const val LIST = "history/list"
-    const val DETAIL = "history/detail/{workoutId}"
+object ProfileRoutes {
+    const val GRAPH = "profile"
+    const val HOME = "profile/home"
+    const val WORKOUT_DETAIL = "profile/workout/{workoutId}"
+    const val EDIT = "profile/edit"
 
-    fun detail(workoutId: Long): String = "history/detail/$workoutId"
+    fun workoutDetail(workoutId: Long): String = "profile/workout/$workoutId"
 
     const val ARG_WORKOUT_ID = "workoutId"
 }

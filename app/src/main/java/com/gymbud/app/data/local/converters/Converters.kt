@@ -5,6 +5,7 @@ import com.gymbud.app.domain.model.Equipment
 import com.gymbud.app.domain.model.ExerciseType
 import com.gymbud.app.domain.model.MuscleGroup
 import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.domain.model.Sex
 
 /** This class helps Room to understand custom types like enums or lists to primitives it can store. */
 class Converters {
@@ -22,6 +23,9 @@ class Converters {
     fun stringToMuscleGroup(value: String): MuscleGroup = MuscleGroup.valueOf(value)
 
     @TypeConverter
+    fun sexToString(value: Sex?): String? = value?.name
+
+    @TypeConverter
     fun muscleGroupListToString(value: List<MuscleGroup>): String =
         value.joinToString(separator = ",") { it.name }
 
@@ -29,6 +33,10 @@ class Converters {
     fun stringToMuscleGroupList(value: String): List<MuscleGroup> =
         if (value.isBlank()) emptyList()
         else value.split(",").map { MuscleGroup.valueOf(it) }
+
+    @TypeConverter
+    fun stringToSex(value: String?): Sex? =
+        value?.let { runCatching { Sex.valueOf(it) }.getOrNull() }
 
     @TypeConverter
     fun exerciseTypeToString(value: ExerciseType): String = value.name

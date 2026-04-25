@@ -32,11 +32,12 @@ import com.gymbud.app.ui.navigation.WorkoutsRoutes
 import com.gymbud.app.ui.screens.workouts.ActiveWorkoutScreen
 import com.gymbud.app.ui.screens.workouts.TemplateDetailScreen
 import com.gymbud.app.ui.navigation.PickerRoutes
-import com.gymbud.app.ui.screens.history.HistoryScreen
 import com.gymbud.app.ui.screens.picker.ExercisePickerScreen
 import com.gymbud.app.ui.screens.workouts.ActiveWorkoutViewModel
-import com.gymbud.app.ui.navigation.HistoryRoutes
 import com.gymbud.app.ui.screens.history.WorkoutDetailScreen
+import com.gymbud.app.ui.navigation.ProfileRoutes
+import com.gymbud.app.ui.screens.profile.EditProfileScreen
+import com.gymbud.app.ui.screens.profile.ProfileScreen
 import androidx.compose.foundation.layout.Column
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymbud.app.ui.screens.banner.ActiveWorkoutBanner
@@ -218,13 +219,16 @@ fun MainScreen() {
             }
 
             navigation(
-                route = HistoryRoutes.GRAPH,
-                startDestination = HistoryRoutes.LIST
+                route = ProfileRoutes.GRAPH,
+                startDestination = ProfileRoutes.HOME
             ) {
-                composable(HistoryRoutes.LIST) {
-                    HistoryScreen(
+                composable(ProfileRoutes.HOME) {
+                    ProfileScreen(
                         onWorkoutClick = { id ->
-                            navController.navigate(HistoryRoutes.detail(id))
+                            navController.navigate(ProfileRoutes.workoutDetail(id))
+                        },
+                        onEditProfileClick = {
+                            navController.navigate(ProfileRoutes.EDIT)
                         },
                         onOpenNotificationsSettings = {
                             navController.navigate(SettingsRoutes.NOTIFICATIONS)
@@ -232,16 +236,21 @@ fun MainScreen() {
                     )
                 }
                 composable(
-                    route = HistoryRoutes.DETAIL,
+                    route = ProfileRoutes.WORKOUT_DETAIL,
                     arguments = listOf(
-                        navArgument(HistoryRoutes.ARG_WORKOUT_ID) { type = NavType.LongType }
+                        navArgument(ProfileRoutes.ARG_WORKOUT_ID) { type = NavType.LongType }
                     )
                 ) { entry ->
                     val id = entry.arguments
-                        ?.getLong(HistoryRoutes.ARG_WORKOUT_ID)
+                        ?.getLong(ProfileRoutes.ARG_WORKOUT_ID)
                         ?: return@composable
                     WorkoutDetailScreen(
                         workoutId = id,
+                        onExit = { navController.popBackStack() }
+                    )
+                }
+                composable(ProfileRoutes.EDIT) {
+                    EditProfileScreen(
                         onExit = { navController.popBackStack() }
                     )
                 }

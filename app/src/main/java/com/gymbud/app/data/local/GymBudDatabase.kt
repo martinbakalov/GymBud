@@ -18,6 +18,8 @@ import com.gymbud.app.data.local.dao.WorkoutSetDao
 import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
+import com.gymbud.app.data.local.dao.ProfileDao
+import com.gymbud.app.data.local.entity.Profile
 
 
 @Database(
@@ -25,9 +27,10 @@ import com.gymbud.app.data.local.entity.WorkoutSet
         Exercise::class,
         Workout::class,
         WorkoutExercise::class,
-        WorkoutSet::class
+        WorkoutSet::class,
+        Profile::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -37,6 +40,8 @@ abstract class GymBudDatabase : RoomDatabase() {
     abstract fun workoutDao(): WorkoutDao
     abstract fun workoutExerciseDao(): WorkoutExerciseDao
     abstract fun workoutSetDao(): WorkoutSetDao
+
+    abstract fun profileDao(): ProfileDao
 
     companion object {
         @Volatile
@@ -68,6 +73,7 @@ abstract class GymBudDatabase : RoomDatabase() {
                 INSTANCE?.let { database ->
                     scope.launch(Dispatchers.IO) {
                         ExerciseSeeder.seed(database.exerciseDao())
+                        ProfileSeeder.seed(database.profileDao())
                     }
                 }
             }

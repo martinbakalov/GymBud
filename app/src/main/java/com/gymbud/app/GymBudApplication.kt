@@ -9,6 +9,7 @@ import com.gymbud.app.data.repository.WorkoutRepository
 import com.gymbud.app.data.prefs.AppPreferences
 import com.gymbud.app.notifications.DailyNotificationScheduler
 import com.gymbud.app.notifications.NotificationHelper
+import com.gymbud.app.data.repository.ProfileRepository
 
 class GymBudApplication : Application() {
 
@@ -32,6 +33,11 @@ class GymBudApplication : Application() {
             exerciseDao = database.exerciseDao()
         )
     }
+
+    val profileRepository: ProfileRepository by lazy {
+        ProfileRepository(database.profileDao())
+    }
+
     override fun onCreate() {
         super.onCreate()
         NotificationHelper.createChannels(this)

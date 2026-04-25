@@ -4,7 +4,7 @@
 
     <string name="nav_workouts">Тренировки</string>
     <string name="nav_exercises">Упражнения</string>
-    <string name="nav_history">История</string>
+    <string name="nav_profile">Профил</string>
     <string name="action_save">Запази</string>
     <string name="action_cancel">Отказ</string>
     <string name="action_delete">Изтрий</string>
@@ -48,8 +48,11 @@
     <string name="stats_sets">Серии</string>
     <string name="stats_volume">Обем</string>
     <string name="stats_duration">Продължителност</string>
-    <string name="history_title">История</string>
-    <string name="history_empty">Все още няма завършени тренировки</string>
+    <string name="profile_title">Профил</string>
+    <string name="profile_default_name">Атлет</string>
+    <string name="profile_workouts_count_label">Тренировки</string>
+    <string name="profile_edit">Редакция</string>
+    <string name="profile_empty_history">Все още няма завършени тренировки</string>
     <string name="muscle_chest">Гърди</string>
     <string name="muscle_back">Гръб</string>
     <string name="muscle_shoulders">Рамене</string>
