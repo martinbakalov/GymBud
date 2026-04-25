@@ -148,4 +148,12 @@
     <string name="settings_subtitle_language_system">Match system</string>
     <string name="settings_subtitle_language_english">English</string>
     <string name="settings_subtitle_language_bulgarian">Български</string>
+    <string name="about_title">About</string>
+    <string name="about_app_name">GymBud</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_author_label">Developed by</string>
+    <string name="about_author_name">Martin Bakalov</string>
+    <string name="about_description">A minimalistic workout tracking app. Built as a coursework project for a mobile programming course at the Technical University of Sofia.</string>
+    <string name="about_tech_label">Built with</string>
+    <string name="about_tech_value">Kotlin, Jetpack Compose, Room, Material 3</string>
 </resources>

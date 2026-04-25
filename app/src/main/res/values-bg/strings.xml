@@ -150,4 +150,12 @@
     <string name="settings_subtitle_language_system">По подразбиране</string>
     <string name="settings_subtitle_language_english">English</string>
     <string name="settings_subtitle_language_bulgarian">Български</string>
+    <string name="about_title">Информация</string>
+    <string name="about_app_name">GymBud</string>
+    <string name="about_version">Версия %1$s</string>
+    <string name="about_author_label">Разработено от</string>
+    <string name="about_author_name">Мартин Бакалов</string>
+    <string name="about_description">Минималистично приложение за тренировки. Направено за курсов проект по програмиране на мобилни устройства в Технически университет - София.</string>
+    <string name="about_tech_label">Използвани технологии</string>
+    <string name="about_tech_value">Kotlin, Jetpack Compose, Room, Material 3</string>
 </resources>

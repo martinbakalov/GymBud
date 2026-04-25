@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymbud.app.ui.screens.banner.ActiveWorkoutBanner
 import com.gymbud.app.ui.screens.banner.ActiveWorkoutBannerViewModel
 import com.gymbud.app.ui.navigation.SettingsRoutes
+import com.gymbud.app.ui.screens.settings.AboutScreen
 import com.gymbud.app.ui.screens.settings.NotificationsSettingsScreen
 import com.gymbud.app.ui.screens.settings.LanguageSettingsScreen
 import com.gymbud.app.ui.screens.settings.SettingsHomeScreen
@@ -280,10 +281,10 @@ fun MainScreen() {
                 composable(SettingsRoutes.LANGUAGE) {
                     LanguageSettingsScreen(onExit = { navController.popBackStack() })
                 }
-               /*  composable(SettingsRoutes.ABOUT) {
+                composable(SettingsRoutes.ABOUT) {
                     AboutScreen(onExit = { navController.popBackStack() })
                 }
-                */
+
             }
         }
     }
