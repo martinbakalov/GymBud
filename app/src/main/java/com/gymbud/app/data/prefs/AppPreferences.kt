@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.map
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.gymbud.app.domain.model.AppLanguage
 import com.gymbud.app.domain.model.ThemeMode
 
 private val Context.dataStore by preferencesDataStore(name = "gymbud_prefs")
@@ -65,6 +66,17 @@ class AppPreferences(private val context: Context) {
         context.dataStore.edit { it[KEY_DAILY_MESSAGE] = message }
     }
 
+    val language: Flow<AppLanguage> = context.dataStore.data
+        .catch { emit(androidx.datastore.preferences.core.emptyPreferences()) }
+        .map { prefs ->
+            val stored = prefs[KEY_LANGUAGE]
+            stored?.let { runCatching { AppLanguage.valueOf(it) }.getOrNull() } ?: AppLanguage.SYSTEM
+        }
+
+    suspend fun setLanguage(language: AppLanguage) {
+        context.dataStore.edit { it[KEY_LANGUAGE] = language.name }
+    }
+
 
     private companion object {
         val KEY_WEIGHT_UNIT = stringPreferencesKey("weight_unit")
@@ -72,7 +84,7 @@ class AppPreferences(private val context: Context) {
         val KEY_DAILY_HOUR = intPreferencesKey("daily_hour")
         val KEY_DAILY_MINUTE = intPreferencesKey("daily_minute")
         val KEY_DAILY_MESSAGE = stringPreferencesKey("daily_message")
-
         val KEY_THEME_MODE = stringPreferencesKey("theme_mode")
+        val KEY_LANGUAGE = stringPreferencesKey("language")
     }
 }

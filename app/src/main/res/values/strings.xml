@@ -141,4 +141,11 @@
     <string name="settings_subtitle_theme_system">Default</string>
     <string name="settings_subtitle_theme_light">Light</string>
     <string name="settings_subtitle_theme_dark">Dark</string>
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_system">Match system</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_bulgarian">Български</string>
+    <string name="settings_subtitle_language_system">Match system</string>
+    <string name="settings_subtitle_language_english">English</string>
+    <string name="settings_subtitle_language_bulgarian">Български</string>
 </resources>

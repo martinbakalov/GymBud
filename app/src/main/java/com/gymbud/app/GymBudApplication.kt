@@ -1,6 +1,8 @@
 package com.gymbud.app
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import com.gymbud.app.data.local.GymBudDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -10,6 +12,9 @@ import com.gymbud.app.data.prefs.AppPreferences
 import com.gymbud.app.notifications.DailyNotificationScheduler
 import com.gymbud.app.notifications.NotificationHelper
 import com.gymbud.app.data.repository.ProfileRepository
+import com.gymbud.app.domain.model.AppLanguage
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class GymBudApplication : Application() {
 
@@ -33,6 +38,17 @@ class GymBudApplication : Application() {
             exerciseDao = database.exerciseDao()
         )
     }
+    private fun applyStoredLanguage() {
+        applicationScope.launch {
+            val first = preferences.language.first()
+            val locales = if (first == AppLanguage.SYSTEM) {
+                LocaleListCompat.getEmptyLocaleList()
+            } else {
+                LocaleListCompat.forLanguageTags(first.tag)
+            }
+            AppCompatDelegate.setApplicationLocales(locales)
+        }
+    }
 
     val profileRepository: ProfileRepository by lazy {
         ProfileRepository(database.profileDao())
@@ -41,6 +57,7 @@ class GymBudApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         NotificationHelper.createChannels(this)
+        applyStoredLanguage()
         DailyNotificationScheduler.scheduleNext(this)
     }
 }
