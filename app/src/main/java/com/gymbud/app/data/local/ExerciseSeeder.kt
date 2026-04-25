@@ -25,14 +25,13 @@ import com.gymbud.app.domain.model.MuscleGroup.FULL_BODY
 object ExerciseSeeder {
 
     suspend fun seed(dao: ExerciseDao) {
-        // Guard against accidental re-seeding (e.g. if called outside onCreate).
         if (dao.count() > 0) return
         dao.insertAll(presets())
     }
 
     private fun presets(): List<Exercise> = listOf(
 
-        preset("Barbell Bench Press",            BARBELL,   CHEST,     listOf(TRICEPS, SHOULDERS)),
+        preset("Barbell Bench Press",             BARBELL,   CHEST,     listOf(TRICEPS, SHOULDERS)),
         preset("Incline Barbell Bench Press",    BARBELL,   CHEST,     listOf(SHOULDERS, TRICEPS)),
         preset("Dumbbell Bench Press",           DUMBBELL,  CHEST,     listOf(TRICEPS, SHOULDERS)),
         preset("Incline Dumbbell Press",         DUMBBELL,  CHEST,     listOf(SHOULDERS, TRICEPS)),
@@ -100,10 +99,14 @@ object ExerciseSeeder {
         type: ExerciseType = ExerciseType.WEIGHT_REPS
     ): Exercise = Exercise(
         name = name,
+        nameKey = nameKeyFor(name),
         equipment = equipment,
         primaryMuscle = primaryMuscle,
         secondaryMuscles = secondaryMuscles,
         type = type,
         isCustom = false
     )
+
+    private fun nameKeyFor(name: String): String =
+        "exercise_" + name.lowercase().replace(Regex("[^a-z0-9]+"), "_").trim('_')
 }

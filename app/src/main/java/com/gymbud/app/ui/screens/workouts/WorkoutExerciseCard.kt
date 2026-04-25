@@ -44,6 +44,7 @@ import com.gymbud.app.domain.model.WeightUnit
 import kotlinx.coroutines.flow.Flow
 import androidx.compose.ui.focus.onFocusChanged
 import com.gymbud.app.domain.model.PreviousSet
+import com.gymbud.app.ui.util.displayName
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +84,7 @@ fun WorkoutExerciseCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = exercise?.name ?: "…",
+                    text = exercise?.displayName() ?: "…",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
@@ -221,8 +222,7 @@ private fun SetRow(
 
         when (exerciseType) {
             ExerciseType.WEIGHT_REPS -> {
-                // Display: convert stored kg to the display unit.
-                // Input: convert the display unit back to kg before saving.
+
                 val displayValue = set.weightKg?.let { kg ->
                     val inUnit = WeightUnit.fromKg(kg, unit)
                     trimZero(inUnit)

@@ -13,6 +13,7 @@ data class Exercise(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
+    val nameKey: String? = null,
     val equipment: Equipment,
     val primaryMuscle: MuscleGroup,
     val secondaryMuscles: List<MuscleGroup> = emptyList(),

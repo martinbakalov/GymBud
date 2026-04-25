@@ -41,8 +41,8 @@ interface ExerciseDao {
 
     @Query(
         "SELECT * FROM exercises " +
-                "WHERE name LIKE :query COLLATE NOCASE " +
-                "ORDER BY name COLLATE NOCASE ASC"
+                "WHERE name LIKE :query OR nameKey LIKE :query " +
+                "ORDER BY name COLLATE NOCASE"
     )
     fun searchByName(query: String): Flow<List<Exercise>>
 

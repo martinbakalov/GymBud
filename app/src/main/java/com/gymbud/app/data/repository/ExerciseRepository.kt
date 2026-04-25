@@ -28,9 +28,7 @@ class ExerciseRepository(
         return source.combine(flowOf(Unit)) { list, _ ->
             list.filter { exercise ->
                 (muscle == null || exercise.primaryMuscle == muscle) &&
-                        (equipment == null || exercise.equipment == equipment) &&
-                        (query.isNullOrBlank() ||
-                                exercise.name.contains(query.trim(), ignoreCase = true))
+                        (equipment == null || exercise.equipment == equipment)
             }
         }
     }

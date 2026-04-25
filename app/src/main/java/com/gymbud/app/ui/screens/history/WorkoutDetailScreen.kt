@@ -44,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.gymbud.app.ui.util.displayName
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -188,7 +189,7 @@ private fun ExerciseReadOnlyCard(block: ExerciseBlock) {
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = block.exercise?.name ?: "—",
+                text = block.exercise?.displayName() ?: "—",
                 style = MaterialTheme.typography.titleMedium
             )
 

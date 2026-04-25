@@ -30,7 +30,7 @@ import com.gymbud.app.data.local.entity.Profile
         WorkoutSet::class,
         Profile::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
