@@ -25,6 +25,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,6 +43,7 @@ import com.gymbud.app.domain.model.ExerciseType
 import com.gymbud.app.domain.model.WeightUnit
 import kotlinx.coroutines.flow.Flow
 import androidx.compose.ui.focus.onFocusChanged
+import com.gymbud.app.domain.model.PreviousSet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +57,7 @@ fun WorkoutExerciseCard(
     onRemoveExercise: () -> Unit,
     onUnitToggle: () -> Unit,
     onUpdateNotes: (String?) -> Unit,
+    previousSetProvider: suspend (Long, Int) -> PreviousSet?,
     observeSets: () -> Flow<List<WorkoutSet>>
 ) {
 
@@ -125,10 +128,15 @@ fun WorkoutExerciseCard(
             )
 
             sets.forEach { set ->
+                val previousSet by produceState<PreviousSet?>(initialValue = null, set.position) {
+
+                    value = previousSetProvider(workoutExercise.exerciseId, set.position)
+                }
                 SetRow(
                     set = set,
                     exerciseType = exercise?.type ?: ExerciseType.WEIGHT_REPS,
                     unit = unit,
+                    previousSet = previousSet,
                     onUpdate = onUpdateSet,
                     onDelete = { onDeleteSet(set) }
                 )
@@ -189,6 +197,7 @@ private fun SetRow(
     set: WorkoutSet,
     exerciseType: ExerciseType,
     unit: WeightUnit,
+    previousSet: PreviousSet?,
     onUpdate: (WorkoutSet) -> Unit,
     onDelete: () -> Unit
 ) {
@@ -203,11 +212,10 @@ private fun SetRow(
             modifier = Modifier.weight(0.8f)
         )
 
-        Text(
-            text = "—",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
+        PreviousCell(
+            previousSet = previousSet,
+            exerciseType = exerciseType,
+            unit = unit,
             modifier = Modifier.weight(1.6f)
         )
 
@@ -322,5 +330,38 @@ private fun NotesField(
             },
         minLines = 1,
         maxLines = 3
+    )
+}
+
+@Composable
+private fun PreviousCell(
+    previousSet: PreviousSet?,
+    exerciseType: ExerciseType,
+    unit: WeightUnit,
+    modifier: Modifier = Modifier
+) {
+    val text = remember(previousSet, exerciseType, unit) {
+        if (previousSet == null) "—"
+        else when (exerciseType) {
+            ExerciseType.WEIGHT_REPS -> {
+                val kg = previousSet.weightKg
+                val reps = previousSet.reps
+                if (kg != null && reps != null) {
+                    val display = WeightUnit.fromKg(kg, unit)
+                    "${trimZero(display)} × $reps"
+                } else "—"
+            }
+            ExerciseType.TIME -> {
+                val secs = previousSet.durationSeconds
+                if (secs != null) "${secs}s" else "—"
+            }
+        }
+    }
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+        modifier = modifier
     )
 }

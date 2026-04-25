@@ -38,19 +38,22 @@ interface WorkoutSetDao {
 
     @Query(
         """
-        SELECT s.* FROM workout_sets s
-        INNER JOIN workout_exercises we ON s.workoutExerciseId = we.id
-        INNER JOIN workouts w ON we.workoutId = w.id
-        WHERE we.exerciseId = :exerciseId
-          AND w.isTemplate = 0
-          AND w.endedAt IS NOT NULL
-          AND w.id != :excludeWorkoutId
-          AND s.isCompleted = 1
-        ORDER BY w.endedAt DESC, s.position ASC
-        """
+    SELECT ws.* FROM workout_sets ws
+    INNER JOIN workout_exercises we ON ws.workoutExerciseId = we.id
+    INNER JOIN workouts w ON we.workoutId = w.id
+    WHERE we.exerciseId = :exerciseId
+      AND ws.position = :position
+      AND ws.isCompleted = 1
+      AND w.isTemplate = 0
+      AND w.endedAt IS NOT NULL
+      AND w.id != :excludingWorkoutId
+    ORDER BY w.endedAt DESC
+    LIMIT 1
+    """
     )
-    suspend fun findPreviousSetsForExercise(
+    suspend fun findPreviousSet(
         exerciseId: Long,
-        excludeWorkoutId: Long
-    ): List<WorkoutSet>
+        position: Int,
+        excludingWorkoutId: Long
+    ): WorkoutSet?
 }

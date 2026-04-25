@@ -158,8 +158,11 @@ fun ActiveWorkoutScreen(
                             onDeleteSet = viewModel::deleteSet,
                             onRemoveExercise = { viewModel.removeExercise(we) },
                             onUnitToggle = { viewModel.toggleUnitForExercise(we.exerciseId, exerciseUnit) },
-                            onUpdateNotes = { notes ->                              // ← new
+                            onUpdateNotes = { notes ->
                                 viewModel.updateExerciseNotes(we.id, notes)
+                            },
+                            previousSetProvider = { exerciseId, position ->
+                                viewModel.previousSetFor(exerciseId, position)
                             },
                             observeSets = { viewModel.observeSets(we.id) }
                         )

@@ -10,6 +10,7 @@ import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.domain.model.WorkoutStats
 import com.gymbud.app.data.prefs.AppPreferences
 import com.gymbud.app.data.repository.ExerciseRepository
+import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.ui.util.effectiveUnit
 import kotlinx.coroutines.flow.Flow
@@ -59,6 +60,8 @@ class ActiveWorkoutViewModel(
                 durationMillis = null
             )
         )
+
+    private val previousSetCache = mutableMapOf<Pair<Long, Int>, PreviousSet?>()
 
     fun rename(newName: String) {
         val trimmed = newName.trim()
@@ -141,6 +144,7 @@ class ActiveWorkoutViewModel(
         }
     }
 
+
     class Factory(
         private val workoutId: Long,
         private val repository: WorkoutRepository,
@@ -173,6 +177,18 @@ class ActiveWorkoutViewModel(
             val newUnit = if (currentlyDisplayed == WeightUnit.KG) WeightUnit.LBS else WeightUnit.KG
             exerciseRepository.update(ex.copy(preferredUnit = newUnit))
         }
+    }
+
+    suspend fun previousSetFor(exerciseId: Long, position: Int): PreviousSet? {
+        val key = exerciseId to position
+        previousSetCache[key]?.let { return it }
+        val result = repository.previousSetFor(
+            exerciseId = exerciseId,
+            position = position,
+            excludingWorkoutId = workoutId
+        )
+        previousSetCache[key] = result
+        return result
     }
 
     }

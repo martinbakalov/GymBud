@@ -224,22 +224,21 @@ class WorkoutRepository(
         )
     }
 
-    suspend fun previousSetsFor(
+    suspend fun previousSetFor(
         exerciseId: Long,
-        excludeWorkoutId: Long
-    ): List<PreviousSet> {
-        val sets = workoutSetDao.findPreviousSetsForExercise(exerciseId, excludeWorkoutId)
-        if (sets.isEmpty()) return emptyList()
-
-        val mostRecentWorkoutExerciseIds = sets
-            .groupBy { it.workoutExerciseId }
-            .entries
-            .first()
-            .value
-
-        return mostRecentWorkoutExerciseIds
-            .sortedBy { it.position }
-            .map { PreviousSet(it.weightKg, it.reps, it.durationSeconds) }
+        position: Int,
+        excludingWorkoutId: Long
+    ): PreviousSet? {
+        val match = workoutSetDao.findPreviousSet(
+            exerciseId = exerciseId,
+            position = position,
+            excludingWorkoutId = excludingWorkoutId
+        ) ?: return null
+        return PreviousSet(
+            weightKg = match.weightKg,
+            reps = match.reps,
+            durationSeconds = match.durationSeconds
+        )
     }
 }
 private suspend fun <T> Flow<List<T>>.firstValueOrEmpty(): List<T> = first()
