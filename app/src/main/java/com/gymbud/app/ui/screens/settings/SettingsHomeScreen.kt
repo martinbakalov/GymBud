@@ -32,6 +32,7 @@ import com.gymbud.app.domain.model.AppLanguage
 @Composable
 fun SettingsHomeScreen(
     onExit: () -> Unit,
+    onOpenProfile: () -> Unit,
     onOpenNotifications: () -> Unit,
     onOpenTheme: () -> Unit,
     onOpenLanguage: () -> Unit,
@@ -69,6 +70,14 @@ fun SettingsHomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
+            SettingsRow(
+                title = stringResource(R.string.settings_section_profile),
+                subtitle = null,
+                onClick = onOpenProfile
+            )
+
+            HorizontalDivider()
+
             SettingsRow(
                 title = stringResource(R.string.settings_notifications_title),
                 subtitle = null,

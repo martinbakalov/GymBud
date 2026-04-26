@@ -253,9 +253,6 @@ fun MainScreen() {
                         onWorkoutClick = { id ->
                             navController.navigate(ProfileRoutes.workoutDetail(id))
                         },
-                        onEditProfileClick = {
-                            navController.navigate(ProfileRoutes.EDIT)
-                        },
                         onOpenSettings = {
                             navController.navigate(SettingsRoutes.HOME)
                         }
@@ -275,11 +272,6 @@ fun MainScreen() {
                         onExit = { navController.popBackStack() }
                     )
                 }
-                composable(ProfileRoutes.EDIT) {
-                    EditProfileScreen(
-                        onExit = { navController.popBackStack() }
-                    )
-                }
             }
             navigation(
                 route = SettingsRoutes.GRAPH,
@@ -288,11 +280,15 @@ fun MainScreen() {
                 composable(SettingsRoutes.HOME) {
                     SettingsHomeScreen(
                         onExit = { navController.popBackStack() },
+                        onOpenProfile = { navController.navigate(SettingsRoutes.PROFILE) },
                         onOpenNotifications = { navController.navigate(SettingsRoutes.NOTIFICATIONS) },
                         onOpenTheme = { navController.navigate(SettingsRoutes.THEME) },
                         onOpenLanguage = { navController.navigate(SettingsRoutes.LANGUAGE) },
                         onOpenAbout = { navController.navigate(SettingsRoutes.ABOUT) }
                     )
+                }
+                composable(SettingsRoutes.PROFILE) {                                                // ← new
+                    EditProfileScreen(onExit = { navController.popBackStack() })
                 }
                 composable(SettingsRoutes.NOTIFICATIONS) {
                     NotificationsSettingsScreen(onExit = { navController.popBackStack() })

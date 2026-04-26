@@ -1,9 +1,7 @@
 package com.gymbud.app.ui.screens.profile
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,11 +58,15 @@ import com.gymbud.app.ui.util.formatSessionDateTime
 import com.gymbud.app.ui.util.formatVolume
 import java.io.File
 import androidx.compose.foundation.shape.RoundedCornerShape
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     onWorkoutClick: (Long) -> Unit,
-    onEditProfileClick: () -> Unit,
     onOpenSettings: () -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
@@ -100,8 +102,7 @@ fun ProfileScreen(
 
             ProfileHeader(
                 profile = profile,
-                workoutCount = workoutCount,
-                onClick = onEditProfileClick
+                workoutCount = workoutCount
             )
 
             HorizontalDivider()
@@ -132,7 +133,7 @@ fun ProfileScreen(
                             workout = workout,
                             stats = stats,
                             onClick = { onWorkoutClick(workout.id) },
-                            onLongPress = { pendingDelete = workout }
+                            onDelete = { pendingDelete = workout }
                         )
                     }
                 }
@@ -170,13 +171,11 @@ fun ProfileScreen(
 @Composable
 private fun ProfileHeader(
     profile: Profile?,
-    workoutCount: Int,
-    onClick: () -> Unit
+    workoutCount: Int
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -248,21 +247,20 @@ private fun HistoryRow(
     workout: Workout,
     stats: WorkoutStats,
     onClick: () -> Unit,
-    onLongPress: () -> Unit
+    onDelete: () -> Unit
 ) {
+    var menuOpen by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongPress
-            )
+            .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
+            // Optional photo thumbnail
             val photoPath = workout.photoPath
             if (photoPath != null && File(photoPath).exists()) {
                 AsyncImage(
@@ -308,6 +306,36 @@ private fun HistoryRow(
                     StatInline(
                         label = stringResource(R.string.stats_volume),
                         value = "${formatVolume(stats.totalVolumeKg)} ${stringResource(R.string.workout_kg)}"
+                    )
+                }
+            }
+
+            // Overflow menu
+            Box {
+                IconButton(onClick = { menuOpen = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                DropdownMenu(
+                    expanded = menuOpen,
+                    onDismissRequest = { menuOpen = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_delete)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        onClick = {
+                            menuOpen = false
+                            onDelete()
+                        }
                     )
                 }
             }

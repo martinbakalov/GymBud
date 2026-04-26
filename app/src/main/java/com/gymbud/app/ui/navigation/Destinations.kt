@@ -52,6 +52,7 @@ object ExercisesRoutes {
 object SettingsRoutes {
     const val GRAPH = "settings"
     const val HOME = "settings/home"
+    const val PROFILE = "settings/profile"
     const val NOTIFICATIONS = "settings/notifications"
     const val THEME = "settings/theme"
     const val LANGUAGE = "settings/language"
@@ -78,7 +79,6 @@ object ProfileRoutes {
     const val GRAPH = "profile"
     const val HOME = "profile/home"
     const val WORKOUT_DETAIL = "profile/workout/{workoutId}"
-    const val EDIT = "profile/edit"
 
     fun workoutDetail(workoutId: Long): String = "profile/workout/$workoutId"
 

@@ -206,4 +206,5 @@
     <string name="exercise_delete_title">Изтриване на упражнението?</string>
     <string name="exercise_delete_body">Упражнението ще бъде изтрито. Минали тренировки, в които е било използвано, ще запазят данните си.</string>
     <string name="exercise_deleted_label">Изтрито упражнение</string>
+    <string name="settings_section_profile">Редактиране на Профил</string>
 </resources>
