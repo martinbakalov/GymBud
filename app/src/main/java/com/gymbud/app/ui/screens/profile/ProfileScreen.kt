@@ -55,7 +55,6 @@ import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.domain.model.WorkoutStats
 import com.gymbud.app.ui.util.formatDurationCompact
 import com.gymbud.app.ui.util.formatSessionDateTime
-import com.gymbud.app.ui.util.formatVolume
 import java.io.File
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Delete
@@ -65,6 +64,7 @@ import androidx.compose.material3.DropdownMenuItem
 import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.ui.util.formatVolumeNumber
 
+@Suppress("AssignedValueIsNeverRead")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(

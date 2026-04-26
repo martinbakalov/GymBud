@@ -25,8 +25,6 @@ object NotificationHelper {
 
     fun createChannels(context: Context) {
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-
         val manager = ContextCompat.getSystemService(context, NotificationManager::class.java)
             ?: return
 

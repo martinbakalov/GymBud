@@ -51,6 +51,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.gymbud.app.ui.util.formatDurationMinutes
 import com.gymbud.app.ui.util.formatVolumeNumber
 
+@Suppress("AssignedValueIsNeverRead")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActiveWorkoutScreen(

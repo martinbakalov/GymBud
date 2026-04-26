@@ -78,9 +78,6 @@ fun WorkoutDetailScreen(
         formatWorkoutShareSummary(workout, stats, unit)
 
     } else null
-    val unitSuffix = stringResource(
-        if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
-    )
 
 
     Scaffold(
