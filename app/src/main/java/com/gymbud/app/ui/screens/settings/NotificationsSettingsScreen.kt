@@ -23,10 +23,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import com.gymbud.app.notifications.DailyNotificationScheduler
 import com.gymbud.app.notifications.DailyNotificationWorker
+import com.gymbud.app.notifications.NotificationHelper.cancelWorkoutInProgress
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,6 +95,40 @@ fun NotificationsSettingsScreen(
                 }
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
+            val workoutNotifEnabled by prefs.workoutNotificationsEnabled
+                .collectAsStateWithLifecycle(initialValue = true)
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.settings_workout_notif_enabled),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = stringResource(R.string.settings_workout_notif_enabled_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = workoutNotifEnabled,
+                    onCheckedChange = { checked ->
+                        scope.launch {
+                            prefs.setWorkoutNotificationsEnabled(checked)
+                            if (!checked) {
+                                cancelWorkoutInProgress(context)
+                            }
+                        }
+                    }
+                )
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -124,34 +160,54 @@ fun NotificationsSettingsScreen(
 
             Text(
                 text = stringResource(R.string.settings_daily_time),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (enabled) MaterialTheme.colorScheme.onSurface
+                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             )
             Spacer(Modifier.height(8.dp))
 
-            TimePicker(state = timePickerState)
+            LaunchedEffect(hour, minute) {
+                timePickerState.hour = hour
+                timePickerState.minute = minute
+            }
 
-            Spacer(Modifier.height(4.dp))
+            var showTimeDialog by remember { mutableStateOf(false) }
 
             OutlinedButton(
-                onClick = {
-                    scope.launch {
-                        prefs.setDailyNotificationTime(
-                            hour = timePickerState.hour,
-                            minute = timePickerState.minute
-                        )
-                        DailyNotificationScheduler.scheduleNext(context)
-                    }
-                },
+                onClick = { showTimeDialog = true },
+                enabled = enabled,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.settings_daily_save_time))
+                Text(
+                    text = "%02d:%02d".format(hour, minute),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            if (showTimeDialog) {
+                TimePickerDialog(
+                    timePickerState = timePickerState,
+                    onConfirm = {
+                        scope.launch {
+                            prefs.setDailyNotificationTime(
+                                hour = timePickerState.hour,
+                                minute = timePickerState.minute
+                            )
+                            DailyNotificationScheduler.scheduleNext(context)
+                        }
+                        showTimeDialog = false
+                    },
+                    onDismiss = { showTimeDialog = false }
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             Text(
                 text = stringResource(R.string.settings_daily_message),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (enabled) MaterialTheme.colorScheme.onSurface
+                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             )
             Spacer(Modifier.height(4.dp))
             Text(
@@ -169,6 +225,7 @@ fun NotificationsSettingsScreen(
                 },
                 minLines = 2,
                 maxLines = 4,
+                enabled = enabled,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -181,7 +238,7 @@ fun NotificationsSettingsScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = messageDraft.trim() != message
+                enabled = enabled && messageDraft.trim() != message
             ) {
                 Text(stringResource(R.string.settings_daily_save_message))
             }
@@ -203,4 +260,30 @@ fun NotificationsSettingsScreen(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TimePickerDialog(
+    timePickerState: androidx.compose.material3.TimePickerState,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_daily_time)) },
+        text = {
+            TimeInput(state = timePickerState)
+        },
+        confirmButton = {
+            androidx.compose.material3.TextButton(onClick = onConfirm) {
+                Text(stringResource(R.string.action_save))
+            }
+        },
+        dismissButton = {
+            androidx.compose.material3.TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        }
+    )
 }

@@ -207,4 +207,6 @@
     <string name="exercise_delete_body">Упражнението ще бъде изтрито. Минали тренировки, в които е било използвано, ще запазят данните си.</string>
     <string name="exercise_deleted_label">Изтрито упражнение</string>
     <string name="settings_section_profile">Редактиране на Профил</string>
+    <string name="settings_workout_notif_enabled">Известие за активна тренировка</string>
+    <string name="settings_workout_notif_enabled_desc">Постоянна нотификация в лентата на състоянието по време на тренировка.</string>
 </resources>

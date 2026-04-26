@@ -47,6 +47,14 @@ class AppPreferences(private val context: Context) {
             stored?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() } ?: ThemeMode.SYSTEM
         }
 
+    val workoutNotificationsEnabled: Flow<Boolean> = context.dataStore.data
+        .catch { emit(androidx.datastore.preferences.core.emptyPreferences()) }
+        .map { it[KEY_WORKOUT_NOTIF_ENABLED] ?: true }   // default ON
+
+    suspend fun setWorkoutNotificationsEnabled(enabled: Boolean) {
+        context.dataStore.edit { it[KEY_WORKOUT_NOTIF_ENABLED] = enabled }
+    }
+
     suspend fun setThemeMode(mode: ThemeMode) {
         context.dataStore.edit { it[KEY_THEME_MODE] = mode.name }
     }
@@ -81,6 +89,7 @@ class AppPreferences(private val context: Context) {
     private companion object {
         val KEY_WEIGHT_UNIT = stringPreferencesKey("weight_unit")
         val KEY_DAILY_ENABLED = booleanPreferencesKey("daily_enabled")
+        val KEY_WORKOUT_NOTIF_ENABLED = booleanPreferencesKey("workout_notif_enabled")
         val KEY_DAILY_HOUR = intPreferencesKey("daily_hour")
         val KEY_DAILY_MINUTE = intPreferencesKey("daily_minute")
         val KEY_DAILY_MESSAGE = stringPreferencesKey("daily_message")

@@ -83,13 +83,23 @@ fun ActiveWorkoutScreen(
             delay(1000L)
         }
     }
-    LaunchedEffect(workout?.id, nowMillis / 5000) {
+
+    val workoutNotifEnabled by app.preferences.workoutNotificationsEnabled
+        .collectAsStateWithLifecycle(initialValue = true)
+
+    val defaultWorkoutName = stringResource(R.string.workout_empty_name)
+
+    LaunchedEffect(workout?.id, nowMillis / 5000, workoutNotifEnabled) {
         val w = workout ?: return@LaunchedEffect
-        showWorkoutInProgress(
-            context = context,
-            workoutName = w.name,
-            elapsedText = formatDurationTicking(elapsedMillis)
-        )
+        if (workoutNotifEnabled) {
+            showWorkoutInProgress(
+                context = context,
+                workoutName = w.name.ifBlank { defaultWorkoutName },
+                elapsedText = formatDurationTicking(elapsedMillis)
+            )
+        } else {
+            cancelWorkoutInProgress(context)
+        }
     }
 
     Scaffold(
