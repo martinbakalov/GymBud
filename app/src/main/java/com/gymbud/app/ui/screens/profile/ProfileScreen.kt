@@ -62,6 +62,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.ui.util.formatVolumeNumber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,6 +82,8 @@ fun ProfileScreen(
     val profile by viewModel.profile.collectAsStateWithLifecycle()
     val workoutCount by viewModel.workoutCount.collectAsStateWithLifecycle()
     val history by viewModel.history.collectAsStateWithLifecycle()
+    val globalUnit by app.preferences.weightUnit
+        .collectAsStateWithLifecycle(initialValue = WeightUnit.KG)
 
     var pendingDelete by remember { mutableStateOf<Workout?>(null) }
 
@@ -132,6 +136,7 @@ fun ProfileScreen(
                         HistoryRow(
                             workout = workout,
                             stats = stats,
+                            unit = globalUnit,
                             onClick = { onWorkoutClick(workout.id) },
                             onDelete = { pendingDelete = workout }
                         )
@@ -246,6 +251,7 @@ private fun ProfileHeader(
 private fun HistoryRow(
     workout: Workout,
     stats: WorkoutStats,
+    unit: WeightUnit,
     onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -260,7 +266,9 @@ private fun HistoryRow(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Optional photo thumbnail
+            val unitSuffix = stringResource(
+                if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
+            )
             val photoPath = workout.photoPath
             if (photoPath != null && File(photoPath).exists()) {
                 AsyncImage(
@@ -305,12 +313,11 @@ private fun HistoryRow(
                     )
                     StatInline(
                         label = stringResource(R.string.stats_volume),
-                        value = "${formatVolume(stats.totalVolumeKg)} ${stringResource(R.string.workout_kg)}"
+                        value = "${formatVolumeNumber(stats.totalVolumeKg, unit)} $unitSuffix"
                     )
                 }
             }
 
-            // Overflow menu
             Box {
                 IconButton(onClick = { menuOpen = true }) {
                     Icon(

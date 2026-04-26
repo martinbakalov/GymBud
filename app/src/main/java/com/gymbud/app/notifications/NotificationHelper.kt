@@ -79,7 +79,7 @@ object NotificationHelper {
             .setContentText(elapsedText)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
-            .setOnlyAlertOnce(false)
+            .setOnlyAlertOnce(true)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setShowWhen(false)
             .build()

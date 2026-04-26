@@ -43,12 +43,13 @@ import com.gymbud.app.R
 import kotlinx.coroutines.delay
 import androidx.compose.ui.platform.LocalFocusManager
 import com.gymbud.app.ui.util.formatDurationTicking
-import com.gymbud.app.ui.util.formatVolume
 import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.notifications.NotificationHelper.cancelWorkoutInProgress
 import com.gymbud.app.notifications.NotificationHelper.showWorkoutInProgress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.pointerInput
+import com.gymbud.app.ui.util.formatDurationMinutes
+import com.gymbud.app.ui.util.formatVolumeNumber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,13 +90,13 @@ fun ActiveWorkoutScreen(
 
     val defaultWorkoutName = stringResource(R.string.workout_empty_name)
 
-    LaunchedEffect(workout?.id, nowMillis / 5000, workoutNotifEnabled) {
+    LaunchedEffect(workout?.id, nowMillis / 60000, workoutNotifEnabled) {
         val w = workout ?: return@LaunchedEffect
         if (workoutNotifEnabled) {
             showWorkoutInProgress(
                 context = context,
                 workoutName = w.name.ifBlank { defaultWorkoutName },
-                elapsedText = formatDurationTicking(elapsedMillis)
+                elapsedText = formatDurationMinutes(elapsedMillis)
             )
         } else {
             cancelWorkoutInProgress(context)
@@ -134,7 +135,8 @@ fun ActiveWorkoutScreen(
             StatsStrip(
                 durationMillis = elapsedMillis,
                 sets = stats.totalSets,
-                volumeKg = stats.totalVolumeKg
+                volumeKg = stats.totalVolumeKg,
+                unit = globalUnit
             )
 
             Spacer(Modifier.height(16.dp))
@@ -226,6 +228,7 @@ fun ActiveWorkoutScreen(
             initialPhotoPath = workout?.photoPath,
             durationMillis = elapsedMillis,
             stats = stats,
+            unit = globalUnit,
             onSave = { name, notes, photoPath ->
                 showFinishDialog = false
                 cancelWorkoutInProgress(context)
@@ -258,8 +261,12 @@ fun ActiveWorkoutScreen(
 private fun StatsStrip(
     durationMillis: Long,
     sets: Int,
-    volumeKg: Float
+    volumeKg: Float,
+    unit: WeightUnit
 ) {
+    val unitSuffix = stringResource(
+        if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
+    )
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
@@ -274,7 +281,7 @@ private fun StatsStrip(
         )
         StatCell(
             label = stringResource(R.string.stats_volume),
-            value = "${formatVolume(volumeKg)} ${stringResource(R.string.workout_kg)}"
+            value = "${formatVolumeNumber(volumeKg, unit)} $unitSuffix"
         )
     }
 }

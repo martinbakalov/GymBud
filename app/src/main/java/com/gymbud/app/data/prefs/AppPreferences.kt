@@ -49,10 +49,16 @@ class AppPreferences(private val context: Context) {
 
     val workoutNotificationsEnabled: Flow<Boolean> = context.dataStore.data
         .catch { emit(androidx.datastore.preferences.core.emptyPreferences()) }
-        .map { it[KEY_WORKOUT_NOTIF_ENABLED] ?: true }   // default ON
+        .map { it[KEY_WORKOUT_NOTIF_ENABLED] ?: true }
 
     suspend fun setWorkoutNotificationsEnabled(enabled: Boolean) {
         context.dataStore.edit { it[KEY_WORKOUT_NOTIF_ENABLED] = enabled }
+    }
+
+    suspend fun setWeightUnit(unit: WeightUnit) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_WEIGHT_UNIT] = unit.name
+        }
     }
 
     suspend fun setThemeMode(mode: ThemeMode) {

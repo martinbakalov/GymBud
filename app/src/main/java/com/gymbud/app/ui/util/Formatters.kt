@@ -1,5 +1,6 @@
 package com.gymbud.app.ui.util
 
+import com.gymbud.app.domain.model.WeightUnit
 import java.text.DateFormat
 import java.util.Date
 
@@ -20,6 +21,14 @@ fun formatDurationTicking(millis: Long): String {
     else "%d:%02d".format(m, s)
 }
 
+fun formatDurationMinutes(millis: Long): String {
+    val totalMinutes = millis / 60_000
+    val h = totalMinutes / 60
+    val m = totalMinutes % 60
+    return if (h > 0) "${h}h ${m}m"
+    else "$m min"
+}
+
 fun formatSessionDateTime(millis: Long?): String {
     if (millis == null) return ""
     val date = Date(millis)
@@ -31,4 +40,9 @@ fun formatSessionDateTime(millis: Long?): String {
 fun formatVolume(kg: Float): String {
     val asInt = kg.toInt()
     return if (kg == asInt.toFloat()) asInt.toString() else "%.1f".format(kg)
+}
+
+fun formatVolumeNumber(volumeKg: Float, unit: WeightUnit): String {
+    val displayValue = WeightUnit.fromKg(volumeKg, unit)
+    return formatVolume(displayValue)
 }

@@ -44,11 +44,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gymbud.app.R
+import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.domain.model.WorkoutStats
 import com.gymbud.app.ui.util.copyUriToWorkoutPhoto
 import com.gymbud.app.ui.util.createWorkoutPhotoFile
 import com.gymbud.app.ui.util.formatDurationCompact
-import com.gymbud.app.ui.util.formatVolume
+import com.gymbud.app.ui.util.formatVolumeNumber
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +61,7 @@ fun FinishWorkoutDialog(
     initialPhotoPath: String?,
     durationMillis: Long,
     stats: WorkoutStats,
+    unit: WeightUnit,
     onSave: (name: String, notes: String?, photoPath: String?) -> Unit,
     onNameChange: (name: String) -> Unit,
     onPhotoChange: (photoPath: String?) -> Unit,
@@ -75,7 +77,9 @@ fun FinishWorkoutDialog(
     }
     var pendingUri by remember { mutableStateOf<Uri?>(null) }
     var pendingFile by remember { mutableStateOf<File?>(null) }
-
+    val unitSuffix = stringResource(
+        if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
+    )
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -143,7 +147,7 @@ fun FinishWorkoutDialog(
                     )
                     StatSummary(
                         label = stringResource(R.string.stats_volume),
-                        value = "${formatVolume(stats.totalVolumeKg)} ${stringResource(R.string.workout_kg)}"
+                        value = "${formatVolumeNumber(stats.totalVolumeKg, unit)} $unitSuffix"
                     )
                 }
 

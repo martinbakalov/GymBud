@@ -36,6 +36,7 @@ fun SettingsHomeScreen(
     onOpenNotifications: () -> Unit,
     onOpenTheme: () -> Unit,
     onOpenLanguage: () -> Unit,
+    onOpenUnits: () -> Unit,
     onOpenAbout: () -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
@@ -97,6 +98,14 @@ fun SettingsHomeScreen(
                 subtitle = languageSubtitle,
                 onClick = onOpenLanguage
             )
+            HorizontalDivider()
+
+            SettingsRow(
+                title = stringResource(R.string.settings_section_units),
+                subtitle = null,
+                onClick = onOpenUnits
+            )
+
             HorizontalDivider()
 
             SettingsRow(

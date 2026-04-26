@@ -48,6 +48,7 @@ import com.gymbud.app.ui.screens.settings.NotificationsSettingsScreen
 import com.gymbud.app.ui.screens.settings.LanguageSettingsScreen
 import com.gymbud.app.ui.screens.settings.SettingsHomeScreen
 import com.gymbud.app.ui.screens.settings.ThemeSettingsScreen
+import com.gymbud.app.ui.screens.settings.WeightUnitSettingsScreen
 import com.gymbud.app.ui.screens.workouts.TemplateEditorViewModel
 
 
@@ -284,6 +285,7 @@ fun MainScreen() {
                         onOpenNotifications = { navController.navigate(SettingsRoutes.NOTIFICATIONS) },
                         onOpenTheme = { navController.navigate(SettingsRoutes.THEME) },
                         onOpenLanguage = { navController.navigate(SettingsRoutes.LANGUAGE) },
+                        onOpenUnits = { navController.navigate(SettingsRoutes.UNITS) },
                         onOpenAbout = { navController.navigate(SettingsRoutes.ABOUT) }
                     )
                 }
@@ -298,6 +300,9 @@ fun MainScreen() {
                 }
                 composable(SettingsRoutes.LANGUAGE) {
                     LanguageSettingsScreen(onExit = { navController.popBackStack() })
+                }
+                composable(SettingsRoutes.UNITS) {                                          // ← new
+                    WeightUnitSettingsScreen(onExit = { navController.popBackStack() })
                 }
                 composable(SettingsRoutes.ABOUT) {
                     AboutScreen(onExit = { navController.popBackStack() })
