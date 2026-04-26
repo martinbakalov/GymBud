@@ -211,4 +211,5 @@
     <string name="settings_workout_notif_enabled_desc">Постоянна нотификация в лентата на състоянието по време на тренировка.</string>
     <string name="settings_section_units">Мерна единица</string>
     <string name="settings_units_desc">Мерна единица по подразбиране за нови упражнения и за отчитане на обема.</string>
+    <string name="action_share">Сподели</string>
 </resources>

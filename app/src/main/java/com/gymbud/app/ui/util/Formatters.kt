@@ -44,5 +44,8 @@ fun formatVolume(kg: Float): String {
 
 fun formatVolumeNumber(volumeKg: Float, unit: WeightUnit): String {
     val displayValue = WeightUnit.fromKg(volumeKg, unit)
-    return formatVolume(displayValue)
+    return when (unit) {
+        WeightUnit.LBS -> displayValue.toInt().toString()
+        WeightUnit.KG -> formatVolume(displayValue)
+    }
 }

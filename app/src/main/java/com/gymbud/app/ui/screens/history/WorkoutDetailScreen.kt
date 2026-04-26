@@ -44,8 +44,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.ui.util.displayName
+import com.gymbud.app.ui.util.formatWorkoutShareSummary
 import java.io.File
+import androidx.compose.material.icons.filled.Share
+import com.gymbud.app.ui.util.formatVolumeNumber
+import com.gymbud.app.ui.util.shareWorkout
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +59,7 @@ fun WorkoutDetailScreen(
     onExit: () -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
+    val context = LocalContext.current
     val viewModel: WorkoutDetailViewModel = viewModel(
         factory = WorkoutDetailViewModel.Factory(
             workoutId = workoutId,
@@ -61,11 +67,21 @@ fun WorkoutDetailScreen(
             exerciseRepository = app.exerciseRepository
         )
     )
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val workout = state.workout
     val stats = state.stats
     val blocks = state.blocks
+    val unit by app.preferences.weightUnit
+        .collectAsStateWithLifecycle(initialValue = WeightUnit.KG)
+    val summaryText = if (workout != null && stats != null) {
+        formatWorkoutShareSummary(workout, stats, unit)
+
+    } else null
+    val unitSuffix = stringResource(
+        if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
+    )
+
 
     Scaffold(
         topBar = {
@@ -76,6 +92,23 @@ fun WorkoutDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onExit) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            val w = workout
+                            val text = summaryText
+                            if (w != null && text != null) {
+                                shareWorkout(context, text, w.photoPath)
+                            }
+                        },
+                        enabled = workout != null && stats != null
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = stringResource(R.string.action_share)
+                        )
                     }
                 }
             )
@@ -113,7 +146,9 @@ fun WorkoutDetailScreen(
                         )
                         DetailStat(
                             label = stringResource(R.string.stats_volume),
-                            value = "${s.totalVolumeKg.toInt()} ${stringResource(R.string.workout_kg)}"
+                            value = "${formatVolumeNumber(stats.totalVolumeKg, unit)} ${
+                                stringResource(if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs)
+                            }"
                         )
                     }
                 }
@@ -172,7 +207,7 @@ fun WorkoutDetailScreen(
                     SectionHeader(stringResource(R.string.detail_section_exercises))
                 }
                 items(items = blocks, key = { it.workoutExercise.id }) { block ->
-                    ExerciseReadOnlyCard(block)
+                    ExerciseReadOnlyCard(block = block, unit = unit)
                 }
             }
         }
@@ -180,7 +215,7 @@ fun WorkoutDetailScreen(
 }
 
 @Composable
-private fun ExerciseReadOnlyCard(block: ExerciseBlock) {
+private fun ExerciseReadOnlyCard(block: ExerciseBlock,  unit: WeightUnit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -206,12 +241,20 @@ private fun ExerciseReadOnlyCard(block: ExerciseBlock) {
             Spacer(Modifier.height(6.dp))
 
             val type = block.exercise?.type ?: ExerciseType.WEIGHT_REPS
+            val unitSuffix = stringResource(
+                if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
+            )
+
             block.sets.forEach { set ->
                 val line = when (type) {
                     ExerciseType.WEIGHT_REPS -> {
-                        val kg = set.weightKg?.let { trimZero(it) } ?: "—"
+                        val displayWeight = set.weightKg?.let { kg ->
+                            val converted = WeightUnit.fromKg(kg, unit)
+                            if (unit == WeightUnit.LBS) converted.toInt().toString()
+                            else trimZero(converted)
+                        } ?: "—"
                         val reps = set.reps?.toString() ?: "—"
-                        "${set.position + 1}.  $kg ${stringResourceKg()} × $reps"
+                        "${set.position + 1}.  $displayWeight $unitSuffix × $reps"
                     }
                     ExerciseType.TIME -> {
                         val dur = set.durationSeconds?.let { "${it}s" } ?: "—"
@@ -228,9 +271,6 @@ private fun ExerciseReadOnlyCard(block: ExerciseBlock) {
         }
     }
 }
-
-@Composable
-private fun stringResourceKg(): String = stringResource(R.string.workout_kg)
 
 @Composable
 private fun DetailStat(label: String, value: String) {

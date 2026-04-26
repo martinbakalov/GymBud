@@ -209,4 +209,5 @@
     <string name="settings_workout_notif_enabled_desc">Persistent banner in the status bar while a workout is running.</string>
     <string name="settings_section_units">Weight unit</string>
     <string name="settings_units_desc">Default unit for new exercises and volume display.</string>
+    <string name="action_share">Share</string>
 </resources>
