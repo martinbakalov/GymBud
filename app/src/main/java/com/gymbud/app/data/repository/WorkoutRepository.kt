@@ -113,6 +113,7 @@ class WorkoutRepository(
             .firstValueOrEmpty()
 
         for (we in templateExercises) {
+            if (we.exerciseId == null) continue
             val newWorkoutExerciseId = workoutExerciseDao.insert(
                 we.copy(id = 0, workoutId = sessionId)
             )

@@ -146,8 +146,12 @@ fun ActiveWorkoutScreen(
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
                     items(items = exercises, key = { it.id }) { we ->
-                        val exerciseUnit = viewModel.unitForExercise(we.exerciseId, globalUnit)
-                            .collectAsStateWithLifecycle(initialValue = globalUnit).value
+                        val exerciseUnit = if (we.exerciseId != null) {
+                            viewModel.unitForExercise(we.exerciseId, globalUnit)
+                                .collectAsStateWithLifecycle(initialValue = globalUnit).value
+                        } else {
+                            globalUnit
+                        }
 
                         WorkoutExerciseCard(
                             workoutExercise = we,
@@ -157,7 +161,9 @@ fun ActiveWorkoutScreen(
                             onUpdateSet = viewModel::updateSet,
                             onDeleteSet = viewModel::deleteSet,
                             onRemoveExercise = { viewModel.removeExercise(we) },
-                            onUnitToggle = { viewModel.toggleUnitForExercise(we.exerciseId, exerciseUnit) },
+                            onUnitToggle = {
+                                we.exerciseId?.let { viewModel.toggleUnitForExercise(it, exerciseUnit) }
+                            },
                             onUpdateNotes = { notes ->
                                 viewModel.updateExerciseNotes(we.id, notes)
                             },

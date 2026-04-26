@@ -203,4 +203,7 @@
     <string name="template_no_exercises_yet">Все още няма упражнения</string>
     <string name="template_set_label">Серия %1$d</string>
     <string name="template_start_workout">Започни тренировка</string>
+    <string name="exercise_delete_title">Изтриване на упражнението?</string>
+    <string name="exercise_delete_body">Упражнението ще бъде изтрито. Минали тренировки, в които е било използвано, ще запазят данните си.</string>
+    <string name="exercise_deleted_label">Изтрито упражнение</string>
 </resources>

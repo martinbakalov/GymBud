@@ -189,7 +189,7 @@ private fun ExerciseReadOnlyCard(block: ExerciseBlock) {
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = block.exercise?.displayName() ?: "—",
+                text = block.exercise?.displayName() ?: stringResource(R.string.exercise_deleted_label),
                 style = MaterialTheme.typography.titleMedium
             )
 

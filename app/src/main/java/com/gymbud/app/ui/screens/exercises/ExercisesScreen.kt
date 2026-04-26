@@ -1,5 +1,6 @@
 package com.gymbud.app.ui.screens.exercises
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,9 +43,15 @@ import com.gymbud.app.domain.model.MuscleGroup
 import com.gymbud.app.ui.util.labelRes
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.FloatingActionButton
 import com.gymbud.app.ui.util.displayName
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +62,7 @@ fun ExercisesScreen(onCreateExerciseClick: () -> Unit) {
         factory = ExerciseListViewModel.Factory(app.exerciseRepository)
     )
 
+    var pendingDelete by remember { mutableStateOf<Exercise?>(null) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
 
@@ -123,8 +131,8 @@ fun ExercisesScreen(onCreateExerciseClick: () -> Unit) {
                     items(items = exercises, key = { it.id }) { exercise ->
                         ExerciseRow(
                             exercise = exercise,
-                            onDelete = if (exercise.isCustom) {
-                                { viewModel.deleteCustom(exercise) }
+                            onLongPress = if (exercise.isCustom) {
+                                { pendingDelete = exercise }
                             } else null
                         )
                         HorizontalDivider()
@@ -132,6 +140,31 @@ fun ExercisesScreen(onCreateExerciseClick: () -> Unit) {
                 }
             }
         }
+    }
+    pendingDelete?.let { exercise ->
+        AlertDialog(
+            onDismissRequest = { pendingDelete = null },
+            title = { Text(stringResource(R.string.exercise_delete_title)) },
+            text = { Text(stringResource(R.string.exercise_delete_body)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteCustom(exercise)
+                        pendingDelete = null
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(stringResource(R.string.action_delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingDelete = null }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
     }
 }
 
@@ -166,38 +199,37 @@ private fun <T> FilterChipsRow(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ExerciseRow(
     exercise: Exercise,
-    onDelete: (() -> Unit)? = null
+    onLongPress: (() -> Unit)?
 ) {
-    Row(
-        modifier = Modifier
+    val rowModifier = if (onLongPress != null) {
+        Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = exercise.displayName(),
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+            .combinedClickable(
+                onClick = {},
+                onLongClick = onLongPress
             )
-            Text(
-                text = "${stringResource(exercise.primaryMuscle.labelRes())} · ${stringResource(exercise.equipment.labelRes())}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        if (onDelete != null) {
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.action_delete),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    } else {
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    }
+
+    Column(modifier = rowModifier) {
+        Text(
+            text = exercise.displayName(),
+            style = MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = "${stringResource(exercise.primaryMuscle.labelRes())} · ${stringResource(exercise.equipment.labelRes())}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }

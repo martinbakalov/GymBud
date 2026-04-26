@@ -19,7 +19,7 @@ import androidx.room.PrimaryKey
             entity = Exercise::class,
             parentColumns = ["id"],
             childColumns = ["exerciseId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.SET_NULL
         )
     ],
     indices = [
@@ -31,7 +31,7 @@ data class WorkoutExercise(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val workoutId: Long,
-    val exerciseId: Long,
+    val exerciseId: Long?,
     val position: Int,
     val notes: String? = null
 )

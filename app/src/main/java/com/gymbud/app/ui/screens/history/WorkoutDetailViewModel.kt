@@ -46,7 +46,9 @@ class WorkoutDetailViewModel(
             val blocks = weList.map { we ->
                 ExerciseBlock(
                     workoutExercise = we,
-                    exercise = exerciseRepository.getById(we.exerciseId),
+                    exercise = we.exerciseId?.let {
+                        exerciseRepository.getById(it)
+                    },
                     sets = workoutRepository.observeSetsForWorkoutExercise(we.id).first()
                 )
             }

@@ -37,11 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Read-mostly card for templates: shows the exercise, lists numbered set
- * placeholders, lets the user add/remove sets, lets them remove the whole
- * exercise. No values, no completion, no notes.
- */
+
 @Composable
 fun TemplateExerciseCard(
     workoutExercise: WorkoutExercise,
@@ -55,7 +51,9 @@ fun TemplateExerciseCard(
     var exercise by remember { mutableStateOf<Exercise?>(null) }
 
     LaunchedEffect(workoutExercise.exerciseId) {
-        exercise = app.exerciseRepository.getById(workoutExercise.exerciseId)
+        exercise = workoutExercise.exerciseId?.let {
+            app.exerciseRepository.getById(it)
+        }
     }
 
     val sets = observeSets().collectAsState(initial = emptyList()).value
@@ -63,13 +61,12 @@ fun TemplateExerciseCard(
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(12.dp)) {
 
-            // Header — exercise name + overflow menu
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = exercise?.displayName() ?: "...",
+                    text = exercise?.displayName() ?: stringResource(R.string.exercise_deleted_label),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )

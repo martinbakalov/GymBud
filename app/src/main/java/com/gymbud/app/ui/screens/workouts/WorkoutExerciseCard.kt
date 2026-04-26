@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -67,8 +68,10 @@ fun WorkoutExerciseCard(
 ) {
 
     var exercise by remember { mutableStateOf<Exercise?>(null) }
-    androidx.compose.runtime.LaunchedEffect(workoutExercise.exerciseId) {
-        exercise = app.exerciseRepository.getById(workoutExercise.exerciseId)
+    LaunchedEffect(workoutExercise.exerciseId) {
+        exercise = workoutExercise.exerciseId?.let {
+            app.exerciseRepository.getById(it)
+        }
     }
 
     val sets by observeSets().collectAsStateWithLifecycle(initialValue = emptyList())
@@ -88,7 +91,7 @@ fun WorkoutExerciseCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = exercise?.displayName() ?: "…",
+                    text = exercise?.displayName() ?: stringResource(R.string.exercise_deleted_label),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
@@ -134,8 +137,8 @@ fun WorkoutExerciseCard(
 
             sets.forEach { set ->
                 val previousSet by produceState<PreviousSet?>(initialValue = null, set.position) {
-
-                    value = previousSetProvider(workoutExercise.exerciseId, set.position)
+                    val exId = workoutExercise.exerciseId
+                    value = if (exId != null) previousSetProvider(exId, set.position) else null
                 }
                 SetRow(
                     set = set,

@@ -201,4 +201,7 @@
     <string name="template_no_exercises_yet">No exercises yet</string>
     <string name="template_set_label">Set %1$d</string>
     <string name="template_start_workout">Start workout</string>
+    <string name="exercise_delete_title">Delete this exercise?</string>
+    <string name="exercise_delete_body">The exercise will be permanently removed. Past workouts that used it will keep their records.</string>
+    <string name="exercise_deleted_label">Deleted exercise</string>
 </resources>
