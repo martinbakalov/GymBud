@@ -171,6 +171,25 @@ class ActiveWorkoutViewModel(
         exerciseRepository.observeById(exerciseId)
             .map { ex -> effectiveUnit(ex, globalDefault) }
 
+    fun setName(name: String) {
+        viewModelScope.launch {
+            repository.renameWorkout(workoutId, name.trim())
+        }
+    }
+
+    fun setPhotoPath(photoPath: String?) {
+        viewModelScope.launch {
+            repository.updateWorkoutPhoto(workoutId, photoPath)
+        }
+    }
+
+
+    fun setNotes(notes: String?) {
+        viewModelScope.launch {
+            repository.updateWorkoutNotes(workoutId, notes?.trim()?.takeIf { it.isNotBlank() })
+        }
+    }
+
     fun toggleUnitForExercise(exerciseId: Long, currentlyDisplayed: WeightUnit) {
         viewModelScope.launch {
             val ex = exerciseRepository.getById(exerciseId) ?: return@launch

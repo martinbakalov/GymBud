@@ -212,6 +212,8 @@ fun ActiveWorkoutScreen(
         FinishWorkoutDialog(
             initialName = workout?.name.orEmpty(),
             nameFallback = defaultName,
+            initialNotes = workout?.notes.orEmpty(),
+            initialPhotoPath = workout?.photoPath,
             durationMillis = elapsedMillis,
             stats = stats,
             onSave = { name, notes, photoPath ->
@@ -224,6 +226,9 @@ fun ActiveWorkoutScreen(
                     onFinished = onExit
                 )
             },
+            onNameChange = { newName -> viewModel.setName(newName) },
+            onPhotoChange = { path -> viewModel.setPhotoPath(path) },
+            onNotesChange = { text -> viewModel.setNotes(text) },
             onResume = { showFinishDialog = false }
         )
     }

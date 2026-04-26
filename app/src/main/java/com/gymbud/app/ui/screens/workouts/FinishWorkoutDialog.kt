@@ -56,16 +56,23 @@ import java.io.File
 fun FinishWorkoutDialog(
     initialName: String,
     nameFallback: String,
+    initialNotes: String,
+    initialPhotoPath: String?,
     durationMillis: Long,
     stats: WorkoutStats,
     onSave: (name: String, notes: String?, photoPath: String?) -> Unit,
+    onNameChange: (name: String) -> Unit,
+    onPhotoChange: (photoPath: String?) -> Unit,
+    onNotesChange: (notes: String?) -> Unit,
     onResume: () -> Unit
 ) {
     val context = LocalContext.current
 
     var name by remember { mutableStateOf(initialName) }
-    var notes by remember { mutableStateOf("") }
-    var photoFile by remember { mutableStateOf<File?>(null) }
+    var notes by remember { mutableStateOf(initialNotes) }
+    var photoFile by remember {
+        mutableStateOf(initialPhotoPath?.let { File(it).takeIf(File::exists) })  // ← from initial, was null
+    }
     var pendingUri by remember { mutableStateOf<Uri?>(null) }
     var pendingFile by remember { mutableStateOf<File?>(null) }
 
@@ -76,6 +83,7 @@ fun FinishWorkoutDialog(
         val file = pendingFile
         if (success && file != null) {
             photoFile = file
+            onPhotoChange(file.absolutePath)
         } else {
             file?.delete()
         }
@@ -89,6 +97,7 @@ fun FinishWorkoutDialog(
             val copied = copyUriToWorkoutPhoto(context, uri)
             if (copied != null) {
                 photoFile = copied
+                onPhotoChange(copied.absolutePath)
             }
         }
     }
@@ -109,7 +118,10 @@ fun FinishWorkoutDialog(
             ) {
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = {
+                        name = it
+                        onNameChange(it)
+                    },
                     label = { Text(stringResource(R.string.finish_dialog_name_label)) },
                     placeholder = { Text(nameFallback) },
                     singleLine = true,
@@ -139,7 +151,10 @@ fun FinishWorkoutDialog(
 
                 OutlinedTextField(
                     value = notes,
-                    onValueChange = { notes = it },
+                    onValueChange = {
+                        notes = it
+                        onNotesChange(it.ifBlank { null })
+                    },
                     label = { Text(stringResource(R.string.finish_dialog_notes_hint)) },
                     minLines = 2,
                     maxLines = 4,
