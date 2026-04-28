@@ -1,5 +1,6 @@
 package com.gymbud.app.ui.screens
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -12,44 +13,43 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.gymbud.app.ui.navigation.TopDestination
-import com.gymbud.app.ui.screens.exercises.ExercisesScreen
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.navigation
-import com.gymbud.app.ui.navigation.ExercisesRoutes
-import com.gymbud.app.ui.screens.exercises.CreateExerciseScreen
-import com.gymbud.app.ui.screens.workouts.WorkoutsScreen
-import androidx.navigation.NavType
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.gymbud.app.GymBudApplication
-import com.gymbud.app.ui.navigation.WorkoutsRoutes
-import com.gymbud.app.ui.screens.workouts.ActiveWorkoutScreen
-import com.gymbud.app.ui.screens.workouts.TemplateDetailScreen
+import com.gymbud.app.ui.navigation.ExercisesRoutes
 import com.gymbud.app.ui.navigation.PickerRoutes
-import com.gymbud.app.ui.screens.picker.ExercisePickerScreen
-import com.gymbud.app.ui.screens.workouts.ActiveWorkoutViewModel
-import com.gymbud.app.ui.screens.history.WorkoutDetailScreen
 import com.gymbud.app.ui.navigation.ProfileRoutes
-import com.gymbud.app.ui.screens.profile.EditProfileScreen
-import com.gymbud.app.ui.screens.profile.ProfileScreen
-import androidx.compose.foundation.layout.Column
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gymbud.app.ui.navigation.SettingsRoutes
+import com.gymbud.app.ui.navigation.TopDestination
+import com.gymbud.app.ui.navigation.WorkoutsRoutes
 import com.gymbud.app.ui.screens.banner.ActiveWorkoutBanner
 import com.gymbud.app.ui.screens.banner.ActiveWorkoutBannerViewModel
-import com.gymbud.app.ui.navigation.SettingsRoutes
+import com.gymbud.app.ui.screens.exercises.CreateExerciseScreen
+import com.gymbud.app.ui.screens.exercises.ExercisesScreen
+import com.gymbud.app.ui.screens.history.WorkoutDetailScreen
+import com.gymbud.app.ui.screens.picker.ExercisePickerScreen
+import com.gymbud.app.ui.screens.profile.EditProfileScreen
+import com.gymbud.app.ui.screens.profile.ProfileScreen
 import com.gymbud.app.ui.screens.settings.AboutScreen
-import com.gymbud.app.ui.screens.settings.NotificationsSettingsScreen
 import com.gymbud.app.ui.screens.settings.LanguageSettingsScreen
+import com.gymbud.app.ui.screens.settings.NotificationsSettingsScreen
 import com.gymbud.app.ui.screens.settings.SettingsHomeScreen
 import com.gymbud.app.ui.screens.settings.ThemeSettingsScreen
 import com.gymbud.app.ui.screens.settings.WeightUnitSettingsScreen
+import com.gymbud.app.ui.screens.workouts.ActiveWorkoutScreen
+import com.gymbud.app.ui.screens.workouts.ActiveWorkoutViewModel
+import com.gymbud.app.ui.screens.workouts.TemplateDetailScreen
 import com.gymbud.app.ui.screens.workouts.TemplateEditorViewModel
+import com.gymbud.app.ui.screens.workouts.WorkoutsScreen
 
 
 @Composable
@@ -289,7 +289,7 @@ fun MainScreen() {
                         onOpenAbout = { navController.navigate(SettingsRoutes.ABOUT) }
                     )
                 }
-                composable(SettingsRoutes.PROFILE) {                                                // ← new
+                composable(SettingsRoutes.PROFILE) {
                     EditProfileScreen(onExit = { navController.popBackStack() })
                 }
                 composable(SettingsRoutes.NOTIFICATIONS) {
@@ -301,7 +301,7 @@ fun MainScreen() {
                 composable(SettingsRoutes.LANGUAGE) {
                     LanguageSettingsScreen(onExit = { navController.popBackStack() })
                 }
-                composable(SettingsRoutes.UNITS) {                                          // ← new
+                composable(SettingsRoutes.UNITS) {
                     WeightUnitSettingsScreen(onExit = { navController.popBackStack() })
                 }
                 composable(SettingsRoutes.ABOUT) {

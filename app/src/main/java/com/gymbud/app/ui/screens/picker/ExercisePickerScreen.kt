@@ -149,7 +149,7 @@ fun ExercisePickerScreen(
             ) {
                 Text(
                     text = if (uiState.selectedIds.isEmpty()) {
-                        stringResource(R.string.picker_add)
+                        stringResource(R.string.action_add)
                     } else {
                         stringResource(R.string.picker_add_with_count, uiState.selectedIds.size)
                     }

@@ -1,17 +1,17 @@
 package com.gymbud.app.domain.model
 
-enum class MuscleGroup(val displayName: String) {
-    CHEST("Chest"),
-    BACK("Back"),
-    SHOULDERS("Shoulders"),
-    BICEPS("Biceps"),
-    TRICEPS("Triceps"),
-    FOREARMS("Forearms"),
-    CORE("Core"),
-    QUADS("Quadriceps"),
-    HAMSTRINGS("Hamstrings"),
-    GLUTES("Glutes"),
-    CALVES("Calves"),
-    FULL_BODY("Full Body"),
-    OTHER("Other")
+enum class MuscleGroup {
+    CHEST,
+    BACK,
+    SHOULDERS,
+    BICEPS,
+    TRICEPS,
+    FOREARMS,
+    CORE,
+    QUADS,
+    HAMSTRINGS,
+    GLUTES,
+    CALVES,
+    FULL_BODY,
+    OTHER
 }

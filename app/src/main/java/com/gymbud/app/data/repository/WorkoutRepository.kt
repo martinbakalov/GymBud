@@ -1,6 +1,5 @@
 package com.gymbud.app.data.repository
 
-import com.gymbud.app.data.local.dao.ExerciseDao
 import com.gymbud.app.data.local.dao.WorkoutDao
 import com.gymbud.app.data.local.dao.WorkoutExerciseDao
 import com.gymbud.app.data.local.dao.WorkoutSetDao
@@ -10,22 +9,20 @@ import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.domain.model.WorkoutStats
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 
 
 class WorkoutRepository(
     private val workoutDao: WorkoutDao,
     private val workoutExerciseDao: WorkoutExerciseDao,
     private val workoutSetDao: WorkoutSetDao,
-    private val exerciseDao: ExerciseDao
 ) {
 
 
     fun observeTemplates(): Flow<List<Workout>> = workoutDao.observeTemplates()
-    fun observeHistory(): Flow<List<Workout>> = workoutDao.observeHistory()
     fun observeActiveWorkout(): Flow<Workout?> = workoutDao.observeActiveWorkout()
 
     fun observeExercisesForWorkout(workoutId: Long): Flow<List<WorkoutExercise>> =
@@ -44,7 +41,7 @@ class WorkoutRepository(
         workoutExerciseDao.observeForWorkout(workoutId)
             .flatMapLatest { exercises ->
                 if (exercises.isEmpty()) {
-                    kotlinx.coroutines.flow.flowOf(emptyList<List<WorkoutSet>>())
+                    kotlinx.coroutines.flow.flowOf(emptyList())
                 } else {
                     val setFlows = exercises.map { we ->
                         workoutSetDao.observeForWorkoutExercise(we.id)
@@ -154,9 +151,6 @@ class WorkoutRepository(
         workoutExerciseDao.delete(workoutExercise)
     }
 
-    suspend fun updateExerciseNotes(workoutExercise: WorkoutExercise, notes: String?) {
-        workoutExerciseDao.update(workoutExercise.copy(notes = notes))
-    }
 
     suspend fun updateExerciseNotes(workoutExerciseId: Long, notes: String?) {
         workoutExerciseDao.updateNotes(workoutExerciseId, notes)

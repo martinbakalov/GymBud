@@ -10,7 +10,6 @@
     <string name="action_add">Add</string>
     <string name="action_done">Done</string>
     <string name="action_start">Start</string>
-    <string name="action_finish">Finish</string>
     <string name="action_search">Search</string>
     <string name="workouts_title">Workouts</string>
     <string name="workouts_start_empty">Start empty workout</string>
@@ -74,21 +73,16 @@
     <string name="equipment_band">Band</string>
     <string name="equipment_other">Other</string>
     <string name="workout_no_exercises_yet">No exercises yet</string>
-    <string name="workouts_start_from_template">Start workout</string>
-    <string name="template_detail_placeholder">No exercises in this template yet</string>
     <string name="picker_add_exercises">Add exercises</string>
-    <string name="picker_add">Add</string>
     <string name="picker_add_with_count">Add (%d)</string>
     <string name="workout_set_completed">Set completed</string>
     <string name="workout_set_incomplete">Mark set complete</string>
     <string name="workout_in_progress_hint">Return to workout</string>
     <string name="finish_dialog_title">Finish workout?</string>
     <string name="finish_dialog_notes_hint">Notes (optional)</string>
-    <string name="finish_dialog_save">Save</string>
     <string name="finish_dialog_resume">Resume</string>
     <string name="discard_confirm_title">Discard workout?</string>
     <string name="discard_confirm_body">This will permanently delete the workout</string>
-    <string name="discard_confirm_delete">Delete</string>
     <string name="workout_discard">Discard workout</string>
     <string name="blocker_title">You have a workout in progress</string>
     <string name="blocker_body">Finish or discard your current workout before starting a new one</string>
@@ -116,7 +110,6 @@
     <string name="daily_default_message">Don\'t forget about your daily workout! (If you are having a rest day, remember to stay active by going for a walk or an activity of choice! </string>
     <string name="settings_daily_test">Test notification</string>
     <string name="edit_profile_title">Edit profile</string>
-    <string name="edit_profile_save">Save</string>
     <string name="edit_profile_change_avatar">Change avatar</string>
     <string name="edit_profile_take_photo">Take photo</string>
     <string name="edit_profile_gallery_photo">Gallery</string>
@@ -138,16 +131,10 @@
     <string name="settings_theme_system">Default</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
-    <string name="settings_subtitle_theme_system">Default</string>
-    <string name="settings_subtitle_theme_light">Light</string>
-    <string name="settings_subtitle_theme_dark">Dark</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">Match system</string>
     <string name="settings_language_english">English</string>
     <string name="settings_language_bulgarian">Български</string>
-    <string name="settings_subtitle_language_system">Match system</string>
-    <string name="settings_subtitle_language_english">English</string>
-    <string name="settings_subtitle_language_bulgarian">Български</string>
     <string name="about_title">About</string>
     <string name="about_app_name">GymBud</string>
     <string name="about_version">Version %1$s</string>
@@ -210,4 +197,6 @@
     <string name="settings_section_units">Weight unit</string>
     <string name="settings_units_desc">Default unit for new exercises and volume display.</string>
     <string name="action_share">Share</string>
+    <string name="action_back">Back</string>
+    <string name="action_more">More options</string>
 </resources>

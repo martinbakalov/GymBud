@@ -33,6 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,13 +46,10 @@ import com.gymbud.app.data.local.entity.Exercise
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.domain.model.WeightUnit
-import kotlinx.coroutines.flow.Flow
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
 import com.gymbud.app.domain.model.PreviousSet
+import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.ui.util.displayName
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

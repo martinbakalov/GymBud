@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Update
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import kotlinx.coroutines.flow.Flow
 
@@ -13,12 +12,6 @@ interface WorkoutExerciseDao {
 
     @Insert
     suspend fun insert(workoutExercise: WorkoutExercise): Long
-
-    @Insert
-    suspend fun insertAll(workoutExercises: List<WorkoutExercise>): List<Long>
-
-    @Update
-    suspend fun update(workoutExercise: WorkoutExercise): Int
 
     @Delete
     suspend fun delete(workoutExercise: WorkoutExercise): Int

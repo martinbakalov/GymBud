@@ -45,10 +45,6 @@ object DailyNotificationScheduler {
         )
     }
 
-    fun cancel(context: Context) {
-        WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
-    }
-
     private fun computeDelayUntil(hour: Int, minute: Int): Long {
         val now = Calendar.getInstance()
         val target = Calendar.getInstance().apply {

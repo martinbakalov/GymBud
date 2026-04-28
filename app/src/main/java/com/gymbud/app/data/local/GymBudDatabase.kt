@@ -8,18 +8,18 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.gymbud.app.data.local.converters.Converters
 import com.gymbud.app.data.local.dao.ExerciseDao
-import com.gymbud.app.data.local.entity.Exercise
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.gymbud.app.data.local.dao.ProfileDao
 import com.gymbud.app.data.local.dao.WorkoutDao
 import com.gymbud.app.data.local.dao.WorkoutExerciseDao
 import com.gymbud.app.data.local.dao.WorkoutSetDao
+import com.gymbud.app.data.local.entity.Exercise
+import com.gymbud.app.data.local.entity.Profile
 import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
-import com.gymbud.app.data.local.dao.ProfileDao
-import com.gymbud.app.data.local.entity.Profile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Database(

@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
-    private val profileRepository: ProfileRepository,
+    profileRepository: ProfileRepository,
     private val workoutRepository: WorkoutRepository
 ) : ViewModel() {
 

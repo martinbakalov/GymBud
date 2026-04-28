@@ -1,8 +1,8 @@
 package com.gymbud.app.ui.util
 
 import android.content.Context
-import androidx.core.content.FileProvider
 import android.net.Uri
+import androidx.core.content.FileProvider
 import java.io.File
 
 fun createWorkoutPhotoFile(context: Context): Pair<File, Uri> {

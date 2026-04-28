@@ -5,13 +5,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.data.local.entity.WorkoutExercise
-import com.gymbud.app.data.repository.WorkoutRepository
 import com.gymbud.app.data.local.entity.WorkoutSet
-import com.gymbud.app.domain.model.WorkoutStats
 import com.gymbud.app.data.prefs.AppPreferences
 import com.gymbud.app.data.repository.ExerciseRepository
+import com.gymbud.app.data.repository.WorkoutRepository
 import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.domain.model.WorkoutStats
 import com.gymbud.app.ui.util.effectiveUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,8 +21,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-
 
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -62,15 +60,6 @@ class ActiveWorkoutViewModel(
         )
 
     private val previousSetCache = mutableMapOf<Pair<Long, Int>, PreviousSet?>()
-
-    fun rename(newName: String) {
-        val trimmed = newName.trim()
-        viewModelScope.launch {
-            val current = repository.getWorkout(workoutId)
-            if (current?.endedAt != null) return@launch
-            repository.renameWorkout(workoutId, trimmed)
-        }
-    }
 
     fun finish(
         name: String,

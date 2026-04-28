@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
-import com.gymbud.app.domain.model.ThemeMode
 import com.gymbud.app.domain.model.AppLanguage
+import com.gymbud.app.domain.model.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,15 +43,15 @@ fun SettingsHomeScreen(
     val prefs = app.preferences
     val language by prefs.language.collectAsStateWithLifecycle(initialValue = AppLanguage.SYSTEM)
     val languageSubtitle = when (language) {
-        AppLanguage.SYSTEM -> stringResource(R.string.settings_subtitle_language_system)
-        AppLanguage.ENGLISH -> stringResource(R.string.settings_subtitle_language_english)
-        AppLanguage.BULGARIAN -> stringResource(R.string.settings_subtitle_language_bulgarian)
+        AppLanguage.SYSTEM -> stringResource(R.string.settings_language_system)
+        AppLanguage.ENGLISH -> stringResource(R.string.settings_language_english)
+        AppLanguage.BULGARIAN -> stringResource(R.string.settings_language_bulgarian)
     }
     val themeMode by prefs.themeMode.collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
     val themeSubtitle = when (themeMode) {
-        ThemeMode.SYSTEM -> stringResource(R.string.settings_subtitle_theme_system)
-        ThemeMode.LIGHT -> stringResource(R.string.settings_subtitle_theme_light)
-        ThemeMode.DARK -> stringResource(R.string.settings_subtitle_theme_dark)
+        ThemeMode.SYSTEM -> stringResource(R.string.settings_theme_system)
+        ThemeMode.LIGHT -> stringResource(R.string.settings_theme_light)
+        ThemeMode.DARK -> stringResource(R.string.settings_theme_dark)
     }
 
     Scaffold(

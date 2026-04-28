@@ -27,11 +27,9 @@ class DailyNotificationWorker(
         val app = applicationContext as GymBudApplication
         val prefs = app.preferences
 
-        // Silent no-op if disabled (in case of a race between toggle-off and work firing).
         val enabled = prefs.dailyNotificationsEnabled.first()
         if (!enabled) return Result.success()
 
-        // Permission check — same pattern as workout notification.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val granted = ContextCompat.checkSelfPermission(
                 applicationContext,

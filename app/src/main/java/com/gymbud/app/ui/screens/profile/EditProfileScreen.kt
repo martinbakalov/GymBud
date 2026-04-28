@@ -289,7 +289,7 @@ fun EditProfileScreen(onExit: () -> Unit) {
                 enabled = !state.isSaving && state.isLoaded,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.edit_profile_save))
+                Text(stringResource(R.string.action_save))
             }
         }
     }

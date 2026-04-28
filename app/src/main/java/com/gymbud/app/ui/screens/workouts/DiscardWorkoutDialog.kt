@@ -27,7 +27,7 @@ fun DiscardWorkoutDialog(
                     contentColor = MaterialTheme.colorScheme.error
                 )
             ) {
-                Text(stringResource(R.string.discard_confirm_delete))
+                Text(stringResource(R.string.action_delete))
             }
         },
         dismissButton = {

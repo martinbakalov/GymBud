@@ -73,7 +73,7 @@ fun FinishWorkoutDialog(
     var name by remember { mutableStateOf(initialName) }
     var notes by remember { mutableStateOf(initialNotes) }
     var photoFile by remember {
-        mutableStateOf(initialPhotoPath?.let { File(it).takeIf(File::exists) })  // ← from initial, was null
+        mutableStateOf(initialPhotoPath?.let { File(it).takeIf(File::exists) })
     }
     var pendingUri by remember { mutableStateOf<Uri?>(null) }
     var pendingFile by remember { mutableStateOf<File?>(null) }
@@ -241,7 +241,7 @@ fun FinishWorkoutDialog(
                     photoFile?.absolutePath
                 )
             }) {
-                Text(stringResource(R.string.finish_dialog_save))
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {

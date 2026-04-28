@@ -2,6 +2,7 @@ package com.gymbud.app.ui.screens.exercises
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,7 +38,6 @@ import com.gymbud.app.domain.model.Equipment
 import com.gymbud.app.domain.model.ExerciseType
 import com.gymbud.app.domain.model.MuscleGroup
 import com.gymbud.app.ui.util.labelRes
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable

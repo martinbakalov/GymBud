@@ -4,15 +4,15 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.gymbud.app.data.local.GymBudDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import com.gymbud.app.data.repository.ExerciseRepository
-import com.gymbud.app.data.repository.WorkoutRepository
 import com.gymbud.app.data.prefs.AppPreferences
+import com.gymbud.app.data.repository.ExerciseRepository
+import com.gymbud.app.data.repository.ProfileRepository
+import com.gymbud.app.data.repository.WorkoutRepository
+import com.gymbud.app.domain.model.AppLanguage
 import com.gymbud.app.notifications.DailyNotificationScheduler
 import com.gymbud.app.notifications.NotificationHelper
-import com.gymbud.app.data.repository.ProfileRepository
-import com.gymbud.app.domain.model.AppLanguage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -35,7 +35,6 @@ class GymBudApplication : Application() {
             workoutDao = database.workoutDao(),
             workoutExerciseDao = database.workoutExerciseDao(),
             workoutSetDao = database.workoutSetDao(),
-            exerciseDao = database.exerciseDao()
         )
     }
     private fun applyStoredLanguage() {

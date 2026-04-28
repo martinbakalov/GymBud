@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,29 +30,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.gymbud.app.GymBudApplication
-import com.gymbud.app.R
-import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.ui.util.formatDurationCompact
-import com.gymbud.app.ui.util.formatSessionDateTime
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.gymbud.app.GymBudApplication
+import com.gymbud.app.R
+import com.gymbud.app.domain.model.ExerciseType
 import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.ui.util.displayName
-import com.gymbud.app.ui.util.formatWorkoutShareSummary
-import java.io.File
-import androidx.compose.material.icons.filled.Share
+import com.gymbud.app.ui.util.formatDurationCompact
+import com.gymbud.app.ui.util.formatSessionDateTime
 import com.gymbud.app.ui.util.formatVolumeNumber
+import com.gymbud.app.ui.util.formatWorkoutShareSummary
 import com.gymbud.app.ui.util.shareWorkout
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,10 +94,8 @@ fun WorkoutDetailScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            val w = workout
-                            val text = summaryText
-                            if (w != null && text != null) {
-                                shareWorkout(context, text, w.photoPath)
+                            if (workout != null && summaryText != null) {
+                                shareWorkout(context, summaryText, workout.photoPath)
                             }
                         },
                         enabled = workout != null && stats != null

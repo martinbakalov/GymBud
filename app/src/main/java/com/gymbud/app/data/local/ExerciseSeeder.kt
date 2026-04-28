@@ -15,12 +15,12 @@ import com.gymbud.app.domain.model.MuscleGroup.BICEPS
 import com.gymbud.app.domain.model.MuscleGroup.CALVES
 import com.gymbud.app.domain.model.MuscleGroup.CHEST
 import com.gymbud.app.domain.model.MuscleGroup.CORE
+import com.gymbud.app.domain.model.MuscleGroup.FULL_BODY
 import com.gymbud.app.domain.model.MuscleGroup.GLUTES
 import com.gymbud.app.domain.model.MuscleGroup.HAMSTRINGS
 import com.gymbud.app.domain.model.MuscleGroup.QUADS
 import com.gymbud.app.domain.model.MuscleGroup.SHOULDERS
 import com.gymbud.app.domain.model.MuscleGroup.TRICEPS
-import com.gymbud.app.domain.model.MuscleGroup.FULL_BODY
 
 object ExerciseSeeder {
 

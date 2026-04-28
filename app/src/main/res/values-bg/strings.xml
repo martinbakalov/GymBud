@@ -12,7 +12,6 @@
     <string name="action_add">Добави</string>
     <string name="action_done">Готово</string>
     <string name="action_start">Старт</string>
-    <string name="action_finish">Край</string>
     <string name="action_search">Търсене</string>
     <string name="workouts_title">Тренировки</string>
     <string name="workouts_start_empty">Нова тренировка</string>
@@ -76,21 +75,16 @@
     <string name="equipment_band">Ластик</string>
     <string name="equipment_other">Други</string>
     <string name="workout_no_exercises_yet">Все още няма упражнения.</string>
-    <string name="workouts_start_from_template">Започни тренировка</string>
-    <string name="template_detail_placeholder">Този шаблон все още няма упражнения</string>
     <string name="picker_add_exercises">Добави упражнения</string>
-    <string name="picker_add">Добави</string>
     <string name="picker_add_with_count">Добави (%d)</string>
     <string name="workout_set_completed">Серията е изпълнена</string>
     <string name="workout_set_incomplete">Маркирай серията като изпълнена</string>
     <string name="workout_in_progress_hint">Върни се към тренировката</string>
     <string name="finish_dialog_title">Край на тренировката?</string>
     <string name="finish_dialog_notes_hint">Бележки (по желание)</string>
-    <string name="finish_dialog_save">Запази</string>
     <string name="finish_dialog_resume">Продължи</string>
     <string name="discard_confirm_title">Изтриване на тренировката?</string>
     <string name="discard_confirm_body">Тренировката ще бъде изтрита завинаги.</string>
-    <string name="discard_confirm_delete">Изтрий</string>
     <string name="workout_discard">Отмени тренировката</string>
     <string name="blocker_title">Имаш незавършена тренировка</string>
     <string name="blocker_body">Трябва да завършиш или откажеш текущата тренировка, преди да започнеш нова.</string>
@@ -118,7 +112,6 @@
     <string name="daily_default_message">Не забравяй за ежедневната си тренировка! (Ако днес имаш почивен ден, помни да включиш някаква активност към деня си като например разходка!)</string>
     <string name="settings_daily_test">Тестово известие</string>
     <string name="edit_profile_title">Редакция на профил</string>
-    <string name="edit_profile_save">Запази</string>
     <string name="edit_profile_change_avatar">Смени профилна снимка</string>
     <string name="edit_profile_take_photo">Снимай</string>
     <string name="edit_profile_gallery_photo">Галерия</string>
@@ -140,16 +133,10 @@
     <string name="settings_theme_system">По подразбиране</string>
     <string name="settings_theme_light">Светла</string>
     <string name="settings_theme_dark">Тъмна</string>
-    <string name="settings_subtitle_theme_system">По подразбиране</string>
-    <string name="settings_subtitle_theme_light">Светла</string>
-    <string name="settings_subtitle_theme_dark">Тъмна</string>
     <string name="settings_language_title">Език</string>
     <string name="settings_language_system">По подразбиране</string>
     <string name="settings_language_english">English</string>
     <string name="settings_language_bulgarian">Български</string>
-    <string name="settings_subtitle_language_system">По подразбиране</string>
-    <string name="settings_subtitle_language_english">English</string>
-    <string name="settings_subtitle_language_bulgarian">Български</string>
     <string name="about_title">Информация</string>
     <string name="about_app_name">GymBud</string>
     <string name="about_version">Версия %1$s</string>
@@ -212,4 +199,6 @@
     <string name="settings_section_units">Мерна единица</string>
     <string name="settings_units_desc">Мерна единица по подразбиране за нови упражнения и за отчитане на обема.</string>
     <string name="action_share">Сподели</string>
+    <string name="action_back">Назад</string>
+    <string name="action_more">Още опции</string>
 </resources>

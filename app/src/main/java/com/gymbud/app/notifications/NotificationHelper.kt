@@ -1,19 +1,19 @@
 package com.gymbud.app.notifications
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
-import com.gymbud.app.R
-import android.app.PendingIntent
-import android.content.Intent
-import androidx.core.app.NotificationCompat
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.gymbud.app.MainActivity
+import com.gymbud.app.R
 
 object NotificationHelper {
 

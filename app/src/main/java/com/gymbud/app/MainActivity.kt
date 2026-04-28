@@ -8,13 +8,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import com.gymbud.app.ui.screens.MainScreen
-import com.gymbud.app.ui.theme.GymBudTheme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymbud.app.domain.model.ThemeMode
+import com.gymbud.app.ui.screens.MainScreen
+import com.gymbud.app.ui.theme.GymBudTheme
 
 class MainActivity : AppCompatActivity() {
 
