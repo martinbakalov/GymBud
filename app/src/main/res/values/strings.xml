@@ -41,6 +41,8 @@
     <string name="workout_time">Time</string>
     <string name="workout_add_set">Add set</string>
     <string name="workout_remove_exercise">Remove exercise</string>
+    <string name="workout_delete_set_title">Delete this set?</string>
+    <string name="workout_delete_set_body">This set will be permanently removed from the exercise.</string>
     <string name="workout_empty_name">Workout</string>
     <string name="stats_sets">Sets</string>
     <string name="stats_volume">Volume</string>

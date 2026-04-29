@@ -43,6 +43,8 @@
     <string name="workout_time">Време</string>
     <string name="workout_add_set">Добави серия</string>
     <string name="workout_remove_exercise">Премахни упражнение</string>
+    <string name="workout_delete_set_title">Изтриване на серията?</string>
+    <string name="workout_delete_set_body">Тази серия ще бъде премахната от упражнението.</string>
     <string name="workout_empty_name">Тренировка</string>
     <string name="stats_sets">Серии</string>
     <string name="stats_volume">Обем</string>
