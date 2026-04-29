@@ -3,11 +3,11 @@ package com.gymbud.app.ui.navigation
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.FitnessCenter
+import androidx.compose.material.icons.outlined.MonitorHeart
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.gymbud.app.R
 
@@ -20,8 +20,8 @@ sealed class TopDestination(
     data object Workouts : TopDestination(
         route = WorkoutsRoutes.GRAPH,
         labelRes = R.string.nav_workouts,
-        iconOutlined = Icons.Outlined.PlayArrow,
-        iconFilled = Icons.Filled.PlayArrow
+        iconOutlined = Icons.Outlined.MonitorHeart,
+        iconFilled = Icons.Filled.MonitorHeart
     )
 
     data object Exercises : TopDestination(

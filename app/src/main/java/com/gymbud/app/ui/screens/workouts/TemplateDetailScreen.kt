@@ -56,7 +56,11 @@ fun TemplateDetailScreen(
     )
 
     val workoutsVm: WorkoutsViewModel = viewModel(
-        factory = WorkoutsViewModel.Factory(app.workoutRepository)
+        factory = WorkoutsViewModel.Factory(
+            repository = app.workoutRepository,
+            exerciseRepository = app.exerciseRepository,
+            profileRepository = app.profileRepository
+        )
     )
 
     var templateName by remember { mutableStateOf("") }

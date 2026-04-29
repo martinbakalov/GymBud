@@ -53,6 +53,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -221,6 +222,13 @@ fun EditProfileScreen(onExit: () -> Unit) {
                 label = { Text(stringResource(R.string.edit_profile_name)) },
                 placeholder = { Text(stringResource(R.string.profile_default_name)) },
                 singleLine = true,
+                supportingText = {
+                    Text(
+                        text = "${state.displayName.length}/${EditProfileViewModel.MAX_DISPLAY_NAME_LENGTH}",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End
+                    )
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 

@@ -43,7 +43,10 @@ class EditProfileViewModel(
     }
 
     fun onNameChange(value: String) {
-        _uiState.value = _uiState.value.copy(displayName = value)
+        val capped = if (value.length > MAX_DISPLAY_NAME_LENGTH) {
+            value.take(MAX_DISPLAY_NAME_LENGTH)
+        } else value
+        _uiState.value = _uiState.value.copy(displayName = capped)
     }
 
     fun onBioChange(value: String) {
@@ -89,5 +92,9 @@ class EditProfileViewModel(
             require(modelClass.isAssignableFrom(EditProfileViewModel::class.java))
             return EditProfileViewModel(repository) as T
         }
+    }
+
+    companion object {
+        const val MAX_DISPLAY_NAME_LENGTH = 20
     }
 }
