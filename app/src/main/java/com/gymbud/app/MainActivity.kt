@@ -2,8 +2,11 @@ package com.gymbud.app
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,12 +28,30 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         maybeRequestNotificationPermission()
+        val app = application as GymBudApplication
+
+        // Apply edge-to-edge once with transparent scrims. The icon
+        // appearance follows the configuration uiMode, which Application
+        // already aligned with the saved theme. Runtime theme switches
+        // only flip status-bar icons via Theme.kt's LaunchedEffect — we
+        // never re-call enableEdgeToEdge at runtime to avoid window
+        // layout invalidation.
+        val nightMask = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val initialStyle = if (nightMask == Configuration.UI_MODE_NIGHT_YES) {
+            SystemBarStyle.dark(Color.TRANSPARENT)
+        } else {
+            SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+        }
+        enableEdgeToEdge(
+            statusBarStyle = initialStyle,
+            navigationBarStyle = initialStyle
+        )
+
         setContent {
-            val prefs = (application as GymBudApplication).preferences
+            val prefs = app.preferences
             val themeMode by prefs.themeMode.collectAsStateWithLifecycle(
-                initialValue = ThemeMode.SYSTEM
+                initialValue = app.initialThemeMode
             )
 
             val systemDark = isSystemInDarkTheme()

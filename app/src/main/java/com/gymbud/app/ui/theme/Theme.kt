@@ -6,7 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
@@ -61,7 +61,7 @@ fun GymBudTheme(
 
     val view = LocalView.current
     if (!view.isInEditMode) {
-        SideEffect {
+        LaunchedEffect(darkTheme) {
             val window = (view.context as Activity).window
             WindowCompat.getInsetsController(window, view)
                 .isAppearanceLightStatusBars = !darkTheme

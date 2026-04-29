@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,16 +41,23 @@ fun ThemeSettingsScreen(onExit: () -> Unit) {
 
     val current by prefs.themeMode.collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
 
+    val surfaceColor = MaterialTheme.colorScheme.surface
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.settings_theme_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onExit) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+            // Keying the TopAppBar on the current surface color forces it to
+            // recompose from scratch when the theme flips, resetting the
+            // internal animateColorAsState that otherwise lerps the container
+            // color over ~300ms and reads as a blink in the top region.
+            key(surfaceColor) {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.settings_theme_title)) },
+                    navigationIcon = {
+                        IconButton(onClick = onExit) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     ) { innerPadding ->
         Column(

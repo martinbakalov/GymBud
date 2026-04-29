@@ -2,6 +2,6 @@
 <resources>
 
     <style name="Theme.GymBud" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="android:windowBackground">@color/gymbud_paper</item>
+        <item name="android:windowBackground">@color/gymbud_ink_dark</item>
     </style>
 </resources>
