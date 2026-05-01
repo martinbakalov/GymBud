@@ -37,9 +37,10 @@ fun formatSessionDateTime(millis: Long?): String {
     return "$dateStr · $timeStr"
 }
 
-fun formatVolume(kg: Float): String {
-    val asInt = kg.toInt()
-    return if (kg == asInt.toFloat()) asInt.toString() else "%.1f".format(kg)
+fun formatVolume(value: Float): String {
+    val rounded = kotlin.math.round(value * 10) / 10f
+    val asInt = rounded.toInt()
+    return if (rounded == asInt.toFloat()) asInt.toString() else "%.1f".format(rounded)
 }
 
 fun formatVolumeNumber(volumeKg: Float, unit: WeightUnit): String {

@@ -6,6 +6,7 @@ import com.gymbud.app.data.local.dao.WorkoutSetDao
 import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
+import com.gymbud.app.domain.model.PersonalBest
 import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.domain.model.WorkoutStats
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +36,9 @@ class WorkoutRepository(
         workoutDao.observeHistory().map { workouts ->
             workouts.map { w -> w to statsFor(w.id) }
         }
+
+    fun observePrCount(workoutId: Long): Flow<Int> =
+        workoutSetDao.observePrCount(workoutId)
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     fun observeStats(workoutId: Long): Flow<WorkoutStats> =
@@ -68,6 +72,9 @@ class WorkoutRepository(
                     totalVolumeKg = totalVolumeKg,
                     durationMillis = null
                 )
+            }
+            .combine(observePrCount(workoutId)) { stats, prCount ->
+                stats.copy(prCount = prCount)
             }
 
     suspend fun getWorkout(id: Long): Workout? = workoutDao.getById(id)
@@ -155,6 +162,7 @@ class WorkoutRepository(
     suspend fun updateExerciseNotes(workoutExerciseId: Long, notes: String?) {
         workoutExerciseDao.updateNotes(workoutExerciseId, notes)
     }
+
     suspend fun addSet(workoutExerciseId: Long): Long {
         val position = workoutSetDao.nextPosition(workoutExerciseId)
         return workoutSetDao.insert(
@@ -165,7 +173,27 @@ class WorkoutRepository(
         )
     }
 
-    suspend fun updateSet(set: WorkoutSet) = workoutSetDao.update(set)
+    suspend fun updateSetCheckPR(set: WorkoutSet, exerciseId: Long?, currentWorkoutId: Long) {
+        val updatedSet = when {
+            !set.isCompleted -> set.copy(isPR = false)
+            exerciseId == null -> set
+            else -> {
+                val isPR = when {
+                    set.weightKg != null && set.reps != null && set.reps > 0 -> {
+                        val best1RM = computeBest1RM(exerciseId, currentWorkoutId)
+                        best1RM != null && epley1RM(set.weightKg, set.reps) > best1RM
+                    }
+                    set.durationSeconds != null -> {
+                        val best = workoutSetDao.getMaxDurationForExercise(exerciseId, currentWorkoutId)
+                        best != null && set.durationSeconds > best
+                    }
+                    else -> false
+                }
+                set.copy(isPR = isPR)
+            }
+        }
+        workoutSetDao.update(updatedSet)
+    }
 
     suspend fun deleteSet(set: WorkoutSet) {
         workoutSetDao.delete(set)
@@ -199,12 +227,14 @@ class WorkoutRepository(
 
         var totalSets = 0
         var totalVolumeKg = 0f
+        var prCount = 0
 
         for (we in exercises) {
             val sets = workoutSetDao.observeForWorkoutExercise(we.id).firstValueOrEmpty()
             for (s in sets) {
                 if (!s.isCompleted) continue
                 totalSets += 1
+                if (s.isPR) prCount += 1
                 val w = s.weightKg
                 val r = s.reps
                 if (w != null && r != null) {
@@ -220,7 +250,8 @@ class WorkoutRepository(
         return WorkoutStats(
             totalSets = totalSets,
             totalVolumeKg = totalVolumeKg,
-            durationMillis = duration
+            durationMillis = duration,
+            prCount = prCount
         )
     }
 
@@ -240,5 +271,24 @@ class WorkoutRepository(
             durationSeconds = match.durationSeconds
         )
     }
+
+    suspend fun personalBestForExercise(exerciseId: Long, currentWorkoutId: Long): PersonalBest =
+        PersonalBest(
+            oneRepMaxKg = computeBest1RM(exerciseId, currentWorkoutId),
+            durationSeconds = workoutSetDao.getMaxDurationForExercise(exerciseId, currentWorkoutId)
+        )
+
+    private suspend fun computeBest1RM(exerciseId: Long, excludingWorkoutId: Long): Float? =
+        workoutSetDao.getCompletedWeightRepsSets(exerciseId, excludingWorkoutId)
+            .mapNotNull { set ->
+                val w = set.weightKg ?: return@mapNotNull null
+                val r = set.reps?.takeIf { it > 0 } ?: return@mapNotNull null
+                epley1RM(w, r)
+            }
+            .maxOrNull()
+
+    private fun epley1RM(weightKg: Float, reps: Int): Float =
+        if (reps == 1) weightKg else weightKg * (1f + reps / 30f)
 }
+
 private suspend fun <T> Flow<List<T>>.firstValueOrEmpty(): List<T> = first()

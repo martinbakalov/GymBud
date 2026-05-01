@@ -1,6 +1,7 @@
 package com.gymbud.app.ui.screens.workouts
 
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -148,7 +149,8 @@ fun ActiveWorkoutScreen(
                 durationMillis = elapsedMillis,
                 sets = stats.totalSets,
                 volumeKg = stats.totalVolumeKg,
-                unit = globalUnit
+                unit = globalUnit,
+                prCount = stats.prCount
             )
 
             Spacer(Modifier.height(16.dp))
@@ -183,7 +185,7 @@ fun ActiveWorkoutScreen(
                             app = app,
                             unit = exerciseUnit,
                             onAddSet = { viewModel.addSet(we.id) },
-                            onUpdateSet = viewModel::updateSet,
+                            onUpdateSet = { set -> viewModel.updateSet(set, we.exerciseId) },
                             onDeleteSet = viewModel::deleteSet,
                             onRemoveExercise = { viewModel.removeExercise(we) },
                             onUnitToggle = {
@@ -194,6 +196,9 @@ fun ActiveWorkoutScreen(
                             },
                             previousSetProvider = { exerciseId, position ->
                                 viewModel.previousSetFor(exerciseId, position)
+                            },
+                            personalBestProvider = { exerciseId ->
+                                viewModel.personalBestForExercise(exerciseId)
                             },
                             observeSets = { viewModel.observeSets(we.id) }
                         )
@@ -238,7 +243,8 @@ private fun StatsStrip(
     durationMillis: Long,
     sets: Int,
     volumeKg: Float,
-    unit: WeightUnit
+    unit: WeightUnit,
+    prCount: Int
 ) {
     val unitSuffix = stringResource(
         if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
@@ -259,15 +265,22 @@ private fun StatsStrip(
             label = stringResource(R.string.stats_volume),
             value = "${formatVolumeNumber(volumeKg, unit)} $unitSuffix"
         )
+        StatCell(
+            label = stringResource(R.string.stats_prs),
+            value = prCount.toString(),
+            highlight = prCount > 0
+        )
     }
 }
 
 @Composable
-private fun StatCell(label: String, value: String) {
+private fun StatCell(label: String, value: String, highlight: Boolean = false) {
+    val valueColor = if (highlight) Color(0xFFFFB300) else MaterialTheme.colorScheme.onSurface
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = value,
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            color = valueColor
         )
         Text(
             text = label,

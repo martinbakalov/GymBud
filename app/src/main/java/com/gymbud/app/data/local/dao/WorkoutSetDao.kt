@@ -59,4 +59,43 @@ interface WorkoutSetDao {
         position: Int,
         excludingWorkoutId: Long
     ): WorkoutSet?
+
+    @Query(
+        """
+    SELECT ws.* FROM workout_sets ws
+    INNER JOIN workout_exercises we ON ws.workoutExerciseId = we.id
+    INNER JOIN workouts w ON we.workoutId = w.id
+    WHERE we.exerciseId = :exerciseId
+      AND ws.isCompleted = 1
+      AND ws.weightKg IS NOT NULL
+      AND ws.reps IS NOT NULL
+      AND w.isTemplate = 0
+      AND w.endedAt IS NOT NULL
+      AND w.id != :excludingWorkoutId
+    """
+    )
+    suspend fun getCompletedWeightRepsSets(exerciseId: Long, excludingWorkoutId: Long): List<WorkoutSet>
+
+    @Query(
+        """
+    SELECT MAX(ws.durationSeconds) FROM workout_sets ws
+    INNER JOIN workout_exercises we ON ws.workoutExerciseId = we.id
+    INNER JOIN workouts w ON we.workoutId = w.id
+    WHERE we.exerciseId = :exerciseId
+      AND ws.isCompleted = 1
+      AND w.isTemplate = 0
+      AND w.endedAt IS NOT NULL
+      AND w.id != :excludingWorkoutId
+    """
+    )
+    suspend fun getMaxDurationForExercise(exerciseId: Long, excludingWorkoutId: Long): Int?
+
+    @Query(
+        """
+    SELECT COUNT(*) FROM workout_sets ws
+    INNER JOIN workout_exercises we ON ws.workoutExerciseId = we.id
+    WHERE we.workoutId = :workoutId AND ws.isPR = 1
+    """
+    )
+    fun observePrCount(workoutId: Long): Flow<Int>
 }

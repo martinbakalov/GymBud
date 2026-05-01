@@ -36,6 +36,9 @@ class FinishWorkoutViewModel(
     val unit: StateFlow<WeightUnit> = preferences.weightUnit
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), WeightUnit.KG)
 
+    val prCount: StateFlow<Int> = repository.observePrCount(workoutId)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+
     val elapsedMillis: StateFlow<Long> = workout
         .flatMapLatest { w ->
             val startedAt = w?.startedAt ?: return@flatMapLatest flowOf(0L)

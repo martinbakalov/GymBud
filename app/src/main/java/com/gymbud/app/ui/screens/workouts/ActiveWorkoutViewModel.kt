@@ -9,6 +9,7 @@ import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.data.prefs.AppPreferences
 import com.gymbud.app.data.repository.ExerciseRepository
 import com.gymbud.app.data.repository.WorkoutRepository
+import com.gymbud.app.domain.model.PersonalBest
 import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.domain.model.WorkoutStats
@@ -60,28 +61,7 @@ class ActiveWorkoutViewModel(
         )
 
     private val previousSetCache = mutableMapOf<Pair<Long, Int>, PreviousSet?>()
-
-    fun finish(
-        name: String,
-        notes: String?,
-        photoPath: String?,
-        onFinished: () -> Unit
-    ) {
-        viewModelScope.launch {
-            if (name.isNotBlank()) {
-                repository.renameWorkout(workoutId, name)
-            }
-            val trimmedNotes = notes?.trim()?.takeIf { it.isNotBlank() }
-            if (trimmedNotes != null) {
-                repository.updateWorkoutNotes(workoutId, trimmedNotes)
-            }
-            if (photoPath != null) {
-                repository.updateWorkoutPhoto(workoutId, photoPath)
-            }
-            repository.finishWorkout(workoutId)
-            onFinished()
-        }
-    }
+    private val personalBestCache = mutableMapOf<Long, PersonalBest>()
 
     fun updateExerciseNotes(workoutExerciseId: Long, notes: String?) {
         viewModelScope.launch {
@@ -121,9 +101,12 @@ class ActiveWorkoutViewModel(
         }
     }
 
-    fun updateSet(set: WorkoutSet) {
+    fun updateSet(set: WorkoutSet, exerciseId: Long?) {
         viewModelScope.launch {
-            repository.updateSet(set)
+            repository.updateSetCheckPR(set, exerciseId, workoutId)
+            if (set.isCompleted && exerciseId != null) {
+                personalBestCache.remove(exerciseId)
+            }
         }
     }
 
@@ -160,25 +143,6 @@ class ActiveWorkoutViewModel(
         exerciseRepository.observeById(exerciseId)
             .map { ex -> effectiveUnit(ex, globalDefault) }
 
-    fun setName(name: String) {
-        viewModelScope.launch {
-            repository.renameWorkout(workoutId, name.trim())
-        }
-    }
-
-    fun setPhotoPath(photoPath: String?) {
-        viewModelScope.launch {
-            repository.updateWorkoutPhoto(workoutId, photoPath)
-        }
-    }
-
-
-    fun setNotes(notes: String?) {
-        viewModelScope.launch {
-            repository.updateWorkoutNotes(workoutId, notes?.trim()?.takeIf { it.isNotBlank() })
-        }
-    }
-
     fun toggleUnitForExercise(exerciseId: Long, currentlyDisplayed: WeightUnit) {
         viewModelScope.launch {
             val ex = exerciseRepository.getById(exerciseId) ?: return@launch
@@ -199,4 +163,10 @@ class ActiveWorkoutViewModel(
         return result
     }
 
+    suspend fun personalBestForExercise(exerciseId: Long): PersonalBest {
+        personalBestCache[exerciseId]?.let { return it }
+        val result = repository.personalBestForExercise(exerciseId, workoutId)
+        personalBestCache[exerciseId] = result
+        return result
     }
+}

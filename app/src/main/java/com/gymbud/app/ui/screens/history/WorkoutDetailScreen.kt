@@ -1,5 +1,6 @@
 package com.gymbud.app.ui.screens.history
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -30,12 +32,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -147,6 +152,13 @@ fun WorkoutDetailScreen(
                                 stringResource(if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs)
                             }"
                         )
+                        if (s.prCount > 0) {
+                            DetailStat(
+                                label = stringResource(R.string.stats_prs),
+                                value = s.prCount.toString(),
+                                valueColor = Color(0xFFFFB300)
+                            )
+                        }
                     }
                 }
             }
@@ -246,33 +258,59 @@ private fun ExerciseReadOnlyCard(block: ExerciseBlock,  unit: WeightUnit) {
                 val line = when (type) {
                     ExerciseType.WEIGHT_REPS -> {
                         val displayWeight = set.weightKg?.let { kg ->
-                            val converted = WeightUnit.fromKg(kg, unit)
-                            if (unit == WeightUnit.LBS) converted.toInt().toString()
-                            else trimZero(converted)
+                            formatWeight(WeightUnit.fromKg(kg, unit))
                         } ?: "—"
                         val reps = set.reps?.toString() ?: "—"
                         "${set.position + 1}.  $displayWeight $unitSuffix × $reps"
                     }
                     ExerciseType.TIME -> {
-                        val dur = set.durationSeconds?.let { "${it}s" } ?: "—"
+                        val secs = set.durationSeconds
+                        val dur = if (secs != null) {
+                            "${secs / 60}:${(secs % 60).toString().padStart(2, '0')}"
+                        } else "—"
                         "${set.position + 1}.  $dur"
                     }
                 }
-                Text(
-                    text = line,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (set.isCompleted) MaterialTheme.colorScheme.onSurface
-                    else MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = line,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (set.isCompleted) MaterialTheme.colorScheme.onSurface
+                        else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    if (set.isPR) {
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(Color(0xFFFFB300).copy(alpha = 0.15f))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "PR",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFFFFB300),
+                                fontSize = 9.sp
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun DetailStat(label: String, value: String) {
+private fun DetailStat(label: String, value: String, valueColor: Color? = null) {
     Column {
-        Text(text = value, style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleLarge,
+            color = valueColor ?: MaterialTheme.colorScheme.onSurface
+        )
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
@@ -281,9 +319,10 @@ private fun DetailStat(label: String, value: String) {
     }
 }
 
-private fun trimZero(value: Float): String {
-    val asInt = value.toInt()
-    return if (value == asInt.toFloat()) asInt.toString() else value.toString()
+private fun formatWeight(value: Float): String {
+    val rounded = kotlin.math.round(value * 100) / 100f
+    val asInt = rounded.toInt()
+    return if (rounded == asInt.toFloat()) asInt.toString() else "%.2f".format(rounded)
 }
 
 @Composable

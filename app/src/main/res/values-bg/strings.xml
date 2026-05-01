@@ -55,6 +55,7 @@
     <string name="workout_time">Време</string>
     <string name="workout_min">Мин</string>
     <string name="workout_sec">Сек</string>
+    <string name="stats_prs">Рекорда</string>
     <string name="workout_add_set">Добави серия</string>
     <string name="workout_remove_exercise">Премахни упражнение</string>
     <string name="workout_delete_set_title">Изтриване на серията?</string>

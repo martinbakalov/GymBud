@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
         WorkoutSet::class,
         Profile::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -54,6 +54,12 @@ abstract class GymBudDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE workout_sets ADD COLUMN isPR INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         fun getDatabase(
             context: Context,
             applicationScope: CoroutineScope
@@ -64,7 +70,7 @@ abstract class GymBudDatabase : RoomDatabase() {
                     GymBudDatabase::class.java,
                     "gymbud.db"
                 )
-                    .addMigrations(MIGRATION_7_8)
+                    .addMigrations(MIGRATION_7_8, MIGRATION_8_9)
                     .fallbackToDestructiveMigration(dropAllTables = true)
                     .addCallback(SeedCallback(applicationScope))
                     .build()

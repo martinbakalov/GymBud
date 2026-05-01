@@ -63,6 +63,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.gymbud.app.GymBudApplication
@@ -71,6 +72,7 @@ import com.gymbud.app.data.local.entity.Exercise
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.domain.model.ExerciseType
+import com.gymbud.app.domain.model.PersonalBest
 import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.ui.util.displayName
@@ -94,6 +96,7 @@ fun WorkoutExerciseCard(
     onUnitToggle: () -> Unit,
     onUpdateNotes: (String?) -> Unit,
     previousSetProvider: suspend (Long, Int) -> PreviousSet?,
+    personalBestProvider: suspend (Long) -> PersonalBest?,
     observeSets: () -> Flow<List<WorkoutSet>>
 ) {
     var exercise by remember { mutableStateOf<Exercise?>(null) }
@@ -105,6 +108,11 @@ fun WorkoutExerciseCard(
 
     val sets by observeSets().collectAsStateWithLifecycle(initialValue = emptyList())
     var menuOpen by remember { mutableStateOf(false) }
+
+    val personalBest by produceState<PersonalBest?>(initialValue = null, workoutExercise.exerciseId) {
+        val exId = workoutExercise.exerciseId
+        value = if (exId != null) personalBestProvider(exId) else null
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -253,6 +261,7 @@ fun WorkoutExerciseCard(
                             exerciseType = exercise?.type ?: ExerciseType.WEIGHT_REPS,
                             unit = unit,
                             previousSet = previousSet,
+                            personalBest = personalBest,
                             onUpdate = onUpdateSet
                         )
                     }
@@ -370,6 +379,7 @@ private fun SetRowHeader(exerciseType: ExerciseType, unit: WeightUnit) {
                 HeaderCell(text = stringResource(R.string.workout_sec), weight = 1.2f)
             }
         }
+        Spacer(Modifier.width(28.dp))
         Spacer(Modifier.size(40.dp))
     }
 }
@@ -389,14 +399,39 @@ private fun androidx.compose.foundation.layout.RowScope.HeaderCell(
     )
 }
 
+private val prAmber = Color(0xFFFFB300)
+
+private fun epley1RM(weightKg: Float, reps: Int): Float =
+    if (reps == 1) weightKg else weightKg * (1f + reps / 30f)
+
 @Composable
 private fun SetRow(
     set: WorkoutSet,
     exerciseType: ExerciseType,
     unit: WeightUnit,
     previousSet: PreviousSet?,
+    personalBest: PersonalBest?,
     onUpdate: (WorkoutSet) -> Unit
 ) {
+    var liveWeightKg by remember(set.weightKg) { mutableStateOf(set.weightKg) }
+    var liveReps by remember(set.reps) { mutableStateOf(set.reps) }
+    var liveDurationSeconds by remember(set.durationSeconds) { mutableStateOf(set.durationSeconds) }
+
+    val isNewPR = when (exerciseType) {
+        ExerciseType.WEIGHT_REPS -> {
+            val w = liveWeightKg
+            val r = liveReps
+            val best1RM = personalBest?.oneRepMaxKg
+            if (w != null && r != null && r > 0 && best1RM != null) {
+                epley1RM(w, r) > best1RM
+            } else false
+        }
+        ExerciseType.TIME -> {
+            val current = liveDurationSeconds
+            val best = personalBest?.durationSeconds
+            current != null && best != null && current > best
+        }
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -428,16 +463,21 @@ private fun SetRow(
             ExerciseType.WEIGHT_REPS -> {
                 val displayValue = set.weightKg?.let { kg ->
                     val inUnit = WeightUnit.fromKg(kg, unit)
-                    trimZero(inUnit)
+                    formatWeight(inUnit)
                 } ?: ""
 
                 NumberField(
                     value = displayValue,
                     isCompleted = set.isCompleted,
+                    isDecimal = true,
                     onValueChange = { newText ->
                         val parsed = newText.toFloatOrNull()
                         val newKg = parsed?.let { WeightUnit.toKg(it, unit) }
                         onUpdate(set.copy(weightKg = newKg))
+                    },
+                    onLiveChange = { newText ->
+                        val parsed = newText.toFloatOrNull()
+                        liveWeightKg = parsed?.let { WeightUnit.toKg(it, unit) }
                     },
                     modifier = Modifier
                         .weight(1.2f)
@@ -449,6 +489,9 @@ private fun SetRow(
                     onValueChange = { newText ->
                         val newReps = newText.toIntOrNull()
                         onUpdate(set.copy(reps = newReps))
+                    },
+                    onLiveChange = { newText ->
+                        liveReps = newText.toIntOrNull()
                     },
                     modifier = Modifier
                         .weight(1.2f)
@@ -467,6 +510,11 @@ private fun SetRow(
                         val combined = newMin * 60 + currentSec
                         onUpdate(set.copy(durationSeconds = if (combined == 0) null else combined))
                     },
+                    onLiveChange = { newText ->
+                        val newMin = newText.toIntOrNull() ?: 0
+                        val curSec = (liveDurationSeconds ?: 0) % 60
+                        liveDurationSeconds = newMin * 60 + curSec
+                    },
                     modifier = Modifier
                         .weight(1.2f)
                         .padding(horizontal = 2.dp)
@@ -480,9 +528,29 @@ private fun SetRow(
                         val combined = currentMin * 60 + newSec
                         onUpdate(set.copy(durationSeconds = if (combined == 0) null else combined))
                     },
+                    onLiveChange = { newText ->
+                        val newSec = (newText.toIntOrNull() ?: 0).coerceIn(0, 59)
+                        val curMin = (liveDurationSeconds ?: 0) / 60
+                        liveDurationSeconds = curMin * 60 + newSec
+                    },
                     modifier = Modifier
                         .weight(1.2f)
                         .padding(horizontal = 2.dp)
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier.width(28.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isNewPR) {
+                Text(
+                    text = "PR",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = prAmber,
+                    fontSize = 9.sp
                 )
             }
         }
@@ -523,16 +591,25 @@ private fun NumberField(
     value: String,
     isCompleted: Boolean,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLiveChange: (String) -> Unit = {},
+    isDecimal: Boolean = false
 ) {
     var localText by remember(value) { mutableStateOf(value) }
     val focusManager = LocalFocusManager.current
 
     BasicTextField(
         value = localText,
-        onValueChange = { localText = it },
+        onValueChange = { raw ->
+            val filtered = when {
+                isDecimal -> filterDecimalInput(raw)
+                else -> raw.filter { it.isDigit() }
+            }
+            localText = filtered
+            onLiveChange(filtered)
+        },
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
+            keyboardType = if (isDecimal) KeyboardType.Decimal else KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
@@ -581,9 +658,32 @@ private fun NumberField(
     )
 }
 
-private fun trimZero(value: Float): String {
-    val asInt = value.toInt()
-    return if (value == asInt.toFloat()) asInt.toString() else value.toString()
+private fun formatWeight(value: Float): String {
+    val rounded = kotlin.math.round(value * 100) / 100f
+    val asInt = rounded.toInt()
+    return if (rounded == asInt.toFloat()) asInt.toString() else "%.2f".format(rounded)
+}
+
+private fun filterDecimalInput(input: String): String {
+    if (input.isEmpty()) return input
+    val cleaned = StringBuilder()
+    var hasDecimal = false
+    var afterDecimalCount = 0
+    for (ch in input) {
+        when {
+            ch.isDigit() -> {
+                if (!hasDecimal || afterDecimalCount < 2) {
+                    cleaned.append(ch)
+                    if (hasDecimal) afterDecimalCount++
+                }
+            }
+            ch == '.' && !hasDecimal -> {
+                hasDecimal = true
+                cleaned.append(ch)
+            }
+        }
+    }
+    return cleaned.toString()
 }
 
 @Composable
@@ -653,7 +753,7 @@ private fun PreviousCell(
                 val reps = previousSet.reps
                 if (kg != null && reps != null) {
                     val display = WeightUnit.fromKg(kg, unit)
-                    "${trimZero(display)} × $reps"
+                    "${formatWeight(display)} × $reps"
                 } else "—"
             }
             ExerciseType.TIME -> {

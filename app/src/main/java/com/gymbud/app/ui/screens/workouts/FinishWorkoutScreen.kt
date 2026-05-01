@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -98,6 +99,7 @@ fun FinishWorkoutScreen(
     val stats by viewModel.stats.collectAsStateWithLifecycle()
     val unit by viewModel.unit.collectAsStateWithLifecycle()
     val elapsedMillis by viewModel.elapsedMillis.collectAsStateWithLifecycle()
+    val prCount by viewModel.prCount.collectAsStateWithLifecycle()
 
     var name by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
@@ -190,7 +192,8 @@ fun FinishWorkoutScreen(
                 StatsCard(
                     elapsedMillis = elapsedMillis,
                     stats = stats,
-                    unit = unit
+                    unit = unit,
+                    prCount = prCount
                 )
 
                 PhotoSection(
@@ -325,7 +328,8 @@ private fun NameSection(
 private fun StatsCard(
     elapsedMillis: Long,
     stats: WorkoutStats,
-    unit: WeightUnit
+    unit: WeightUnit,
+    prCount: Int
 ) {
     val unitSuffix = stringResource(
         if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
@@ -378,6 +382,22 @@ private fun StatsCard(
                 value = stats.totalSets.toString(),
                 label = stringResource(R.string.stats_sets)
             )
+
+            if (prCount > 0) {
+                Box(
+                    modifier = Modifier
+                        .size(width = 1.dp, height = 40.dp)
+                        .background(MaterialTheme.colorScheme.outlineVariant)
+                )
+                StatItem(
+                    icon = Icons.Default.Star,
+                    iconBg = Color(0xFFFFB300).copy(alpha = 0.18f),
+                    iconTint = Color(0xFFFFB300),
+                    value = prCount.toString(),
+                    label = stringResource(R.string.stats_prs),
+                    valueColor = Color(0xFFFFB300)
+                )
+            }
         }
     }
 }
@@ -388,7 +408,8 @@ private fun StatItem(
     iconBg: Color,
     iconTint: Color,
     value: String,
-    label: String
+    label: String,
+    valueColor: Color? = null
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -412,7 +433,7 @@ private fun StatItem(
             text = value,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = valueColor ?: MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = label.uppercase(),

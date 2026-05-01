@@ -27,5 +27,6 @@ data class WorkoutSet(
     val weightKg: Float? = null,
     val reps: Int? = null,
     val durationSeconds: Int? = null,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val isPR: Boolean = false
 )
