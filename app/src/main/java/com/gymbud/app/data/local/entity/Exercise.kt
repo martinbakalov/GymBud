@@ -20,5 +20,18 @@ data class Exercise(
     val type: ExerciseType = ExerciseType.WEIGHT_REPS,
     val preferredUnit: WeightUnit? = null,
     val isCustom: Boolean = false,
-    val notes: String? = null
+    val notes: String? = null,
+    /**
+     * Stable identifier used to look up a bundled drawable for this exercise
+     * (see [com.gymbud.app.ui.util.exerciseImageRes]). Preseeded exercises
+     * set this to their nameKey so a single drop-in drawable is enough to
+     * give the row a thumbnail. Custom exercises leave it null.
+     */
+    val imageSlug: String? = null,
+    /**
+     * Absolute file path of a user-supplied photo (camera or gallery).
+     * Only set on custom exercises. Takes precedence over [imageSlug] when
+     * both are present.
+     */
+    val photoPath: String? = null
 )

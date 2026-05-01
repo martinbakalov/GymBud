@@ -57,7 +57,7 @@ class DailyNotificationWorker(
             applicationContext,
             NotificationHelper.CHANNEL_DAILY_MOTIVATION
         )
-            .setSmallIcon(R.drawable.ic_workout_notification)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(applicationContext.getString(R.string.app_name))
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))

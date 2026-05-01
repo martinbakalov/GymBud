@@ -26,9 +26,15 @@ class MainActivity : AppCompatActivity() {
     ) { _ ->
     }
 
+    private val requestCameraPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { _ ->
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         maybeRequestNotificationPermission()
+        maybeRequestCameraPermission()
         val app = application as GymBudApplication
 
         // Apply edge-to-edge once with transparent scrims. The icon
@@ -77,6 +83,17 @@ class MainActivity : AppCompatActivity() {
 
         if (!granted) {
             requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    private fun maybeRequestCameraPermission() {
+        val granted = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!granted) {
+            requestCameraPermission.launch(Manifest.permission.CAMERA)
         }
     }
 }

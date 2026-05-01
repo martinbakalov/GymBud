@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.gymbud.app.data.local.converters.Converters
 import com.gymbud.app.data.local.dao.ExerciseDao
@@ -30,7 +31,7 @@ import kotlinx.coroutines.launch
         WorkoutSet::class,
         Profile::class
     ],
-    version = 6,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -47,6 +48,12 @@ abstract class GymBudDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: GymBudDatabase? = null
 
+        private val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE exercises ADD COLUMN photoPath TEXT")
+            }
+        }
+
         fun getDatabase(
             context: Context,
             applicationScope: CoroutineScope
@@ -57,6 +64,7 @@ abstract class GymBudDatabase : RoomDatabase() {
                     GymBudDatabase::class.java,
                     "gymbud.db"
                 )
+                    .addMigrations(MIGRATION_7_8)
                     .fallbackToDestructiveMigration(dropAllTables = true)
                     .addCallback(SeedCallback(applicationScope))
                     .build()

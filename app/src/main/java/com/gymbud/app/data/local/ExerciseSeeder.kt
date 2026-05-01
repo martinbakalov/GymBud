@@ -97,15 +97,19 @@ object ExerciseSeeder {
         primaryMuscle: MuscleGroup,
         secondaryMuscles: List<MuscleGroup> = emptyList(),
         type: ExerciseType = ExerciseType.WEIGHT_REPS
-    ): Exercise = Exercise(
-        name = name,
-        nameKey = nameKeyFor(name),
-        equipment = equipment,
-        primaryMuscle = primaryMuscle,
-        secondaryMuscles = secondaryMuscles,
-        type = type,
-        isCustom = false
-    )
+    ): Exercise {
+        val key = nameKeyFor(name)
+        return Exercise(
+            name = name,
+            nameKey = key,
+            equipment = equipment,
+            primaryMuscle = primaryMuscle,
+            secondaryMuscles = secondaryMuscles,
+            type = type,
+            isCustom = false,
+            imageSlug = key
+        )
+    }
 
     private fun nameKeyFor(name: String): String =
         "exercise_" + name.lowercase().replace(Regex("[^a-z0-9]+"), "_").trim('_')

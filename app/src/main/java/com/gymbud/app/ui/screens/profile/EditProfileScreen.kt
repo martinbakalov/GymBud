@@ -187,7 +187,7 @@ fun EditProfileScreen(onExit: () -> Unit) {
                     ) {
                         Icon(Icons.Default.PhotoCamera, contentDescription = null)
                         Spacer(Modifier.size(6.dp))
-                        Text(stringResource(R.string.edit_profile_take_photo))
+                        Text(stringResource(R.string.take_photo))
                     }
                     OutlinedButton(
                         onClick = {
@@ -201,7 +201,7 @@ fun EditProfileScreen(onExit: () -> Unit) {
                     ) {
                         Icon(Icons.Default.PhotoLibrary, contentDescription = null)
                         Spacer(Modifier.size(6.dp))
-                        Text(stringResource(R.string.edit_profile_gallery_photo))
+                        Text(stringResource(R.string.gallery_photo))
                     }
                 }
 
@@ -209,7 +209,7 @@ fun EditProfileScreen(onExit: () -> Unit) {
                     TextButton(
                         onClick = { viewModel.onAvatarChange(null) }
                     ) {
-                        Text(stringResource(R.string.edit_profile_remove_photo))
+                        Text(stringResource(R.string.remove_photo))
                     }
                 }
             }

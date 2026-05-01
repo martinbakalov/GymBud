@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.ui.navigation.ExercisesRoutes
+import com.gymbud.app.ui.navigation.NavIcon
 import com.gymbud.app.ui.navigation.PickerRoutes
 import com.gymbud.app.ui.navigation.ProfileRoutes
 import com.gymbud.app.ui.navigation.SettingsRoutes
@@ -97,10 +99,18 @@ fun MainScreen() {
                                 }
                             },
                             icon = {
-                                Icon(
-                                    imageVector = if (selected) dest.iconFilled else dest.iconOutlined,
-                                    contentDescription = null
-                                )
+                                when (val icon = dest.icon) {
+                                    is NavIcon.Material -> Icon(
+                                        imageVector = if (selected) icon.filled else icon.outlined,
+                                        contentDescription = null
+                                    )
+                                    is NavIcon.Drawable -> Icon(
+                                        painter = painterResource(
+                                            id = if (selected) icon.filled else icon.outlined
+                                        ),
+                                        contentDescription = null
+                                    )
+                                }
                             },
                             label = { Text(stringResource(dest.labelRes)) }
                         )

@@ -24,7 +24,13 @@
     <string name="workouts_exercises_count">%1$d Exercises</string>
     <string name="workouts_no_exercises">No exercises</string>
     <string name="exercises_title">Exercises</string>
+    <string name="exercises_subtitle">Your personal exercise library</string>
     <string name="exercises_search_hint">Search exercises</string>
+    <string name="exercises_filters_title">Filters</string>
+    <string name="exercises_filters_clear">Clear all</string>
+    <string name="exercises_filters_muscle_section">Muscle</string>
+    <string name="exercises_filters_equipment_section">Equipment</string>
+    <string name="exercises_filters_open">Open filters</string>
     <string name="exercises_filter_all_muscles">All muscles</string>
     <string name="exercises_filter_all_equipment">All equipment</string>
     <string name="exercises_new">New exercise</string>
@@ -96,9 +102,9 @@
     <string name="blocker_body">Finish or discard your current workout before starting a new one</string>
     <string name="blocker_resume">Resume current</string>
     <string name="blocker_discard_and_start">Discard &amp; start new</string>
-    <string name="finish_dialog_take_photo">Take photo</string>
-    <string name="finish_dialog_gallery_photo">Gallery</string>
-    <string name="finish_dialog_remove_photo">Remove photo</string>
+    <string name="take_photo">Take photo</string>
+    <string name="gallery_photo">Gallery</string>
+    <string name="remove_photo">Remove photo</string>
     <string name="history_delete_title">Delete this workout?</string>
     <string name="history_delete_body">The workout will be permanently removed</string>
     <string name="notif_channel_workout_title">Active workout</string>
@@ -119,9 +125,6 @@
     <string name="settings_daily_test">Test notification</string>
     <string name="edit_profile_title">Edit profile</string>
     <string name="edit_profile_change_avatar">Change avatar</string>
-    <string name="edit_profile_take_photo">Take photo</string>
-    <string name="edit_profile_gallery_photo">Gallery</string>
-    <string name="edit_profile_remove_photo">Remove photo</string>
     <string name="edit_profile_name">Profile name</string>
     <string name="edit_profile_bio">Bio</string>
     <string name="edit_profile_sex">Sex</string>
@@ -207,4 +210,6 @@
     <string name="action_share">Share</string>
     <string name="action_back">Back</string>
     <string name="action_more">More options</string>
+    <string name="exercises_photo">Photo (optional)</string>
+    <string name="exercises_photo_camera">Camera</string>
 </resources>

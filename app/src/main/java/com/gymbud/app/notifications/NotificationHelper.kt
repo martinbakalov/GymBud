@@ -72,7 +72,7 @@ object NotificationHelper {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_WORKOUT_IN_PROGRESS)
-            .setSmallIcon(R.drawable.ic_workout_notification)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(workoutName.ifBlank { context.getString(R.string.workout_empty_name) })
             .setContentText(elapsedText)
             .setContentIntent(pendingIntent)

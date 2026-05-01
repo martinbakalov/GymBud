@@ -1,41 +1,56 @@
 package com.gymbud.app.ui.navigation
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.MonitorHeart
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.FitnessCenter
-import androidx.compose.material.icons.outlined.MonitorHeart
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.gymbud.app.R
+
+
+sealed class NavIcon {
+    data class Material(
+        val outlined: ImageVector,
+        val filled: ImageVector
+    ) : NavIcon()
+
+    data class Drawable(
+        @param:DrawableRes val outlined: Int,
+        @param:DrawableRes val filled: Int
+    ) : NavIcon()
+}
 
 sealed class TopDestination(
     val route: String,
     @get:StringRes val labelRes: Int,
-    val iconOutlined: ImageVector,
-    val iconFilled: ImageVector
+    val icon: NavIcon
 ) {
     data object Workouts : TopDestination(
         route = WorkoutsRoutes.GRAPH,
         labelRes = R.string.nav_workouts,
-        iconOutlined = Icons.Outlined.MonitorHeart,
-        iconFilled = Icons.Filled.MonitorHeart
+        icon = NavIcon.Drawable(
+            outlined = R.drawable.ic_nav_workouts,
+            filled = R.drawable.ic_nav_workouts
+        )
     )
 
     data object Exercises : TopDestination(
         route = ExercisesRoutes.GRAPH,
         labelRes = R.string.nav_exercises,
-        iconOutlined = Icons.Outlined.FitnessCenter,
-        iconFilled = Icons.Filled.FitnessCenter
+        icon = NavIcon.Drawable(
+            outlined = R.drawable.ic_nav_exercises,
+            filled = R.drawable.ic_nav_exercises
+        )
     )
 
     data object Profile : TopDestination(
         route = ProfileRoutes.GRAPH,
         labelRes = R.string.nav_profile,
-        iconOutlined = Icons.Outlined.Person,
-        iconFilled = Icons.Filled.Person
+        icon = NavIcon.Material(
+            outlined = Icons.Outlined.AccountCircle,
+            filled = Icons.Filled.AccountCircle
+        )
     )
 
 

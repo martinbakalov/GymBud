@@ -183,7 +183,7 @@ fun FinishWorkoutDialog(
                         ) {
                             Icon(Icons.Default.PhotoCamera, contentDescription = null)
                             Spacer(Modifier.size(6.dp))
-                            Text(stringResource(R.string.finish_dialog_take_photo))
+                            Text(stringResource(R.string.take_photo))
                         }
                         OutlinedButton(
                             onClick = {
@@ -197,7 +197,7 @@ fun FinishWorkoutDialog(
                         ) {
                             Icon(Icons.Default.PhotoLibrary, contentDescription = null)
                             Spacer(Modifier.size(6.dp))
-                            Text(stringResource(R.string.finish_dialog_gallery_photo))
+                            Text(stringResource(R.string.gallery_photo))
                         }
                     }
                 } else {
@@ -225,7 +225,7 @@ fun FinishWorkoutDialog(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(R.string.finish_dialog_remove_photo),
+                                contentDescription = stringResource(R.string.remove_photo),
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
                         }

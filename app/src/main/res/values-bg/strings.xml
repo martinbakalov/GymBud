@@ -26,12 +26,18 @@
     <string name="workouts_exercises_count">%1$d упражнения</string>
     <string name="workouts_no_exercises">Без упражнения</string>
     <string name="exercises_title">Упражнения</string>
+    <string name="exercises_subtitle">Твоята библиотека с упражнения</string>
     <string name="exercises_search_hint">Търсене на упражнения</string>
+    <string name="exercises_filters_title">Филтри</string>
+    <string name="exercises_filters_clear">Изчисти всички</string>
+    <string name="exercises_filters_muscle_section">Мускул</string>
+    <string name="exercises_filters_equipment_section">Оборудване</string>
+    <string name="exercises_filters_open">Отвори филтри</string>
     <string name="exercises_filter_all_muscles">Всички мускули</string>
     <string name="exercises_filter_all_equipment">Всякакво оборудване</string>
     <string name="exercises_new">Ново упражнение</string>
     <string name="exercises_name_hint">Име</string>
-    <string name="exercises_equipment">оборудване</string>
+    <string name="exercises_equipment">Оборудване</string>
     <string name="exercises_primary_muscle">Основен мускул</string>
     <string name="exercises_secondary_muscles">Вторични мускули (по желание)</string>
     <string name="exercises_type">Тип</string>
@@ -98,9 +104,9 @@
     <string name="blocker_body">Трябва да завършиш или откажеш текущата тренировка, преди да започнеш нова.</string>
     <string name="blocker_resume">Отвори текущата</string>
     <string name="blocker_discard_and_start">Откажи и започни нова</string>
-    <string name="finish_dialog_take_photo">Направи снимка</string>
-    <string name="finish_dialog_gallery_photo">Галерия</string>
-    <string name="finish_dialog_remove_photo">Премахни снимката</string>
+    <string name="take_photo">Направи снимка</string>
+    <string name="gallery_photo">Галерия</string>
+    <string name="remove_photo">Премахни снимката</string>
     <string name="history_delete_title">Желаете ли да изтриете тренировката?</string>
     <string name="history_delete_body">Тренировката ще бъде премахната завинаги.</string>
     <string name="notif_channel_workout_title">Активна тренировка</string>
@@ -121,9 +127,6 @@
     <string name="settings_daily_test">Тестово известие</string>
     <string name="edit_profile_title">Редакция на профил</string>
     <string name="edit_profile_change_avatar">Смени профилна снимка</string>
-    <string name="edit_profile_take_photo">Снимай</string>
-    <string name="edit_profile_gallery_photo">Галерия</string>
-    <string name="edit_profile_remove_photo">Премахни снимката</string>
     <string name="edit_profile_name">Профилно име</string>
     <string name="edit_profile_bio">Биография</string>
     <string name="edit_profile_sex">Пол</string>
@@ -209,4 +212,6 @@
     <string name="action_share">Сподели</string>
     <string name="action_back">Назад</string>
     <string name="action_more">Още опции</string>
+    <string name="exercises_photo">Снимка (по желание)</string>
+    <string name="exercises_photo_camera">Камера</string>
 </resources>
