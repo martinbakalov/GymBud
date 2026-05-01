@@ -91,7 +91,6 @@ fun TemplateExerciseCard(
                 }
             }
 
-            // Set rows — just numbered placeholders + a remove button each.
             sets.forEach { set ->
                 Row(
                     modifier = Modifier

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import coil.compose.AsyncImage
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -98,7 +99,9 @@ fun ExercisesScreen(onCreateExerciseClick: () -> Unit) {
 
     val hasFilters = uiState.muscleFilter != null || uiState.equipmentFilter != null
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0)
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)

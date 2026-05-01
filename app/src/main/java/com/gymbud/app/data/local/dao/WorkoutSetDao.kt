@@ -20,6 +20,9 @@ interface WorkoutSetDao {
     @Update
     suspend fun update(set: WorkoutSet): Int
 
+    @Update
+    suspend fun updateAll(sets: List<WorkoutSet>)
+
     @Delete
     suspend fun delete(set: WorkoutSet): Int
 

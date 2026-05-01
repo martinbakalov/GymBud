@@ -1,7 +1,11 @@
 package com.gymbud.app.ui.screens.workouts
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,11 +14,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -25,7 +34,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
@@ -40,16 +48,23 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Exercise
@@ -59,12 +74,17 @@ import com.gymbud.app.domain.model.ExerciseType
 import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.domain.model.WeightUnit
 import com.gymbud.app.ui.util.displayName
+import com.gymbud.app.ui.util.exerciseImageRes
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+
+private val completedGreen = Color(0xFF4CAF50)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutExerciseCard(
     workoutExercise: WorkoutExercise,
+    index: Int,
     app: GymBudApplication,
     unit: WeightUnit,
     onAddSet: () -> Unit,
@@ -76,7 +96,6 @@ fun WorkoutExerciseCard(
     previousSetProvider: suspend (Long, Int) -> PreviousSet?,
     observeSets: () -> Flow<List<WorkoutSet>>
 ) {
-
     var exercise by remember { mutableStateOf<Exercise?>(null) }
     LaunchedEffect(workoutExercise.exerciseId) {
         exercise = workoutExercise.exerciseId?.let {
@@ -85,60 +104,75 @@ fun WorkoutExerciseCard(
     }
 
     val sets by observeSets().collectAsStateWithLifecycle(initialValue = emptyList())
-
     var menuOpen by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = exercise?.displayName() ?: stringResource(R.string.exercise_deleted_label),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                if (exercise?.type == ExerciseType.WEIGHT_REPS) {
-                    TextButton(onClick = onUnitToggle) {
-                        Text(
-                            text = when (unit) {
-                                WeightUnit.KG -> stringResource(R.string.workout_kg)
-                                WeightUnit.LBS -> stringResource(R.string.workout_lbs)
+                ExerciseThumbnail(exercise = exercise)
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "${index + 1}. ${exercise?.displayName() ?: stringResource(R.string.exercise_deleted_label)}",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    if (exercise?.type == ExerciseType.WEIGHT_REPS) {
+                        Spacer(Modifier.height(4.dp))
+                        UnitTogglePill(unit = unit, onClick = onUnitToggle)
+                    }
+                }
+
+                Box {
+                    IconButton(
+                        onClick = { menuOpen = true },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuOpen,
+                        onDismissRequest = { menuOpen = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.workout_remove_exercise)) },
+                            leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
+                            onClick = {
+                                menuOpen = false
+                                onRemoveExercise()
                             }
                         )
                     }
                 }
-                IconButton(onClick = { menuOpen = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = null)
-                }
-                DropdownMenu(
-                    expanded = menuOpen,
-                    onDismissRequest = { menuOpen = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.workout_remove_exercise)) },
-                        leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
-                        onClick = {
-                            menuOpen = false
-                            onRemoveExercise()
-                        }
-                    )
-                }
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
 
             NotesField(
                 initialNotes = workoutExercise.notes.orEmpty(),
                 onSave = onUpdateNotes
             )
+
+            Spacer(Modifier.height(10.dp))
 
             SetRowHeader(
                 exerciseType = exercise?.type ?: ExerciseType.WEIGHT_REPS,
@@ -199,6 +233,7 @@ fun WorkoutExerciseCard(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxSize()
+                                        .clip(RoundedCornerShape(10.dp))
                                         .background(MaterialTheme.colorScheme.errorContainer)
                                         .padding(horizontal = 16.dp),
                                     verticalAlignment = Alignment.CenterVertically,
@@ -226,7 +261,16 @@ fun WorkoutExerciseCard(
 
             Spacer(Modifier.height(4.dp))
 
-            TextButton(onClick = onAddSet, modifier = Modifier.fillMaxWidth()) {
+            TextButton(
+                onClick = onAddSet,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(Modifier.width(4.dp))
                 Text(stringResource(R.string.workout_add_set))
             }
         }
@@ -234,9 +278,78 @@ fun WorkoutExerciseCard(
 }
 
 @Composable
+private fun ExerciseThumbnail(exercise: Exercise?) {
+    val shape = RoundedCornerShape(12.dp)
+    val imageRes = exerciseImageRes(exercise?.imageSlug)
+    val photoPath = exercise?.photoPath
+
+    when {
+        photoPath != null -> {
+            AsyncImage(
+                model = photoPath,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(shape)
+            )
+        }
+        imageRes != null -> {
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(shape)
+            )
+        }
+        else -> {
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(shape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FitnessCenter,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun UnitTogglePill(unit: WeightUnit, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 3.dp)
+    ) {
+        Text(
+            text = when (unit) {
+                WeightUnit.KG -> stringResource(R.string.workout_kg)
+                WeightUnit.LBS -> stringResource(R.string.workout_lbs)
+            },
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
 private fun SetRowHeader(exerciseType: ExerciseType, unit: WeightUnit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         HeaderCell(text = stringResource(R.string.workout_set), weight = 0.8f)
@@ -268,6 +381,7 @@ private fun androidx.compose.foundation.layout.RowScope.HeaderCell(
     Text(
         text = text,
         style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
         modifier = Modifier.weight(weight)
@@ -282,95 +396,128 @@ private fun SetRow(
     previousSet: PreviousSet?,
     onUpdate: (WorkoutSet) -> Unit
 ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = (set.position + 1).toString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(0.8f)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(
+                if (set.isCompleted) completedGreen.copy(alpha = 0.08f) else Color.Transparent
+            )
+            .padding(vertical = 4.dp, horizontal = 2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = (set.position + 1).toString(),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+            color = if (set.isCompleted) completedGreen
+            else MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(0.8f)
+        )
+
+        PreviousCell(
+            previousSet = previousSet,
+            exerciseType = exerciseType,
+            unit = unit,
+            modifier = Modifier.weight(1.6f)
+        )
+
+        when (exerciseType) {
+            ExerciseType.WEIGHT_REPS -> {
+                val displayValue = set.weightKg?.let { kg ->
+                    val inUnit = WeightUnit.fromKg(kg, unit)
+                    trimZero(inUnit)
+                } ?: ""
+
+                NumberField(
+                    value = displayValue,
+                    isCompleted = set.isCompleted,
+                    onValueChange = { newText ->
+                        val parsed = newText.toFloatOrNull()
+                        val newKg = parsed?.let { WeightUnit.toKg(it, unit) }
+                        onUpdate(set.copy(weightKg = newKg))
+                    },
+                    modifier = Modifier
+                        .weight(1.2f)
+                        .padding(horizontal = 2.dp)
                 )
-
-                PreviousCell(
-                    previousSet = previousSet,
-                    exerciseType = exerciseType,
-                    unit = unit,
-                    modifier = Modifier.weight(1.6f)
+                NumberField(
+                    value = set.reps?.toString() ?: "",
+                    isCompleted = set.isCompleted,
+                    onValueChange = { newText ->
+                        val newReps = newText.toIntOrNull()
+                        onUpdate(set.copy(reps = newReps))
+                    },
+                    modifier = Modifier
+                        .weight(1.2f)
+                        .padding(horizontal = 2.dp)
                 )
-
-                when (exerciseType) {
-                    ExerciseType.WEIGHT_REPS -> {
-
-                        val displayValue = set.weightKg?.let { kg ->
-                            val inUnit = WeightUnit.fromKg(kg, unit)
-                            trimZero(inUnit)
-                        } ?: ""
-
-                        NumberField(
-                            value = displayValue,
-                            onValueChange = { newText ->
-                                val parsed = newText.toFloatOrNull()
-                                val newKg = parsed?.let { WeightUnit.toKg(it, unit) }
-                                onUpdate(set.copy(weightKg = newKg))
-                            },
-                            modifier = Modifier.weight(1.2f)
-                        )
-                        NumberField(
-                            value = set.reps?.toString() ?: "",
-                            onValueChange = { newText ->
-                                val newReps = newText.toIntOrNull()
-                                onUpdate(set.copy(reps = newReps))
-                            },
-                            modifier = Modifier.weight(1.2f)
-                        )
-                    }
-
-                    ExerciseType.TIME -> {
-                        NumberField(
-                            value = set.durationSeconds?.toString() ?: "",
-                            onValueChange = { newText ->
-                                val newSecs = newText.toIntOrNull()
-                                onUpdate(set.copy(durationSeconds = newSecs))
-                            },
-                            modifier = Modifier.weight(2.4f)
-                        )
-                    }
-                }
-
-                IconButton(
-                    onClick = { onUpdate(set.copy(isCompleted = !set.isCompleted)) },
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = if (set.isCompleted) {
-                            stringResource(R.string.workout_set_completed)
-                        } else {
-                            stringResource(R.string.workout_set_incomplete)
-                        },
-                        tint = if (set.isCompleted) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
             }
 
+            ExerciseType.TIME -> {
+                NumberField(
+                    value = set.durationSeconds?.toString() ?: "",
+                    isCompleted = set.isCompleted,
+                    onValueChange = { newText ->
+                        val newSecs = newText.toIntOrNull()
+                        onUpdate(set.copy(durationSeconds = newSecs))
+                    },
+                    modifier = Modifier
+                        .weight(2.4f)
+                        .padding(horizontal = 2.dp)
+                )
+            }
+        }
 
+        Box(
+            modifier = Modifier.size(40.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (set.isCompleted) completedGreen
+                        else MaterialTheme.colorScheme.surfaceVariant
+                    )
+                    .clickable { onUpdate(set.copy(isCompleted = !set.isCompleted)) },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = if (set.isCompleted) {
+                        stringResource(R.string.workout_set_completed)
+                    } else {
+                        stringResource(R.string.workout_set_incomplete)
+                    },
+                    tint = if (set.isCompleted) Color.White
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+    }
 }
 
 @Composable
 private fun NumberField(
     value: String,
+    isCompleted: Boolean,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var localText by remember(value) { mutableStateOf(value) }
     val focusManager = LocalFocusManager.current
-    OutlinedTextField(
+
+    BasicTextField(
         value = localText,
         onValueChange = { localText = it },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,  imeAction = ImeAction.Done),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
         keyboardActions = KeyboardActions(
             onDone = {
                 if (localText != value) onValueChange(localText)
@@ -378,9 +525,40 @@ private fun NumberField(
             }
         ),
         singleLine = true,
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            color = if (isCompleted) completedGreen
+            else MaterialTheme.colorScheme.onSurface
+        ),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         modifier = modifier.onFocusChanged { state ->
             if (!state.hasFocus && localText != value) {
                 onValueChange(localText)
+            }
+        },
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (isCompleted) Color.Transparent
+                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                    )
+                    .padding(vertical = 8.dp, horizontal = 2.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (localText.isEmpty()) {
+                    Text(
+                        text = "—",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            textAlign = TextAlign.Center
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                }
+                innerTextField()
             }
         }
     )
@@ -401,27 +579,45 @@ private fun NotesField(
     onSave: (String?) -> Unit
 ) {
     var text by remember(initialNotes) { mutableStateOf(initialNotes) }
+    val shape = RoundedCornerShape(10.dp)
 
-    OutlinedTextField(
+    BasicTextField(
         value = text,
         onValueChange = { text = it },
-        placeholder = {
-            Text(
-                text = stringResource(R.string.workout_exercise_notes_hint),
-                style = MaterialTheme.typography.bodySmall
-            )
-        },
-        textStyle = MaterialTheme.typography.bodySmall,
+        textStyle = MaterialTheme.typography.bodySmall.copy(
+            color = MaterialTheme.colorScheme.onSurface
+        ),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
             .onFocusChanged { state ->
                 if (!state.hasFocus && text != initialNotes) {
                     onSave(text.ifBlank { null })
                 }
             },
-        minLines = 1,
-        maxLines = 3
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(shape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                        shape = shape
+                    )
+                    .padding(horizontal = 12.dp, vertical = 10.dp)
+            ) {
+                if (text.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.workout_exercise_notes_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                }
+                innerTextField()
+            }
+        }
     )
 }
 

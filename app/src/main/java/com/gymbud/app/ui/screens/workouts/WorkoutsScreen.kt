@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -89,7 +90,9 @@ fun WorkoutsScreen(
 
     val displayName = profileName ?: stringResource(R.string.profile_default_name)
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0)
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -112,7 +115,6 @@ fun WorkoutsScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            // Templates section header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -217,9 +219,7 @@ private fun HeaderCard(
     fullName: String,
     onStartEmptyClick: () -> Unit
 ) {
-    // Greeting uses the first whitespace-separated token of the user's
-    // display name (so "John Doe" → "John"), while the avatar bubble
-    // still derives its initials from the full name (→ "JD").
+
     val firstName = remember(fullName) {
         fullName.trim().split(Regex("\\s+")).firstOrNull()?.takeIf { it.isNotEmpty() }
             ?: fullName
@@ -405,7 +405,6 @@ private fun TemplateCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Box {
-            // Side accent stripe
             Box(
                 modifier = Modifier
                     .width(6.dp)

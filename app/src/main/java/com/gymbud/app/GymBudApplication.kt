@@ -39,11 +39,6 @@ class GymBudApplication : Application() {
         )
     }
 
-    /**
-     * Cached snapshot of the saved theme, read synchronously at startup so
-     * MainActivity can use it as its Compose initialValue and avoid a one-frame
-     * flash where the UI briefly renders in the wrong theme.
-     */
     var initialThemeMode: ThemeMode = ThemeMode.SYSTEM
         private set
 

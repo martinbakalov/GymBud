@@ -125,7 +125,7 @@ class WorkoutRepository(
                         it.copy(
                             id = 0,
                             workoutExerciseId = newWorkoutExerciseId,
-                            isCompleted = false  // always reset
+                            isCompleted = false
                         )
                     }
                 )
@@ -167,7 +167,12 @@ class WorkoutRepository(
 
     suspend fun updateSet(set: WorkoutSet) = workoutSetDao.update(set)
 
-    suspend fun deleteSet(set: WorkoutSet) = workoutSetDao.delete(set)
+    suspend fun deleteSet(set: WorkoutSet) {
+        workoutSetDao.delete(set)
+        val remaining = workoutSetDao.observeForWorkoutExercise(set.workoutExerciseId).first()
+        val renumbered = remaining.mapIndexed { index, s -> s.copy(position = index) }
+        workoutSetDao.updateAll(renumbered)
+    }
 
     suspend fun finishWorkout(workoutId: Long) {
         val workout = workoutDao.getById(workoutId) ?: return

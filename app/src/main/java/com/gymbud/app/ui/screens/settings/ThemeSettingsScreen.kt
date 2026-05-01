@@ -1,6 +1,7 @@
 package com.gymbud.app.ui.screens.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -43,11 +44,8 @@ fun ThemeSettingsScreen(onExit: () -> Unit) {
 
     val surfaceColor = MaterialTheme.colorScheme.surface
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = {
-            // Keying the TopAppBar on the current surface color forces it to
-            // recompose from scratch when the theme flips, resetting the
-            // internal animateColorAsState that otherwise lerps the container
-            // color over ~300ms and reads as a blink in the top region.
             key(surfaceColor) {
                 TopAppBar(
                     title = { Text(stringResource(R.string.settings_theme_title)) },

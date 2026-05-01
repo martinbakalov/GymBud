@@ -49,6 +49,7 @@ import com.gymbud.app.ui.screens.settings.ThemeSettingsScreen
 import com.gymbud.app.ui.screens.settings.WeightUnitSettingsScreen
 import com.gymbud.app.ui.screens.workouts.ActiveWorkoutScreen
 import com.gymbud.app.ui.screens.workouts.ActiveWorkoutViewModel
+import com.gymbud.app.ui.screens.workouts.FinishWorkoutScreen
 import com.gymbud.app.ui.screens.workouts.TemplateDetailScreen
 import com.gymbud.app.ui.screens.workouts.TemplateEditorViewModel
 import com.gymbud.app.ui.screens.workouts.WorkoutsScreen
@@ -67,6 +68,7 @@ fun MainScreen() {
     val bannerHiddenRoutes = setOf(
         WorkoutsRoutes.ACTIVE,
         WorkoutsRoutes.TEMPLATE,
+        WorkoutsRoutes.FINISH,
         PickerRoutes.PICK_EXERCISES
     )
     val showBanner = activeWorkout != null && currentRoute !in bannerHiddenRoutes
@@ -218,9 +220,30 @@ fun MainScreen() {
                         onExit = {
                             navController.popBackStack(WorkoutsRoutes.HOME, inclusive = false)
                         },
+                        onFinish = {
+                            navController.navigate(WorkoutsRoutes.finish(id))
+                        },
                         onAddExercisesClick = {
                             navController.navigate(PickerRoutes.PICK_EXERCISES)
                         }
+                    )
+                }
+
+                composable(
+                    route = WorkoutsRoutes.FINISH,
+                    arguments = listOf(
+                        navArgument(WorkoutsRoutes.ARG_WORKOUT_ID) { type = NavType.LongType }
+                    )
+                ) { entry ->
+                    val id = entry.arguments
+                        ?.getLong(WorkoutsRoutes.ARG_WORKOUT_ID)
+                        ?: return@composable
+                    FinishWorkoutScreen(
+                        workoutId = id,
+                        onSaved = {
+                            navController.popBackStack(WorkoutsRoutes.HOME, inclusive = false)
+                        },
+                        onBack = { navController.popBackStack() }
                     )
                 }
 

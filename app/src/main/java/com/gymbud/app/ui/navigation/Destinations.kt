@@ -79,9 +79,11 @@ object WorkoutsRoutes {
     const val HOME = "workouts/home"
     const val TEMPLATE = "workouts/template/{workoutId}"
     const val ACTIVE = "workouts/active/{workoutId}"
+    const val FINISH = "workouts/finish/{workoutId}"
 
     fun template(workoutId: Long): String = "workouts/template/$workoutId"
     fun active(workoutId: Long): String = "workouts/active/$workoutId"
+    fun finish(workoutId: Long): String = "workouts/finish/$workoutId"
 
     const val ARG_WORKOUT_ID = "workoutId"
 }

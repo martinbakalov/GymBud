@@ -3,6 +3,7 @@ package com.gymbud.app.ui.screens.picker
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -61,6 +62,7 @@ fun ExercisePickerScreen(
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.picker_add_exercises)) },
@@ -74,7 +76,7 @@ fun ExercisePickerScreen(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
 
-            // Search
+
             OutlinedTextField(
                 value = uiState.query,
                 onValueChange = viewModel::onQueryChange,
@@ -93,7 +95,6 @@ fun ExercisePickerScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            // Muscle filter chips
             FilterChipsRow(
                 allLabel = stringResource(R.string.exercises_filter_all_muscles),
                 selected = uiState.muscleFilter,
@@ -102,7 +103,6 @@ fun ExercisePickerScreen(
                 onSelect = viewModel::onMuscleFilterChange
             )
 
-            // Equipment filter chips
             FilterChipsRow(
                 allLabel = stringResource(R.string.exercises_filter_all_equipment),
                 selected = uiState.equipmentFilter,
@@ -113,7 +113,6 @@ fun ExercisePickerScreen(
 
             HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
 
-            // Results
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 if (exercises.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -139,7 +138,6 @@ fun ExercisePickerScreen(
                 }
             }
 
-            // Confirm button
             Button(
                 onClick = { onConfirm(uiState.selectedIds.toList()) },
                 enabled = uiState.selectedIds.isNotEmpty(),

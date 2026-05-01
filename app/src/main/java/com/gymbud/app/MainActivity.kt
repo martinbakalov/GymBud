@@ -37,12 +37,6 @@ class MainActivity : AppCompatActivity() {
         maybeRequestCameraPermission()
         val app = application as GymBudApplication
 
-        // Apply edge-to-edge once with transparent scrims. The icon
-        // appearance follows the configuration uiMode, which Application
-        // already aligned with the saved theme. Runtime theme switches
-        // only flip status-bar icons via Theme.kt's LaunchedEffect — we
-        // never re-call enableEdgeToEdge at runtime to avoid window
-        // layout invalidation.
         val nightMask = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val initialStyle = if (nightMask == Configuration.UI_MODE_NIGHT_YES) {
             SystemBarStyle.dark(Color.TRANSPARENT)

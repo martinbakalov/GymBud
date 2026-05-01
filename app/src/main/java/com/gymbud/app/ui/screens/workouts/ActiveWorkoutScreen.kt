@@ -7,12 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -58,6 +59,7 @@ import kotlinx.coroutines.delay
 fun ActiveWorkoutScreen(
     workoutId: Long,
     onExit: () -> Unit,
+    onFinish: () -> Unit,
     onAddExercisesClick: () -> Unit
 ) {
     val app = LocalContext.current.applicationContext as GymBudApplication
@@ -74,7 +76,6 @@ fun ActiveWorkoutScreen(
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
     val stats by viewModel.stats.collectAsStateWithLifecycle()
     val globalUnit by viewModel.globalUnit.collectAsStateWithLifecycle(initialValue = WeightUnit.KG)
-    var showFinishDialog by remember { mutableStateOf(false) }
     var showDiscardDialog by remember { mutableStateOf(false) }
     var nowMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
     val startedAt = workout?.startedAt
@@ -106,6 +107,7 @@ fun ActiveWorkoutScreen(
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title = {
@@ -118,6 +120,14 @@ fun ActiveWorkoutScreen(
                 navigationIcon = {
                     IconButton(onClick = onExit) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    }
+                },
+                actions = {
+                    Button(
+                        onClick = onFinish,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text(stringResource(R.string.workout_finish))
                     }
                 }
             )
@@ -159,7 +169,7 @@ fun ActiveWorkoutScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
-                    items(items = exercises, key = { it.id }) { we ->
+                    itemsIndexed(items = exercises, key = { _, it -> it.id }) { index, we ->
                         val exerciseUnit = if (we.exerciseId != null) {
                             viewModel.unitForExercise(we.exerciseId, globalUnit)
                                 .collectAsStateWithLifecycle(initialValue = globalUnit).value
@@ -169,6 +179,7 @@ fun ActiveWorkoutScreen(
 
                         WorkoutExerciseCard(
                             workoutExercise = we,
+                            index = index,
                             app = app,
                             unit = exerciseUnit,
                             onAddSet = { viewModel.addSet(we.id) },
@@ -197,55 +208,18 @@ fun ActiveWorkoutScreen(
                 Text(stringResource(R.string.workout_add_exercise))
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
 
-            Row(
+            TextButton(
+                onClick = { showDiscardDialog = true },
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
             ) {
-                Button(
-                    onClick = { showFinishDialog = true },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.workout_finish))
-                }
-                TextButton(
-                    onClick = { showDiscardDialog = true },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
-                ) {
-                    Text(stringResource(R.string.workout_discard))
-                }
+                Text(stringResource(R.string.workout_discard))
             }
         }
-    }
-    if (showFinishDialog) {
-        val defaultName = stringResource(R.string.workout_empty_name)
-        FinishWorkoutDialog(
-            initialName = workout?.name.orEmpty(),
-            nameFallback = defaultName,
-            initialNotes = workout?.notes.orEmpty(),
-            initialPhotoPath = workout?.photoPath,
-            durationMillis = elapsedMillis,
-            stats = stats,
-            unit = globalUnit,
-            onSave = { name, notes, photoPath ->
-                showFinishDialog = false
-                cancelWorkoutInProgress(context)
-                viewModel.finish(
-                    name = name,
-                    notes = notes,
-                    photoPath = photoPath,
-                    onFinished = onExit
-                )
-            },
-            onNameChange = { newName -> viewModel.setName(newName) },
-            onPhotoChange = { path -> viewModel.setPhotoPath(path) },
-            onNotesChange = { text -> viewModel.setNotes(text) },
-            onResume = { showFinishDialog = false }
-        )
     }
     if (showDiscardDialog) {
         DiscardWorkoutDialog(

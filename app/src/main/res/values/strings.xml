@@ -92,9 +92,6 @@
     <string name="workout_set_completed">Set completed</string>
     <string name="workout_set_incomplete">Mark set complete</string>
     <string name="workout_in_progress_hint">Return to workout</string>
-    <string name="finish_dialog_title">Finish workout?</string>
-    <string name="finish_dialog_notes_hint">Notes (optional)</string>
-    <string name="finish_dialog_resume">Resume</string>
     <string name="discard_confirm_title">Discard workout?</string>
     <string name="discard_confirm_body">This will permanently delete the workout</string>
     <string name="workout_discard">Discard workout</string>
@@ -113,6 +110,13 @@
     <string name="notif_channel_daily_desc">One reminder per day with your custom message</string>
     <string name="notif_permission_denied">Enable notifications in Settings to get reminders</string>
     <string name="finish_dialog_name_label">Workout name</string>
+    <string name="finish_screen_title">Finish Workout</string>
+    <string name="finish_screen_name_label">Workout name</string>
+    <string name="finish_screen_name_placeholder">Name your workout</string>
+    <string name="finish_screen_photo_label">Add photo</string>
+    <string name="finish_screen_notes_label">Workout notes</string>
+    <string name="finish_screen_notes_hint">How was your workout?</string>
+    <string name="finish_screen_save">Save Workout</string>
     <string name="settings_notifications_title">Notifications</string>
     <string name="settings_daily_enabled">Daily motivation</string>
     <string name="settings_daily_enabled_desc">Fires once a day with a reminder to train</string>

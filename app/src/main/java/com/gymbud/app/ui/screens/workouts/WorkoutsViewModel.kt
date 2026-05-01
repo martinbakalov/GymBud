@@ -16,11 +16,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * Lightweight metadata about a template, computed lazily per card on
- * the Workouts screen. We aggregate the distinct primary muscles of
- * all exercises in the template and report the total exercise count.
- */
 data class TemplateMeta(
     val exerciseCount: Int,
     val primaryMuscles: List<MuscleGroup>
@@ -57,11 +52,6 @@ class WorkoutsViewModel(
     private fun observeExercises(templateId: Long): Flow<List<com.gymbud.app.data.local.entity.WorkoutExercise>> =
         repository.observeExercisesForWorkout(templateId)
 
-    /**
-     * Suspending one-shot fetch of metadata for a template. Used by the
-     * card composable inside a produceState so each card loads its own
-     * meta independently of the templates list flow.
-     */
     suspend fun templateMeta(templateId: Long): TemplateMeta {
         val workoutExercises = observeExercises(templateId).first()
         val muscles = workoutExercises

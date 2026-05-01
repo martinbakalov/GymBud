@@ -94,9 +94,13 @@
     <string name="workout_set_completed">Серията е изпълнена</string>
     <string name="workout_set_incomplete">Маркирай серията като изпълнена</string>
     <string name="workout_in_progress_hint">Върни се към тренировката</string>
-    <string name="finish_dialog_title">Край на тренировката?</string>
-    <string name="finish_dialog_notes_hint">Бележки (по желание)</string>
-    <string name="finish_dialog_resume">Продължи</string>
+    <string name="finish_screen_title">Завършване на тренировката</string>
+    <string name="finish_screen_name_label">Име на тренировката</string>
+    <string name="finish_screen_name_placeholder">Задай име</string>
+    <string name="finish_screen_photo_label">Добави снимка</string>
+    <string name="finish_screen_notes_label">Бележки към тренировката</string>
+    <string name="finish_screen_notes_hint">Как мина тренировката?</string>
+    <string name="finish_screen_save">Приключи и запази тренировката</string>
     <string name="discard_confirm_title">Изтриване на тренировката?</string>
     <string name="discard_confirm_body">Тренировката ще бъде изтрита завинаги.</string>
     <string name="workout_discard">Отмени тренировката</string>

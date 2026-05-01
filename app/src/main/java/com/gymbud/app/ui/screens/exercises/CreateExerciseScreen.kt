@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.core.content.ContextCompat
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -90,6 +91,7 @@ fun CreateExerciseScreen(
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.exercises_new)) },
@@ -199,65 +201,31 @@ private fun ExercisePhotoPicker(
     onClearPhoto: () -> Unit
 ) {
     if (photoPath != null) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp)
-        ) {
+        Box(modifier = Modifier.fillMaxWidth().height(180.dp)) {
             AsyncImage(
                 model = photoPath,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                modifier = Modifier.fillMaxWidth().height(180.dp).clip(RoundedCornerShape(12.dp))
             )
             IconButton(
                 onClick = onClearPhoto,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(4.dp)
-                    .size(32.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                        shape = RoundedCornerShape(8.dp)
-                    )
+                modifier = Modifier.align(Alignment.TopEnd).padding(4.dp).size(32.dp)
+                    .background(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f), shape = RoundedCornerShape(8.dp))
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(R.string.remove_photo),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(18.dp)
-                )
+                Icon(imageVector = Icons.Default.Close, contentDescription = stringResource(R.string.remove_photo),
+                    tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(18.dp))
             }
         }
     } else {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            OutlinedButton(
-                onClick = onCameraClick,
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.CameraAlt,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            OutlinedButton(onClick = onCameraClick, modifier = Modifier.weight(1f)) {
+                Icon(imageVector = Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
                 Text(stringResource(R.string.exercises_photo_camera))
             }
-            OutlinedButton(
-                onClick = onGalleryClick,
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Photo,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
+            OutlinedButton(onClick = onGalleryClick, modifier = Modifier.weight(1f)) {
+                Icon(imageVector = Icons.Default.Photo, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
                 Text(stringResource(R.string.gallery_photo))
             }
@@ -267,55 +235,25 @@ private fun ExercisePhotoPicker(
 
 @Composable
 private fun SectionLabel(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
+    Text(text = text, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun <T> ChipSelectRow(
-    options: List<T>,
-    isSelected: (T) -> Boolean,
-    onSelect: (T) -> Unit,
-    labelFor: @Composable (T) -> String
+    options: List<T>, isSelected: (T) -> Boolean, onSelect: (T) -> Unit, labelFor: @Composable (T) -> String
 ) {
-    FlowRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        options.forEach { option ->
-            FilterChip(
-                selected = isSelected(option),
-                onClick = { onSelect(option) },
-                label = { Text(labelFor(option)) }
-            )
-        }
+    FlowRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        options.forEach { option -> FilterChip(selected = isSelected(option), onClick = { onSelect(option) }, label = { Text(labelFor(option)) }) }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun <T> ChipMultiSelectRow(
-    options: List<T>,
-    isSelected: (T) -> Boolean,
-    onToggle: (T) -> Unit,
-    labelFor: @Composable (T) -> String
+    options: List<T>, isSelected: (T) -> Boolean, onToggle: (T) -> Unit, labelFor: @Composable (T) -> String
 ) {
-    FlowRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        options.forEach { option ->
-            FilterChip(
-                selected = isSelected(option),
-                onClick = { onToggle(option) },
-                label = { Text(labelFor(option)) }
-            )
-        }
+    FlowRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        options.forEach { option -> FilterChip(selected = isSelected(option), onClick = { onToggle(option) }, label = { Text(labelFor(option)) }) }
     }
 }

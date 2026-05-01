@@ -1,6 +1,7 @@
 package com.gymbud.app.ui.screens.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,6 +46,7 @@ fun WeightUnitSettingsScreen(
     val current by prefs.weightUnit.collectAsStateWithLifecycle(initialValue = WeightUnit.KG)
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.settings_section_units)) },
