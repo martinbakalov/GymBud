@@ -1,34 +1,43 @@
 package com.gymbud.app.ui.screens.profile
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,9 +53,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,6 +77,8 @@ import com.gymbud.app.ui.util.formatDurationCompact
 import com.gymbud.app.ui.util.formatSessionDateTime
 import com.gymbud.app.ui.util.formatVolumeNumber
 import java.io.File
+
+private val prAmber = Color(0xFFFFB300)
 
 @Suppress("AssignedValueIsNeverRead")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,6 +101,8 @@ fun ProfileScreen(
     val globalUnit by app.preferences.weightUnit
         .collectAsStateWithLifecycle(initialValue = WeightUnit.KG)
 
+    val totalPrs = remember(history) { history.sumOf { it.second.prCount } }
+
     var pendingDelete by remember { mutableStateOf<Workout?>(null) }
 
     Scaffold(
@@ -104,45 +121,67 @@ fun ProfileScreen(
             )
         }
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            item(key = "header") {
+                ProfileHeader(profile = profile)
+            }
 
-            ProfileHeader(
-                profile = profile,
-                workoutCount = workoutCount
-            )
-
-            HorizontalDivider()
-
-            Text(
-                text = stringResource(R.string.profile_workout_history),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-            )
-
-            HorizontalDivider()
-
-            if (history.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = stringResource(R.string.profile_empty_history),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+            item(key = "stats") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatCard(
+                        value = workoutCount.toString(),
+                        label = stringResource(R.string.profile_workouts_count_label),
+                        modifier = Modifier.weight(1f)
+                    )
+                    StatCard(
+                        value = totalPrs.toString(),
+                        label = stringResource(R.string.stats_prs),
+                        modifier = Modifier.weight(1f)
                     )
                 }
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(items = history, key = { it.first.id }) { (workout, stats) ->
-                        HistoryRow(
-                            workout = workout,
-                            stats = stats,
-                            unit = globalUnit,
-                            onClick = { onWorkoutClick(workout.id) },
-                            onDelete = { pendingDelete = workout }
+            }
+
+            item(key = "history_header") {
+                Text(
+                    text = stringResource(R.string.profile_workout_history),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+            }
+
+            if (history.isEmpty()) {
+                item(key = "empty") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.profile_empty_history),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                }
+            } else {
+                items(items = history, key = { it.first.id }) { (workout, stats) ->
+                    WorkoutCard(
+                        workout = workout,
+                        stats = stats,
+                        unit = globalUnit,
+                        onClick = { onWorkoutClick(workout.id) },
+                        onDelete = { pendingDelete = workout }
+                    )
                 }
             }
         }
@@ -176,17 +215,14 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileHeader(
-    profile: Profile?,
-    workoutCount: Int
-) {
-    Row(
+private fun ProfileHeader(profile: Profile?) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-
         val avatarPath = profile?.avatarPath
         if (avatarPath != null && File(avatarPath).exists()) {
             AsyncImage(
@@ -198,59 +234,96 @@ private fun ProfileHeader(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(72.dp)
+                    .size(112.dp)
                     .clip(CircleShape)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .border(3.dp, MaterialTheme.colorScheme.surface, CircleShape)
             )
         } else {
             Box(
                 modifier = Modifier
-                    .size(72.dp)
+                    .size(112.dp)
                     .clip(CircleShape)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(56.dp)
                 )
             }
         }
 
-        Spacer(Modifier.size(16.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Text(
                 text = profile?.displayName?.ifBlank { null }
                     ?: stringResource(R.string.profile_default_name),
-                style = MaterialTheme.typography.titleLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
             val bio = profile?.bio?.ifBlank { null }
             if (bio != null) {
                 Text(
                     text = bio,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
+                    textAlign = TextAlign.Center,
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Spacer(Modifier.size(6.dp))
-            Text(
-                text = "${stringResource(R.string.profile_workouts_count_label)} $workoutCount",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary
-            )
         }
     }
 }
 
 @Composable
-private fun HistoryRow(
+private fun StatCard(
+    value: String,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 20.dp, horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = label.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                letterSpacing = androidx.compose.ui.unit.TextUnit(
+                    0.08f,
+                    androidx.compose.ui.unit.TextUnitType.Em
+                )
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun WorkoutCard(
     workout: Workout,
     stats: WorkoutStats,
     unit: WeightUnit,
@@ -258,93 +331,114 @@ private fun HistoryRow(
     onDelete: () -> Unit
 ) {
     var menuOpen by remember { mutableStateOf(false) }
+    val unitSuffix = stringResource(
+        if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
+    )
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val unitSuffix = stringResource(
-                if (unit == WeightUnit.KG) R.string.workout_kg else R.string.workout_lbs
-            )
-            val photoPath = workout.photoPath
-            if (photoPath != null && File(photoPath).exists()) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(File(photoPath))
-                        .memoryCachePolicy(CachePolicy.DISABLED)
-                        .diskCachePolicy(CachePolicy.DISABLED)
-                        .build(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                )
-                Spacer(Modifier.size(12.dp))
-            }
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = workout.name.ifBlank { stringResource(R.string.workout_empty_name) },
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = formatSessionDateTime(workout.endedAt),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(Modifier.size(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    StatInline(
-                        label = stringResource(R.string.stats_duration),
-                        value = formatDurationCompact(stats.durationMillis)
-                    )
-                    StatInline(
-                        label = stringResource(R.string.stats_sets),
-                        value = stats.totalSets.toString()
-                    )
-                    StatInline(
-                        label = stringResource(R.string.stats_volume),
-                        value = "${formatVolumeNumber(stats.totalVolumeKg, unit)} $unitSuffix"
-                    )
-                }
-            }
-
-            Box {
-                IconButton(onClick = { menuOpen = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
+        Column(modifier = Modifier.padding(18.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
+                val photoPath = workout.photoPath
+                if (photoPath != null && File(photoPath).exists()) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(File(photoPath))
+                            .memoryCachePolicy(CachePolicy.DISABLED)
+                            .diskCachePolicy(CachePolicy.DISABLED)
+                            .build(),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                    )
+                    Spacer(Modifier.width(12.dp))
+                }
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = workout.name.ifBlank { stringResource(R.string.workout_empty_name) },
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = formatSessionDateTime(workout.endedAt),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                DropdownMenu(
-                    expanded = menuOpen,
-                    onDismissRequest = { menuOpen = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.action_delete)) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        },
-                        onClick = {
-                            menuOpen = false
-                            onDelete()
-                        }
+
+                Box {
+                    IconButton(
+                        onClick = { menuOpen = true },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuOpen,
+                        onDismissRequest = { menuOpen = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.action_delete)) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            },
+                            onClick = {
+                                menuOpen = false
+                                onDelete()
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                StatChip(
+                    icon = Icons.Default.AccessTime,
+                    text = formatDurationCompact(stats.durationMillis)
+                )
+                StatChip(
+                    icon = Icons.Default.List,
+                    text = "${stats.totalSets} ${stringResource(R.string.stats_sets)}"
+                )
+                StatChip(
+                    icon = Icons.Default.FitnessCenter,
+                    text = "${formatVolumeNumber(stats.totalVolumeKg, unit)} $unitSuffix"
+                )
+                if (stats.prCount > 0) {
+                    StatChip(
+                        icon = Icons.Default.Star,
+                        text = "${stats.prCount} ${stringResource(R.string.stats_prs)}",
+                        isPr = true
                     )
                 }
             }
@@ -353,13 +447,32 @@ private fun HistoryRow(
 }
 
 @Composable
-private fun StatInline(label: String, value: String) {
-    Column {
-        Text(text = value, style = MaterialTheme.typography.bodyLarge)
+private fun StatChip(
+    icon: ImageVector,
+    text: String,
+    isPr: Boolean = false
+) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(50.dp))
+            .background(
+                if (isPr) prAmber.copy(alpha = 0.12f)
+                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+            )
+            .padding(horizontal = 10.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(13.dp),
+            tint = if (isPr) prAmber else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+        )
         Text(
-            text = label,
+            text = text,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = if (isPr) prAmber else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
