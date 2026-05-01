@@ -366,7 +366,8 @@ private fun SetRowHeader(exerciseType: ExerciseType, unit: WeightUnit) {
                 HeaderCell(text = stringResource(R.string.workout_reps), weight = 1.2f)
             }
             ExerciseType.TIME -> {
-                HeaderCell(text = stringResource(R.string.workout_time), weight = 2.4f)
+                HeaderCell(text = stringResource(R.string.workout_min), weight = 1.2f)
+                HeaderCell(text = stringResource(R.string.workout_sec), weight = 1.2f)
             }
         }
         Spacer(Modifier.size(40.dp))
@@ -456,15 +457,31 @@ private fun SetRow(
             }
 
             ExerciseType.TIME -> {
+                val totalSecs = set.durationSeconds ?: 0
                 NumberField(
-                    value = set.durationSeconds?.toString() ?: "",
+                    value = if (set.durationSeconds != null) (totalSecs / 60).toString() else "",
                     isCompleted = set.isCompleted,
                     onValueChange = { newText ->
-                        val newSecs = newText.toIntOrNull()
-                        onUpdate(set.copy(durationSeconds = newSecs))
+                        val newMin = newText.toIntOrNull() ?: 0
+                        val currentSec = (set.durationSeconds ?: 0) % 60
+                        val combined = newMin * 60 + currentSec
+                        onUpdate(set.copy(durationSeconds = if (combined == 0) null else combined))
                     },
                     modifier = Modifier
-                        .weight(2.4f)
+                        .weight(1.2f)
+                        .padding(horizontal = 2.dp)
+                )
+                NumberField(
+                    value = if (set.durationSeconds != null) (totalSecs % 60).toString() else "",
+                    isCompleted = set.isCompleted,
+                    onValueChange = { newText ->
+                        val newSec = (newText.toIntOrNull() ?: 0).coerceIn(0, 59)
+                        val currentMin = (set.durationSeconds ?: 0) / 60
+                        val combined = currentMin * 60 + newSec
+                        onUpdate(set.copy(durationSeconds = if (combined == 0) null else combined))
+                    },
+                    modifier = Modifier
+                        .weight(1.2f)
                         .padding(horizontal = 2.dp)
                 )
             }
@@ -641,7 +658,11 @@ private fun PreviousCell(
             }
             ExerciseType.TIME -> {
                 val secs = previousSet.durationSeconds
-                if (secs != null) "${secs}s" else "—"
+                if (secs != null) {
+                    val m = secs / 60
+                    val s = secs % 60
+                    "$m:${s.toString().padStart(2, '0')}"
+                } else "—"
             }
         }
     }
