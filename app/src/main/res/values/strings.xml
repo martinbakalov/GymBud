@@ -41,6 +41,9 @@
     <string name="exercises_type">Type</string>
     <string name="exercises_type_weight_reps">Weight &amp; Reps</string>
     <string name="exercises_type_time">Time</string>
+    <string name="exercises_secondary_placeholder">None</string>
+    <string name="exercises_photo">Photo</string>
+    <string name="exercises_photo_camera">Camera</string>
     <string name="exercises_no_results">No exercises found</string>
     <string name="workout_add_exercise">Add exercise</string>
     <string name="workout_finish">Finish workout</string>
@@ -217,6 +220,4 @@
     <string name="action_share">Share</string>
     <string name="action_back">Back</string>
     <string name="action_more">More options</string>
-    <string name="exercises_photo">Photo (optional)</string>
-    <string name="exercises_photo_camera">Camera</string>
 </resources>

@@ -43,6 +43,7 @@
     <string name="exercises_type">Тип</string>
     <string name="exercises_type_weight_reps">Тежест и повторения</string>
     <string name="exercises_type_time">Време</string>
+    <string name="exercises_secondary_placeholder">Никакви</string>
     <string name="exercises_no_results">Няма намерени упражнения</string>
     <string name="workout_add_exercise">Добави упражнение</string>
     <string name="workout_finish">Край на тренировката</string>
