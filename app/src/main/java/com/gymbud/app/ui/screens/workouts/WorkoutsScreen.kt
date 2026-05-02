@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -459,18 +460,53 @@ private fun TemplateCard(
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Spacer(Modifier.height(10.dp))
 
-                val count = meta?.exerciseCount
-                val countText = when {
-                    count == null -> ""
-                    count == 0 -> stringResource(R.string.workouts_no_exercises)
-                    else -> stringResource(R.string.workouts_exercises_count, count)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val count = meta?.exerciseCount
+                    val sets = meta?.totalSets
+                    val statsText = when {
+                        count == null -> ""
+                        count == 0 -> stringResource(R.string.workouts_no_exercises)
+                        sets != null && sets > 0 ->
+                            "${stringResource(R.string.workouts_exercises_count, count)}  ·  ${stringResource(R.string.workouts_sets_count, sets)}"
+                        else -> stringResource(R.string.workouts_exercises_count, count)
+                    }
+                    Text(
+                        text = statsText,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    val lastUsed = meta?.lastUsedAt
+                    if (lastUsed != null) {
+                        val daysAgo = ((System.currentTimeMillis() - lastUsed) / (1000L * 60 * 60 * 24)).toInt()
+                        val lastUsedText = when (daysAgo) {
+                            0 -> stringResource(R.string.workouts_last_used_today)
+                            1 -> stringResource(R.string.workouts_last_used_yesterday)
+                            else -> stringResource(R.string.workouts_last_used_days, daysAgo)
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(3.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Schedule,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(12.dp)
+                            )
+                            Text(
+                                text = lastUsedText,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
-                Text(
-                    text = countText,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
         }
     }

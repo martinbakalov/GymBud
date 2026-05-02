@@ -53,4 +53,17 @@ interface WorkoutDao {
                 "LIMIT 1"
     )
     fun observeActiveWorkout(): Flow<Workout?>
+
+    @Query(
+        "SELECT COUNT(*) FROM workout_sets ws " +
+                "INNER JOIN workout_exercises we ON ws.workoutExerciseId = we.id " +
+                "WHERE we.workoutId = :templateId"
+    )
+    suspend fun getSetCountForTemplate(templateId: Long): Int
+
+    @Query(
+        "SELECT MAX(endedAt) FROM workouts " +
+                "WHERE sourceTemplateId = :templateId AND endedAt IS NOT NULL"
+    )
+    suspend fun getLastUsedAt(templateId: Long): Long?
 }

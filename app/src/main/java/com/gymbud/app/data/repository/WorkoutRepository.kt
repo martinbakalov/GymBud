@@ -82,6 +82,11 @@ class WorkoutRepository(
 
     suspend fun getWorkout(id: Long): Workout? = workoutDao.getById(id)
 
+    suspend fun getSetCountForTemplate(templateId: Long): Int =
+        workoutDao.getSetCountForTemplate(templateId)
+
+    suspend fun getLastUsedAt(templateId: Long): Long? =
+        workoutDao.getLastUsedAt(templateId)
 
     suspend fun createTemplate(name: String): Long =
         workoutDao.insert(Workout(name = name, isTemplate = true))
@@ -111,7 +116,8 @@ class WorkoutRepository(
             Workout(
                 name = template.name,
                 isTemplate = false,
-                startedAt = System.currentTimeMillis()
+                startedAt = System.currentTimeMillis(),
+                sourceTemplateId = templateId
             )
         )
 

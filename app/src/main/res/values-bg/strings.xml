@@ -24,6 +24,10 @@
     <string name="workouts_no_templates">Все още няма шаблони</string>
     <string name="workouts_template_name">Име на шаблон</string>
     <string name="workouts_exercises_count">%1$d упражнения</string>
+    <string name="workouts_sets_count">%1$d Серии</string>
+    <string name="workouts_last_used_today">Днес</string>
+    <string name="workouts_last_used_yesterday">Вчера</string>
+    <string name="workouts_last_used_days">Преди %1$d дена</string>
     <string name="workouts_no_exercises">Без упражнения</string>
     <string name="exercises_title">Упражнения</string>
     <string name="exercises_subtitle">Твоята библиотека с упражнения</string>
@@ -56,7 +60,7 @@
     <string name="workout_time">Време</string>
     <string name="workout_min">Мин</string>
     <string name="workout_sec">Сек</string>
-    <string name="stats_prs">Рекорда</string>
+    <string name="stats_prs">Постижения</string>
     <string name="workout_add_set">Добави серия</string>
     <string name="workout_remove_exercise">Премахни упражнение</string>
     <string name="workout_delete_set_title">Изтриване на серията?</string>
@@ -64,7 +68,7 @@
     <string name="workout_empty_name">Тренировка</string>
     <string name="stats_sets">Серии</string>
     <string name="stats_volume">Обем</string>
-    <string name="stats_duration">Продължителност</string>
+    <string name="stats_duration">Време</string>
     <string name="profile_title">Профил</string>
     <string name="profile_default_name">Атлет</string>
     <string name="profile_workouts_count_label">Брой тренировки</string>

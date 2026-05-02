@@ -22,6 +22,10 @@
     <string name="workouts_no_templates">No templates yet</string>
     <string name="workouts_template_name">Template name</string>
     <string name="workouts_exercises_count">%1$d Exercises</string>
+    <string name="workouts_sets_count">%1$d Sets</string>
+    <string name="workouts_last_used_today">Today</string>
+    <string name="workouts_last_used_yesterday">Yesterday</string>
+    <string name="workouts_last_used_days">%1$d days ago</string>
     <string name="workouts_no_exercises">No exercises</string>
     <string name="exercises_title">Exercises</string>
     <string name="exercises_subtitle">Your personal exercise library</string>

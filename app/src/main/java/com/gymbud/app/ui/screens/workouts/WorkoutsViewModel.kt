@@ -18,7 +18,9 @@ import kotlinx.coroutines.launch
 
 data class TemplateMeta(
     val exerciseCount: Int,
-    val primaryMuscles: List<MuscleGroup>
+    val totalSets: Int,
+    val primaryMuscles: List<MuscleGroup>,
+    val lastUsedAt: Long? = null
 )
 
 class WorkoutsViewModel(
@@ -59,9 +61,13 @@ class WorkoutsViewModel(
                 we.exerciseId?.let { exerciseRepository.getById(it)?.primaryMuscle }
             }
             .distinct()
+        val totalSets = repository.getSetCountForTemplate(templateId)
+        val lastUsedAt = repository.getLastUsedAt(templateId)
         return TemplateMeta(
             exerciseCount = workoutExercises.size,
-            primaryMuscles = muscles
+            totalSets = totalSets,
+            primaryMuscles = muscles,
+            lastUsedAt = lastUsedAt
         )
     }
 

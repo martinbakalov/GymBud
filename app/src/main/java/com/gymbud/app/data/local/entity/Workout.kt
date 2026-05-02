@@ -12,5 +12,6 @@ data class Workout(
     val startedAt: Long? = null,
     val endedAt: Long? = null,
     val notes: String? = null,
-    val photoPath: String? = null
+    val photoPath: String? = null,
+    val sourceTemplateId: Long? = null
 )
