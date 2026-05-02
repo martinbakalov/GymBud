@@ -209,6 +209,9 @@
     <string name="template_no_exercises_yet">Все още няма упражнения</string>
     <string name="template_set_label">Серия %1$d</string>
     <string name="template_start_workout">Започни тренировка</string>
+    <string name="template_delete">Изтрий щаблона</string>
+    <string name="template_delete_title">Изтриване на шаблона?</string>
+    <string name="template_delete_body">Този шаблон ще бъде изтрит. Минали тренировки, които са били започвани чрез него, няма да бъдат афектирани.</string>
     <string name="exercise_delete_title">Изтриване на упражнението?</string>
     <string name="exercise_delete_body">Упражнението ще бъде изтрито. Минали тренировки, в които е било използвано, ще запазят данните си.</string>
     <string name="exercise_deleted_label">Изтрито упражнение</string>
@@ -222,4 +225,7 @@
     <string name="action_more">Още опции</string>
     <string name="exercises_photo">Снимка (по желание)</string>
     <string name="exercises_photo_camera">Камера</string>
+    <string name="template_set_header">Серия</string>
+    <string name="template_reps_header">Повт</string>
+    <string name="template_rename">Rename template</string>
 </resources>

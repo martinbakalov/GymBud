@@ -42,9 +42,29 @@ class TemplateEditorViewModel(
         }
     }
 
-    fun addSet(workoutExerciseId: Long) {
+    fun addSet(workoutExerciseId: Long, exerciseId: Long?) {
         viewModelScope.launch {
-            repository.addSet(workoutExerciseId)
+            repository.addSetWithLastValues(workoutExerciseId, exerciseId)
+        }
+    }
+
+    fun renameTemplate(newName: String) {
+        viewModelScope.launch {
+            repository.renameWorkout(templateId, newName.trim())
+        }
+    }
+
+    fun deleteTemplate(onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            val workout = repository.getWorkout(templateId) ?: return@launch
+            repository.deleteWorkout(workout)
+            onDeleted()
+        }
+    }
+
+    fun updateSet(set: WorkoutSet) {
+        viewModelScope.launch {
+            repository.updateSet(set)
         }
     }
 

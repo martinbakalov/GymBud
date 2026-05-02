@@ -36,6 +36,21 @@ interface WorkoutSetDao {
     )
     fun observeForWorkoutExercise(workoutExerciseId: Long): Flow<List<WorkoutSet>>
 
+    @Query(
+        "SELECT * FROM workout_sets " +
+                "WHERE workoutExerciseId = :workoutExerciseId " +
+                "ORDER BY position ASC"
+    )
+    suspend fun getSetsForWorkoutExercise(workoutExerciseId: Long): List<WorkoutSet>
+
+    @Query(
+        "SELECT * FROM workout_sets " +
+                "WHERE workoutExerciseId = :workoutExerciseId " +
+                "AND isCompleted = 1 " +
+                "ORDER BY position ASC"
+    )
+    suspend fun getCompletedSetsForWorkoutExercise(workoutExerciseId: Long): List<WorkoutSet>
+
     @Query("SELECT COALESCE(MAX(position) + 1, 0) FROM workout_sets WHERE workoutExerciseId = :workoutExerciseId")
     suspend fun nextPosition(workoutExerciseId: Long): Int
 

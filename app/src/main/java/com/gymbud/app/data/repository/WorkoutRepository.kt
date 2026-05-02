@@ -163,6 +163,24 @@ class WorkoutRepository(
         workoutExerciseDao.updateNotes(workoutExerciseId, notes)
     }
 
+    suspend fun updateSet(set: WorkoutSet) = workoutSetDao.update(set)
+
+    suspend fun addSetWithLastValues(workoutExerciseId: Long, exerciseId: Long?): Long {
+        val position = workoutSetDao.nextPosition(workoutExerciseId)
+        val lastSet = exerciseId?.let {
+            workoutSetDao.findPreviousSet(exerciseId = it, position = position, excludingWorkoutId = 0L)
+        }
+        return workoutSetDao.insert(
+            WorkoutSet(
+                workoutExerciseId = workoutExerciseId,
+                position = position,
+                weightKg = lastSet?.weightKg,
+                reps = lastSet?.reps,
+                durationSeconds = lastSet?.durationSeconds
+            )
+        )
+    }
+
     suspend fun addSet(workoutExerciseId: Long): Long {
         val position = workoutSetDao.nextPosition(workoutExerciseId)
         return workoutSetDao.insert(
@@ -206,6 +224,31 @@ class WorkoutRepository(
         val workout = workoutDao.getById(workoutId) ?: return
         if (workout.endedAt != null) return
         workoutDao.update(workout.copy(endedAt = System.currentTimeMillis()))
+    }
+
+    suspend fun syncTemplateSetsFromWorkout(workoutId: Long) {
+        val workoutExercises = workoutExerciseDao.getForWorkout(workoutId)
+        for (we in workoutExercises) {
+            val exerciseId = we.exerciseId ?: continue
+            val completedSets = workoutSetDao.getCompletedSetsForWorkoutExercise(we.id)
+            if (completedSets.isEmpty()) continue
+            val templateExercises = workoutExerciseDao.getTemplateExercisesForExercise(exerciseId)
+            for (templateWe in templateExercises) {
+                val templateSets = workoutSetDao.getSetsForWorkoutExercise(templateWe.id)
+                if (templateSets.isEmpty()) continue
+                for (templateSet in templateSets) {
+                    val matching = completedSets.find { it.position == templateSet.position }
+                        ?: continue
+                    workoutSetDao.update(
+                        templateSet.copy(
+                            weightKg = matching.weightKg,
+                            reps = matching.reps,
+                            durationSeconds = matching.durationSeconds
+                        )
+                    )
+                }
+            }
+        }
     }
 
     suspend fun discardWorkout(workoutId: Long) {

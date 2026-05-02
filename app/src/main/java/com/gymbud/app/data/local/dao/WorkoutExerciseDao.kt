@@ -26,6 +26,20 @@ interface WorkoutExerciseDao {
     )
     fun observeForWorkout(workoutId: Long): Flow<List<WorkoutExercise>>
 
+    @Query(
+        "SELECT * FROM workout_exercises " +
+                "WHERE workoutId = :workoutId " +
+                "ORDER BY position ASC"
+    )
+    suspend fun getForWorkout(workoutId: Long): List<WorkoutExercise>
+
+    @Query(
+        "SELECT we.* FROM workout_exercises we " +
+                "INNER JOIN workouts w ON we.workoutId = w.id " +
+                "WHERE we.exerciseId = :exerciseId AND w.isTemplate = 1"
+    )
+    suspend fun getTemplateExercisesForExercise(exerciseId: Long): List<WorkoutExercise>
+
     @Query("UPDATE workout_exercises SET notes = :notes WHERE id = :id")
     suspend fun updateNotes(id: Long, notes: String?): Int
 

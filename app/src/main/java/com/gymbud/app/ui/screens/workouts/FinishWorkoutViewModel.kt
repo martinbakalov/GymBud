@@ -75,6 +75,7 @@ class FinishWorkoutViewModel(
             repository.updateWorkoutNotes(workoutId, notes?.trim()?.takeIf { it.isNotBlank() })
             repository.updateWorkoutPhoto(workoutId, photoPath)
             repository.finishWorkout(workoutId)
+            repository.syncTemplateSetsFromWorkout(workoutId)
             onSaved()
         }
     }
