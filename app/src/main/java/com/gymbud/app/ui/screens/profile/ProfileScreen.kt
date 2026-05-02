@@ -71,8 +71,8 @@ import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Profile
 import com.gymbud.app.data.local.entity.Workout
-import com.gymbud.app.domain.model.WeightUnit
-import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.model.WeightUnit
+import com.gymbud.app.model.WorkoutStats
 import com.gymbud.app.ui.util.formatDurationCompact
 import com.gymbud.app.ui.util.formatSessionDateTime
 import com.gymbud.app.ui.util.formatVolumeNumber

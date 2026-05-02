@@ -77,8 +77,8 @@ import kotlinx.coroutines.launch
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Exercise
-import com.gymbud.app.domain.model.Equipment
-import com.gymbud.app.domain.model.MuscleGroup
+import com.gymbud.app.model.Equipment
+import com.gymbud.app.model.MuscleGroup
 import com.gymbud.app.ui.util.accentColor
 import com.gymbud.app.ui.util.displayName
 import com.gymbud.app.ui.util.exerciseImageRes

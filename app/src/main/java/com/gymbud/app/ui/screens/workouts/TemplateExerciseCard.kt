@@ -64,8 +64,8 @@ import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Exercise
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
-import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.ExerciseType
+import com.gymbud.app.model.WeightUnit
 import com.gymbud.app.ui.util.displayName
 import com.gymbud.app.ui.util.exerciseImageRes
 import com.gymbud.app.ui.util.labelRes

@@ -71,10 +71,10 @@ import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Exercise
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
-import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.domain.model.PersonalBest
-import com.gymbud.app.domain.model.PreviousSet
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.ExerciseType
+import com.gymbud.app.model.PersonalBest
+import com.gymbud.app.model.PreviousSet
+import com.gymbud.app.model.WeightUnit
 import com.gymbud.app.ui.util.displayName
 import com.gymbud.app.ui.util.exerciseImageRes
 import kotlinx.coroutines.flow.Flow
@@ -98,7 +98,6 @@ fun WorkoutExerciseCard(
     previousSetProvider: suspend (Long, Int) -> PreviousSet?,
     personalBestProvider: suspend (Long) -> PersonalBest?,
     observeSets: () -> Flow<List<WorkoutSet>>,
-    onReorderSets: (List<WorkoutSet>) -> Unit = {},
     dragHandle: @Composable () -> Unit = {}
 ) {
     var exercise by remember { mutableStateOf<Exercise?>(null) }
@@ -447,7 +446,7 @@ private fun SetRow(
                 val historicBest = personalBest?.durationSeconds ?: 0
                 val inWorkoutBest = otherCompletedSets.mapNotNull { it.durationSeconds }.maxOrNull() ?: 0
                 val effectiveBest = maxOf(historicBest, inWorkoutBest)
-                effectiveBest > 0 && current > effectiveBest
+                effectiveBest in 1 until current
             } else false
         }
     }
@@ -583,7 +582,20 @@ private fun SetRow(
                         if (set.isCompleted) completedGreen
                         else MaterialTheme.colorScheme.surfaceVariant
                     )
-                    .clickable { onUpdate(set.copy(isCompleted = !set.isCompleted)) },
+                    .clickable {
+                        val updatedSet = when (exerciseType) {
+                            ExerciseType.WEIGHT_REPS -> set.copy(
+                                isCompleted = !set.isCompleted,
+                                weightKg = liveWeightKg ?: set.weightKg,
+                                reps = liveReps ?: set.reps
+                            )
+                            ExerciseType.TIME -> set.copy(
+                                isCompleted = !set.isCompleted,
+                                durationSeconds = liveDurationSeconds ?: set.durationSeconds
+                            )
+                        }
+                        onUpdate(updatedSet)
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

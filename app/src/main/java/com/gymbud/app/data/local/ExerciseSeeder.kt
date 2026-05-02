@@ -2,25 +2,25 @@ package com.gymbud.app.data.local
 
 import com.gymbud.app.data.local.dao.ExerciseDao
 import com.gymbud.app.data.local.entity.Exercise
-import com.gymbud.app.domain.model.Equipment
-import com.gymbud.app.domain.model.Equipment.BARBELL
-import com.gymbud.app.domain.model.Equipment.BODYWEIGHT
-import com.gymbud.app.domain.model.Equipment.CABLE
-import com.gymbud.app.domain.model.Equipment.DUMBBELL
-import com.gymbud.app.domain.model.Equipment.MACHINE
-import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.domain.model.MuscleGroup
-import com.gymbud.app.domain.model.MuscleGroup.BACK
-import com.gymbud.app.domain.model.MuscleGroup.BICEPS
-import com.gymbud.app.domain.model.MuscleGroup.CALVES
-import com.gymbud.app.domain.model.MuscleGroup.CHEST
-import com.gymbud.app.domain.model.MuscleGroup.CORE
-import com.gymbud.app.domain.model.MuscleGroup.FULL_BODY
-import com.gymbud.app.domain.model.MuscleGroup.GLUTES
-import com.gymbud.app.domain.model.MuscleGroup.HAMSTRINGS
-import com.gymbud.app.domain.model.MuscleGroup.QUADS
-import com.gymbud.app.domain.model.MuscleGroup.SHOULDERS
-import com.gymbud.app.domain.model.MuscleGroup.TRICEPS
+import com.gymbud.app.model.Equipment
+import com.gymbud.app.model.Equipment.BARBELL
+import com.gymbud.app.model.Equipment.BODYWEIGHT
+import com.gymbud.app.model.Equipment.CABLE
+import com.gymbud.app.model.Equipment.DUMBBELL
+import com.gymbud.app.model.Equipment.MACHINE
+import com.gymbud.app.model.ExerciseType
+import com.gymbud.app.model.MuscleGroup
+import com.gymbud.app.model.MuscleGroup.BACK
+import com.gymbud.app.model.MuscleGroup.BICEPS
+import com.gymbud.app.model.MuscleGroup.CALVES
+import com.gymbud.app.model.MuscleGroup.CHEST
+import com.gymbud.app.model.MuscleGroup.CORE
+import com.gymbud.app.model.MuscleGroup.FULL_BODY
+import com.gymbud.app.model.MuscleGroup.GLUTES
+import com.gymbud.app.model.MuscleGroup.HAMSTRINGS
+import com.gymbud.app.model.MuscleGroup.QUADS
+import com.gymbud.app.model.MuscleGroup.SHOULDERS
+import com.gymbud.app.model.MuscleGroup.TRICEPS
 
 object ExerciseSeeder {
 

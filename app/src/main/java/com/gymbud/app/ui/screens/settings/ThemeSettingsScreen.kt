@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
-import com.gymbud.app.domain.model.ThemeMode
+import com.gymbud.app.model.ThemeMode
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

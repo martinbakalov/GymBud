@@ -1,7 +1,7 @@
 package com.gymbud.app.ui.util
 
 import androidx.compose.ui.graphics.Color
-import com.gymbud.app.domain.model.MuscleGroup
+import com.gymbud.app.model.MuscleGroup
 import com.gymbud.app.ui.theme.AccentAmber
 import com.gymbud.app.ui.theme.AccentBlue
 import com.gymbud.app.ui.theme.AccentCyan

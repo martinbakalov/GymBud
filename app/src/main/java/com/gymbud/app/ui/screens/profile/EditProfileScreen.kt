@@ -1,7 +1,10 @@
 package com.gymbud.app.ui.screens.profile
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.core.content.ContextCompat
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -72,7 +75,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
-import com.gymbud.app.domain.model.Sex
+import com.gymbud.app.model.Sex
 import com.gymbud.app.ui.util.copyUriToAvatarPhoto
 import com.gymbud.app.ui.util.createAvatarPhotoFile
 import com.gymbud.app.ui.util.labelRes
@@ -105,6 +108,16 @@ fun EditProfileScreen(onExit: () -> Unit) {
         }
         pendingAvatarFile = null
         pendingAvatarUri = null
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            val (file, uri) = createAvatarPhotoFile(context)
+            pendingAvatarFile = file
+            pendingAvatarUri = uri
+        }
     }
 
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -150,9 +163,16 @@ fun EditProfileScreen(onExit: () -> Unit) {
             AvatarSection(
                 avatarPath = state.avatarPath,
                 onCameraClick = {
-                    val (file, uri) = createAvatarPhotoFile(context)
-                    pendingAvatarFile = file
-                    pendingAvatarUri = uri
+                    val hasCameraPermission = ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
+                    if (hasCameraPermission) {
+                        val (file, uri) = createAvatarPhotoFile(context)
+                        pendingAvatarFile = file
+                        pendingAvatarUri = uri
+                    } else {
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
                 },
                 onGalleryClick = {
                     galleryLauncher.launch(

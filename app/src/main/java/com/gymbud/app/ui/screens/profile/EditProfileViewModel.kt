@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.gymbud.app.data.local.entity.Profile
 import com.gymbud.app.data.repository.ProfileRepository
-import com.gymbud.app.domain.model.Sex
+import com.gymbud.app.model.Sex
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

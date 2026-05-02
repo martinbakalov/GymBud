@@ -235,5 +235,5 @@
     <string name="exercises_photo_camera">Камера</string>
     <string name="template_set_header">Серия</string>
     <string name="template_reps_header">Повт</string>
-    <string name="template_rename">Rename template</string>
+    <string name="template_rename">Преименувай шаблона</string>
 </resources>

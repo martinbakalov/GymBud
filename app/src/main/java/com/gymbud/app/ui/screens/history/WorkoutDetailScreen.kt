@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,8 +24,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,8 +59,8 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
-import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.ExerciseType
+import com.gymbud.app.model.WeightUnit
 import com.gymbud.app.ui.util.displayName
 import com.gymbud.app.ui.util.formatDurationCompact
 import com.gymbud.app.ui.util.formatSessionDateTime
@@ -68,6 +72,7 @@ import com.gymbud.app.ui.util.shareWorkout
 import java.io.File
 
 private val detailAmber = Color(0xFFFFB300)
+private val completedGreen = Color(0xFF4CAF50)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -195,6 +200,14 @@ fun WorkoutDetailScreen(
             val photoPath = workout?.photoPath
             if (photoPath != null && File(photoPath).exists()) {
                 item(key = "photo") {
+                    val aspectRatio = remember(photoPath) {
+                        val opts = android.graphics.BitmapFactory.Options()
+                            .apply { inJustDecodeBounds = true }
+                        android.graphics.BitmapFactory.decodeFile(photoPath, opts)
+                        if (opts.outWidth > 0 && opts.outHeight > 0)
+                            opts.outWidth.toFloat() / opts.outHeight.toFloat()
+                        else null
+                    }
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(File(photoPath))
@@ -205,6 +218,10 @@ fun WorkoutDetailScreen(
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .then(
+                                if (aspectRatio != null) Modifier.aspectRatio(aspectRatio)
+                                else Modifier.height(280.dp)
+                            )
                             .clip(RoundedCornerShape(24.dp))
                     )
                 }
@@ -454,46 +471,60 @@ private fun ExerciseReadOnlyCard(block: ExerciseBlock, unit: WeightUnit) {
                     }
                 }
 
+                val rowBg = when {
+                    set.isPR -> detailAmber.copy(alpha = 0.10f)
+                    set.isCompleted -> completedGreen.copy(alpha = 0.07f)
+                    else -> Color.Transparent
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .then(
-                            if (set.isPR) Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(detailAmber.copy(alpha = 0.10f))
-                            else Modifier
-                        )
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(rowBg)
                         .padding(horizontal = 8.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "${set.position + 1}",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (set.isPR) detailAmber
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = when {
+                            set.isPR -> detailAmber
+                            set.isCompleted -> completedGreen
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                         modifier = Modifier.width(28.dp)
                     )
                     Text(
                         text = lineText,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = if (set.isPR) FontWeight.SemiBold else FontWeight.Normal,
-                        color = if (set.isPR) MaterialTheme.colorScheme.onSurface
-                        else MaterialTheme.colorScheme.onSurface,
+                        color = if (set.isCompleted) MaterialTheme.colorScheme.onSurface
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center
                     )
-                    Box(
-                        modifier = Modifier.width(28.dp),
-                        contentAlignment = Alignment.Center
+                    Row(
+                        modifier = Modifier.width(48.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (set.isPR) {
                             Icon(
                                 imageVector = Icons.Default.Star,
                                 contentDescription = null,
                                 tint = detailAmber,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(14.dp)
                             )
+                            Spacer(Modifier.width(4.dp))
                         }
+                        Icon(
+                            imageVector = if (set.isCompleted) Icons.Default.CheckCircle
+                            else Icons.Outlined.RadioButtonUnchecked,
+                            contentDescription = null,
+                            tint = if (set.isCompleted) completedGreen
+                            else MaterialTheme.colorScheme.outlineVariant,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                 }
             }

@@ -6,9 +6,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.gymbud.app.domain.model.AppLanguage
-import com.gymbud.app.domain.model.ThemeMode
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.AppLanguage
+import com.gymbud.app.model.ThemeMode
+import com.gymbud.app.model.WeightUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map

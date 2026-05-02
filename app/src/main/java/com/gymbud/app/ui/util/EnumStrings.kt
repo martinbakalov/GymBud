@@ -2,9 +2,9 @@ package com.gymbud.app.ui.util
 
 import androidx.annotation.StringRes
 import com.gymbud.app.R
-import com.gymbud.app.domain.model.Equipment
-import com.gymbud.app.domain.model.MuscleGroup
-import com.gymbud.app.domain.model.Sex
+import com.gymbud.app.model.Equipment
+import com.gymbud.app.model.MuscleGroup
+import com.gymbud.app.model.Sex
 
 
 @StringRes

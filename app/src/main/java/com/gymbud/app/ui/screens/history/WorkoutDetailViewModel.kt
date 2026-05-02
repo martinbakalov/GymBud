@@ -9,7 +9,7 @@ import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.data.repository.ExerciseRepository
 import com.gymbud.app.data.repository.WorkoutRepository
-import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.model.WorkoutStats
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

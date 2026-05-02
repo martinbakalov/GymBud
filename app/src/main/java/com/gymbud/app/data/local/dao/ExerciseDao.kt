@@ -7,8 +7,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.gymbud.app.data.local.entity.Exercise
-import com.gymbud.app.domain.model.Equipment
-import com.gymbud.app.domain.model.MuscleGroup
+import com.gymbud.app.model.Equipment
+import com.gymbud.app.model.MuscleGroup
 import kotlinx.coroutines.flow.Flow
 
 
@@ -38,14 +38,6 @@ interface ExerciseDao {
 
     @Query("SELECT * FROM exercises WHERE id = :id")
     fun observeById(id: Long): Flow<Exercise?>
-
-    @Query(
-        "SELECT * FROM exercises " +
-                "WHERE name LIKE :query OR nameKey LIKE :query " +
-                "ORDER BY name COLLATE NOCASE"
-    )
-    fun searchByName(query: String): Flow<List<Exercise>>
-
 
     @Query(
         "SELECT * FROM exercises " +

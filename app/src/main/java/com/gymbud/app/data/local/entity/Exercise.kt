@@ -2,10 +2,10 @@ package com.gymbud.app.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.gymbud.app.domain.model.Equipment
-import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.domain.model.MuscleGroup
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.Equipment
+import com.gymbud.app.model.ExerciseType
+import com.gymbud.app.model.MuscleGroup
+import com.gymbud.app.model.WeightUnit
 
 
 @Entity(tableName = "exercises")

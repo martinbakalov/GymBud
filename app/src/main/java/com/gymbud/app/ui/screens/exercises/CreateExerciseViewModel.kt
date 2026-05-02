@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.gymbud.app.data.local.entity.Exercise
 import com.gymbud.app.data.repository.ExerciseRepository
-import com.gymbud.app.domain.model.Equipment
-import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.domain.model.MuscleGroup
+import com.gymbud.app.model.Equipment
+import com.gymbud.app.model.ExerciseType
+import com.gymbud.app.model.MuscleGroup
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

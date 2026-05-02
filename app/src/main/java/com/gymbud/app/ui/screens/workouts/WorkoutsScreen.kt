@@ -60,7 +60,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Workout
-import com.gymbud.app.domain.model.MuscleGroup
+import com.gymbud.app.model.MuscleGroup
 import com.gymbud.app.notifications.NotificationHelper.cancelWorkoutInProgress
 import com.gymbud.app.ui.theme.HeroGradientEnd
 import com.gymbud.app.ui.theme.HeroGradientStart

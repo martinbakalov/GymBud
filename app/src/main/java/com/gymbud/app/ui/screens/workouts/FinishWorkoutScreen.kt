@@ -1,7 +1,10 @@
 package com.gymbud.app.ui.screens.workouts
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.core.content.ContextCompat
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -69,8 +72,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
-import com.gymbud.app.domain.model.WeightUnit
-import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.model.WeightUnit
+import com.gymbud.app.model.WorkoutStats
 import com.gymbud.app.notifications.NotificationHelper.cancelWorkoutInProgress
 import com.gymbud.app.ui.util.copyUriToWorkoutPhoto
 import com.gymbud.app.ui.util.createWorkoutPhotoFile
@@ -128,6 +131,16 @@ fun FinishWorkoutScreen(
         }
         pendingFile = null
         pendingUri = null
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            val (file, uri) = createWorkoutPhotoFile(context)
+            pendingFile = file
+            pendingUri = uri
+        }
     }
 
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -199,9 +212,16 @@ fun FinishWorkoutScreen(
                 PhotoSection(
                     photoFile = photoFile,
                     onCameraClick = {
-                        val (file, uri) = createWorkoutPhotoFile(context)
-                        pendingFile = file
-                        pendingUri = uri
+                        val hasCameraPermission = ContextCompat.checkSelfPermission(
+                            context, Manifest.permission.CAMERA
+                        ) == PackageManager.PERMISSION_GRANTED
+                        if (hasCameraPermission) {
+                            val (file, uri) = createWorkoutPhotoFile(context)
+                            pendingFile = file
+                            pendingUri = uri
+                        } else {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
                     },
                     onGalleryClick = {
                         galleryLauncher.launch(

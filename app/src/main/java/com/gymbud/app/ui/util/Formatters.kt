@@ -1,6 +1,6 @@
 package com.gymbud.app.ui.util
 
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.WeightUnit
 import java.text.DateFormat
 import java.util.Date
 

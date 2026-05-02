@@ -3,8 +3,8 @@ package com.gymbud.app.data.repository
 import android.content.Context
 import com.gymbud.app.data.local.dao.ExerciseDao
 import com.gymbud.app.data.local.entity.Exercise
-import com.gymbud.app.domain.model.Equipment
-import com.gymbud.app.domain.model.MuscleGroup
+import com.gymbud.app.model.Equipment
+import com.gymbud.app.model.MuscleGroup
 import com.gymbud.app.ui.util.exerciseNameResId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

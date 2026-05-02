@@ -61,7 +61,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.WorkoutExercise
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.WeightUnit
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 

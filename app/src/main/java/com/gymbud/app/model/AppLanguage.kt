@@ -1,4 +1,4 @@
-package com.gymbud.app.domain.model
+package com.gymbud.app.model
 
 enum class AppLanguage(val tag: String) {
     SYSTEM(""),

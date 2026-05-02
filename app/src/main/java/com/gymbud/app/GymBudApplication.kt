@@ -8,8 +8,8 @@ import com.gymbud.app.data.prefs.AppPreferences
 import com.gymbud.app.data.repository.ExerciseRepository
 import com.gymbud.app.data.repository.ProfileRepository
 import com.gymbud.app.data.repository.WorkoutRepository
-import com.gymbud.app.domain.model.AppLanguage
-import com.gymbud.app.domain.model.ThemeMode
+import com.gymbud.app.model.AppLanguage
+import com.gymbud.app.model.ThemeMode
 import com.gymbud.app.notifications.DailyNotificationScheduler
 import com.gymbud.app.notifications.NotificationHelper
 import kotlinx.coroutines.CoroutineScope

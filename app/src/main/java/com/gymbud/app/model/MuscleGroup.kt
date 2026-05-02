@@ -1,4 +1,4 @@
-package com.gymbud.app.domain.model
+package com.gymbud.app.model
 
 enum class MuscleGroup {
     CHEST,

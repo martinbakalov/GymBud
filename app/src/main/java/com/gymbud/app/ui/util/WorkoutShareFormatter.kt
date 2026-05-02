@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.gymbud.app.R
 import com.gymbud.app.data.local.entity.Workout
-import com.gymbud.app.domain.model.WeightUnit
-import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.model.WeightUnit
+import com.gymbud.app.model.WorkoutStats
 
 @Composable
 fun formatWorkoutShareSummary(
@@ -29,5 +29,8 @@ fun formatWorkoutShareSummary(
         appendLine("⏱ $duration")
         appendLine("📋 $sets ${stringResource(R.string.stats_sets).lowercase()}")
         appendLine("🏋️ $volumeText")
+        if (stats.prCount > 0) {
+            appendLine("⭐ ${"${stats.prCount} ${stringResource(R.string.stats_prs)}"}")
+        }
     }.trim()
 }

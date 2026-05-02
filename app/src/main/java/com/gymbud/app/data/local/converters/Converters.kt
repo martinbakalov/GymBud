@@ -1,13 +1,13 @@
 package com.gymbud.app.data.local.converters
 
 import androidx.room.TypeConverter
-import com.gymbud.app.domain.model.Equipment
-import com.gymbud.app.domain.model.ExerciseType
-import com.gymbud.app.domain.model.MuscleGroup
-import com.gymbud.app.domain.model.Sex
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.Equipment
+import com.gymbud.app.model.ExerciseType
+import com.gymbud.app.model.MuscleGroup
+import com.gymbud.app.model.Sex
+import com.gymbud.app.model.WeightUnit
 
-@Suppress("unused")
+
 class Converters {
 
     @TypeConverter

@@ -62,7 +62,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.WeightUnit
 import com.gymbud.app.notifications.NotificationHelper.cancelWorkoutInProgress
 import com.gymbud.app.notifications.NotificationHelper.showWorkoutInProgress
 import com.gymbud.app.ui.util.formatDurationMinutes
@@ -239,7 +239,6 @@ fun ActiveWorkoutScreen(
                                     viewModel.personalBestForExercise(exerciseId)
                                 },
                                 observeSets = { viewModel.observeSets(we.id) },
-                                onReorderSets = { viewModel.persistSetOrder(it) },
                                 dragHandle = {
                                     Icon(
                                         imageVector = Icons.Default.DragHandle,

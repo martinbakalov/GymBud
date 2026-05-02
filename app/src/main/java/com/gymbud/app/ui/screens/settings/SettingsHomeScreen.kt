@@ -50,9 +50,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
-import com.gymbud.app.domain.model.AppLanguage
-import com.gymbud.app.domain.model.ThemeMode
-import com.gymbud.app.domain.model.WeightUnit
+import com.gymbud.app.model.AppLanguage
+import com.gymbud.app.model.ThemeMode
+import com.gymbud.app.model.WeightUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -9,10 +9,10 @@ import com.gymbud.app.data.local.entity.WorkoutSet
 import com.gymbud.app.data.prefs.AppPreferences
 import com.gymbud.app.data.repository.ExerciseRepository
 import com.gymbud.app.data.repository.WorkoutRepository
-import com.gymbud.app.domain.model.PersonalBest
-import com.gymbud.app.domain.model.PreviousSet
-import com.gymbud.app.domain.model.WeightUnit
-import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.model.PersonalBest
+import com.gymbud.app.model.PreviousSet
+import com.gymbud.app.model.WeightUnit
+import com.gymbud.app.model.WorkoutStats
 import com.gymbud.app.ui.util.effectiveUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -119,12 +119,6 @@ class ActiveWorkoutViewModel(
     fun persistExerciseOrder(orderedExercises: List<WorkoutExercise>) {
         viewModelScope.launch {
             repository.updateExercisePositions(orderedExercises)
-        }
-    }
-
-    fun persistSetOrder(orderedSets: List<WorkoutSet>) {
-        viewModelScope.launch {
-            repository.updateSetPositions(orderedSets)
         }
     }
 

@@ -7,7 +7,7 @@ import com.gymbud.app.data.local.entity.Profile
 import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.data.repository.ProfileRepository
 import com.gymbud.app.data.repository.WorkoutRepository
-import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.model.WorkoutStats
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn

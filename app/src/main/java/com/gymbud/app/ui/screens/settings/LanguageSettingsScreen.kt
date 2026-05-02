@@ -31,7 +31,7 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
-import com.gymbud.app.domain.model.AppLanguage
+import com.gymbud.app.model.AppLanguage
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

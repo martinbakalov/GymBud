@@ -7,10 +7,10 @@ import com.gymbud.app.data.local.dao.WorkoutSetDao
 import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
-import com.gymbud.app.domain.model.MuscleGroup
-import com.gymbud.app.domain.model.PersonalBest
-import com.gymbud.app.domain.model.PreviousSet
-import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.model.MuscleGroup
+import com.gymbud.app.model.PersonalBest
+import com.gymbud.app.model.PreviousSet
+import com.gymbud.app.model.WorkoutStats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -84,10 +84,6 @@ class WorkoutRepository(
 
     suspend fun updateExercisePositions(exercises: List<WorkoutExercise>) {
         workoutExerciseDao.updateAll(exercises.mapIndexed { i, e -> e.copy(position = i) })
-    }
-
-    suspend fun updateSetPositions(sets: List<WorkoutSet>) {
-        workoutSetDao.updateAll(sets.mapIndexed { i, s -> s.copy(position = i) })
     }
 
     suspend fun getSetCountForTemplate(templateId: Long): Int =

@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.data.prefs.AppPreferences
 import com.gymbud.app.data.repository.WorkoutRepository
-import com.gymbud.app.domain.model.WeightUnit
-import com.gymbud.app.domain.model.WorkoutStats
+import com.gymbud.app.model.WeightUnit
+import com.gymbud.app.model.WorkoutStats
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
