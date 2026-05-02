@@ -74,6 +74,12 @@ class TemplateEditorViewModel(
         }
     }
 
+    fun persistExerciseOrder(orderedExercises: List<WorkoutExercise>) {
+        viewModelScope.launch {
+            repository.updateExercisePositions(orderedExercises)
+        }
+    }
+
     class Factory(
         private val templateId: Long,
         private val repository: WorkoutRepository,

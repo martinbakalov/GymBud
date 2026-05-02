@@ -116,6 +116,18 @@ class ActiveWorkoutViewModel(
         }
     }
 
+    fun persistExerciseOrder(orderedExercises: List<WorkoutExercise>) {
+        viewModelScope.launch {
+            repository.updateExercisePositions(orderedExercises)
+        }
+    }
+
+    fun persistSetOrder(orderedSets: List<WorkoutSet>) {
+        viewModelScope.launch {
+            repository.updateSetPositions(orderedSets)
+        }
+    }
+
 
     class Factory(
         private val workoutId: Long,

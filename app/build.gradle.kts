@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.reorderable)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.coil.compose)

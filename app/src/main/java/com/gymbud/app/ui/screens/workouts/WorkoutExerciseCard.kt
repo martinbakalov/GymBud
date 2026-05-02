@@ -97,7 +97,9 @@ fun WorkoutExerciseCard(
     onUpdateNotes: (String?) -> Unit,
     previousSetProvider: suspend (Long, Int) -> PreviousSet?,
     personalBestProvider: suspend (Long) -> PersonalBest?,
-    observeSets: () -> Flow<List<WorkoutSet>>
+    observeSets: () -> Flow<List<WorkoutSet>>,
+    onReorderSets: (List<WorkoutSet>) -> Unit = {},
+    dragHandle: @Composable () -> Unit = {}
 ) {
     var exercise by remember { mutableStateOf<Exercise?>(null) }
     LaunchedEffect(workoutExercise.exerciseId) {
@@ -146,6 +148,8 @@ fun WorkoutExerciseCard(
                     }
                 }
 
+                dragHandle()
+
                 Box {
                     IconButton(
                         onClick = { menuOpen = true },
@@ -187,84 +191,86 @@ fun WorkoutExerciseCard(
                 unit = unit
             )
 
-            sets.forEach { set ->
-                key(set.id) {
-                    val previousSet by produceState<PreviousSet?>(initialValue = null, set.position) {
-                        val exId = workoutExercise.exerciseId
-                        value = if (exId != null) previousSetProvider(exId, set.position) else null
-                    }
-                    val dismissState = rememberSwipeToDismissBoxState(
-                        positionalThreshold = { totalDistance -> totalDistance * 0.4f }
-                    )
-                    val scope = rememberCoroutineScope()
-                    var showConfirm by remember { mutableStateOf(false) }
-
-                    LaunchedEffect(dismissState.currentValue) {
-                        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-                            showConfirm = true
+            Column {
+                sets.forEach { set ->
+                    key(set.id) {
+                        val previousSet by produceState<PreviousSet?>(initialValue = null, set.position) {
+                            val exId = workoutExercise.exerciseId
+                            value = if (exId != null) previousSetProvider(exId, set.position) else null
                         }
-                    }
+                        val dismissState = rememberSwipeToDismissBoxState(
+                            positionalThreshold = { totalDistance -> totalDistance * 0.4f }
+                        )
+                        val scope = rememberCoroutineScope()
+                        var showConfirm by remember { mutableStateOf(false) }
 
-                    if (showConfirm) {
-                        AlertDialog(
-                            onDismissRequest = {
-                                showConfirm = false
-                                scope.launch { dismissState.reset() }
-                            },
-                            title = { Text(stringResource(R.string.workout_delete_set_title)) },
-                            text = { Text(stringResource(R.string.workout_delete_set_body)) },
-                            confirmButton = {
-                                TextButton(onClick = {
-                                    showConfirm = false
-                                    onDeleteSet(set)
-                                }) {
-                                    Text(stringResource(R.string.action_delete))
-                                }
-                            },
-                            dismissButton = {
-                                TextButton(onClick = {
+                        LaunchedEffect(dismissState.currentValue) {
+                            if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+                                showConfirm = true
+                            }
+                        }
+
+                        if (showConfirm) {
+                            AlertDialog(
+                                onDismissRequest = {
                                     showConfirm = false
                                     scope.launch { dismissState.reset() }
-                                }) {
-                                    Text(stringResource(R.string.action_cancel))
+                                },
+                                title = { Text(stringResource(R.string.workout_delete_set_title)) },
+                                text = { Text(stringResource(R.string.workout_delete_set_body)) },
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        showConfirm = false
+                                        onDeleteSet(set)
+                                    }) {
+                                        Text(stringResource(R.string.action_delete))
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = {
+                                        showConfirm = false
+                                        scope.launch { dismissState.reset() }
+                                    }) {
+                                        Text(stringResource(R.string.action_cancel))
+                                    }
                                 }
-                            }
-                        )
-                    }
-
-                    SwipeToDismissBox(
-                        state = dismissState,
-                        enableDismissFromStartToEnd = false,
-                        enableDismissFromEndToStart = true,
-                        backgroundContent = {
-                            if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(MaterialTheme.colorScheme.errorContainer)
-                                        .padding(horizontal = 16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.End
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onErrorContainer
-                                    )
-                                }
-                            }
+                            )
                         }
-                    ) {
-                        SetRow(
-                            set = set,
-                            exerciseType = exercise?.type ?: ExerciseType.WEIGHT_REPS,
-                            unit = unit,
-                            previousSet = previousSet,
-                            personalBest = personalBest,
-                            allSets = sets,
-                            onUpdate = onUpdateSet
-                        )
+
+                        SwipeToDismissBox(
+                            state = dismissState,
+                            enableDismissFromStartToEnd = false,
+                            enableDismissFromEndToStart = true,
+                            backgroundContent = {
+                                if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .background(MaterialTheme.colorScheme.errorContainer)
+                                            .padding(horizontal = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onErrorContainer
+                                        )
+                                    }
+                                }
+                            }
+                        ) {
+                            SetRow(
+                                set = set,
+                                exerciseType = exercise?.type ?: ExerciseType.WEIGHT_REPS,
+                                unit = unit,
+                                previousSet = previousSet,
+                                personalBest = personalBest,
+                                allSets = sets,
+                                onUpdate = onUpdateSet
+                            )
+                        }
                     }
                 }
             }
@@ -593,6 +599,7 @@ private fun SetRow(
                 )
             }
         }
+
     }
 }
 

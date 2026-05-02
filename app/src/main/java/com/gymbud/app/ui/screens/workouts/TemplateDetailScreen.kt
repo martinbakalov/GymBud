@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
@@ -44,6 +47,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -55,7 +60,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gymbud.app.GymBudApplication
 import com.gymbud.app.R
+import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.domain.model.WeightUnit
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,6 +98,19 @@ fun TemplateDetailScreen(
     val activeWorkout by workoutsVm.activeWorkout.collectAsStateWithLifecycle()
     val unit by app.preferences.weightUnit
         .collectAsStateWithLifecycle(initialValue = WeightUnit.KG)
+
+    val localExercises: SnapshotStateList<WorkoutExercise> =
+        remember { exercises.toMutableStateList() }
+    LaunchedEffect(exercises) {
+        if (localExercises.map { it.id } != exercises.map { it.id }) {
+            localExercises.clear()
+            localExercises.addAll(exercises)
+        }
+    }
+    val lazyListState = rememberLazyListState()
+    val reorderState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        localExercises.add(to.index, localExercises.removeAt(from.index))
+    }
 
     var pendingStart by remember { mutableStateOf(false) }
     var menuOpen by remember { mutableStateOf(false) }
@@ -161,24 +182,24 @@ fun TemplateDetailScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     OutlinedButton(
                         onClick = onAddExercisesClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(16.dp)
+                            .height(40.dp),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = null,
-                            modifier = Modifier.padding(end = 6.dp)
+                            modifier = Modifier.padding(end = 6.dp).size(16.dp)
                         )
                         Text(
                             text = stringResource(R.string.workout_add_exercise),
-                            style = MaterialTheme.typography.labelLarge,
+                            style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -192,28 +213,29 @@ fun TemplateDetailScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
+                            .height(44.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
                         Text(
                             text = stringResource(R.string.template_start_workout),
-                            style = MaterialTheme.typography.titleSmall,
+                            style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(Modifier.padding(horizontal = 4.dp))
                         Icon(
                             imageVector = Icons.Default.PlayArrow,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
             }
         }
     ) { innerPadding ->
-        if (exercises.isEmpty()) {
+        if (localExercises.isEmpty()) {
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -226,31 +248,51 @@ fun TemplateDetailScreen(
                 )
             }
         } else {
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .fillMaxSize()
             ) {
-                item(key = "chips") {
-                    CountChip(
-                        text = "${exercises.size} ${
-                            stringResource(R.string.detail_section_exercises).lowercase()
-                        }"
-                    )
-                }
-                items(items = exercises, key = { it.id }) { we ->
-                    TemplateExerciseCard(
-                        workoutExercise = we,
-                        app = app,
-                        unit = unit,
-                        onAddSet = { templateVm.addSet(we.id, we.exerciseId) },
-                        onDeleteSet = templateVm::deleteSet,
-                        onUpdateSet = templateVm::updateSet,
-                        onRemoveExercise = { templateVm.removeExercise(we) },
-                        observeSets = { templateVm.observeSets(we.id) }
-                    )
+                CountChip(
+                    text = "${localExercises.size} ${
+                        stringResource(R.string.detail_section_exercises).lowercase()
+                    }",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                )
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    itemsIndexed(items = localExercises, key = { _, it -> it.id }) { _, we ->
+                        ReorderableItem(reorderState, key = we.id) {
+                            TemplateExerciseCard(
+                                workoutExercise = we,
+                                app = app,
+                                unit = unit,
+                                onAddSet = { templateVm.addSet(we.id, we.exerciseId) },
+                                onDeleteSet = templateVm::deleteSet,
+                                onUpdateSet = templateVm::updateSet,
+                                onRemoveExercise = { templateVm.removeExercise(we) },
+                                observeSets = { templateVm.observeSets(we.id) },
+                                dragHandle = {
+                                    Icon(
+                                        imageVector = Icons.Default.DragHandle,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .draggableHandle(
+                                                onDragStopped = {
+                                                    templateVm.persistExerciseOrder(localExercises.toList())
+                                                }
+                                            )
+                                    )
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -354,11 +396,12 @@ private fun RenameTemplateDialog(
 }
 
 @Composable
-private fun CountChip(text: String) {
+private fun CountChip(text: String, modifier: Modifier = Modifier) {
     Surface(
         shape = RoundedCornerShape(50.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
-        tonalElevation = 0.dp
+        tonalElevation = 0.dp,
+        modifier = modifier
     ) {
         Text(
             text = text,

@@ -81,7 +81,8 @@ fun TemplateExerciseCard(
     onDeleteSet: (WorkoutSet) -> Unit,
     onUpdateSet: (WorkoutSet) -> Unit,
     onRemoveExercise: () -> Unit,
-    observeSets: () -> Flow<List<WorkoutSet>>
+    observeSets: () -> Flow<List<WorkoutSet>>,
+    dragHandle: @Composable () -> Unit = {}
 ) {
     var exercise by remember { mutableStateOf<Exercise?>(null) }
 
@@ -139,6 +140,7 @@ fun TemplateExerciseCard(
                     )
                     Spacer(Modifier.width(4.dp))
                 }
+                dragHandle()
                 IconButton(onClick = onRemoveExercise) {
                     Icon(
                         imageVector = Icons.Default.Delete,

@@ -82,6 +82,14 @@ class WorkoutRepository(
 
     suspend fun getWorkout(id: Long): Workout? = workoutDao.getById(id)
 
+    suspend fun updateExercisePositions(exercises: List<WorkoutExercise>) {
+        workoutExerciseDao.updateAll(exercises.mapIndexed { i, e -> e.copy(position = i) })
+    }
+
+    suspend fun updateSetPositions(sets: List<WorkoutSet>) {
+        workoutSetDao.updateAll(sets.mapIndexed { i, s -> s.copy(position = i) })
+    }
+
     suspend fun getSetCountForTemplate(templateId: Long): Int =
         workoutDao.getSetCountForTemplate(templateId)
 

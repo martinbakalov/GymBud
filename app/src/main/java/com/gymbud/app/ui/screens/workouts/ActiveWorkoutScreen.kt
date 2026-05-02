@@ -18,10 +18,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +41,8 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,6 +69,8 @@ import com.gymbud.app.ui.util.formatDurationMinutes
 import com.gymbud.app.ui.util.formatDurationTicking
 import com.gymbud.app.ui.util.formatVolumeNumber
 import kotlinx.coroutines.delay
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 private val statAmber = Color(0xFFFFB300)
 
@@ -182,44 +188,74 @@ fun ActiveWorkoutScreen(
                     )
                 }
             } else {
+                val localExercises: SnapshotStateList<com.gymbud.app.data.local.entity.WorkoutExercise> =
+                    remember { exercises.toMutableStateList() }
+                LaunchedEffect(exercises) {
+                    if (localExercises.map { it.id } != exercises.map { it.id }) {
+                        localExercises.clear()
+                        localExercises.addAll(exercises)
+                    }
+                }
+                val lazyListState = rememberLazyListState()
+                val reorderState = rememberReorderableLazyListState(lazyListState) { from, to ->
+                    localExercises.add(to.index, localExercises.removeAt(from.index))
+                }
                 LazyColumn(
+                    state = lazyListState,
                     contentPadding = PaddingValues(bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    itemsIndexed(items = exercises, key = { _, it -> it.id }) { index, we ->
-                        val exerciseUnit = if (we.exerciseId != null) {
-                            viewModel.unitForExercise(we.exerciseId, globalUnit)
-                                .collectAsStateWithLifecycle(initialValue = globalUnit).value
-                        } else {
-                            globalUnit
-                        }
+                    itemsIndexed(items = localExercises, key = { _, it -> it.id }) { index, we ->
+                        ReorderableItem(reorderState, key = we.id) {
+                            val exerciseUnit = if (we.exerciseId != null) {
+                                viewModel.unitForExercise(we.exerciseId, globalUnit)
+                                    .collectAsStateWithLifecycle(initialValue = globalUnit).value
+                            } else {
+                                globalUnit
+                            }
 
-                        WorkoutExerciseCard(
-                            workoutExercise = we,
-                            index = index,
-                            app = app,
-                            unit = exerciseUnit,
-                            onAddSet = { viewModel.addSet(we.id) },
-                            onUpdateSet = { set -> viewModel.updateSet(set, we.exerciseId) },
-                            onDeleteSet = viewModel::deleteSet,
-                            onRemoveExercise = { viewModel.removeExercise(we) },
-                            onUnitToggle = {
-                                we.exerciseId?.let { viewModel.toggleUnitForExercise(it, exerciseUnit) }
-                            },
-                            onUpdateNotes = { notes ->
-                                viewModel.updateExerciseNotes(we.id, notes)
-                            },
-                            previousSetProvider = { exerciseId, position ->
-                                viewModel.previousSetFor(exerciseId, position)
-                            },
-                            personalBestProvider = { exerciseId ->
-                                viewModel.personalBestForExercise(exerciseId)
-                            },
-                            observeSets = { viewModel.observeSets(we.id) }
-                        )
+                            WorkoutExerciseCard(
+                                workoutExercise = we,
+                                index = index,
+                                app = app,
+                                unit = exerciseUnit,
+                                onAddSet = { viewModel.addSet(we.id) },
+                                onUpdateSet = { set -> viewModel.updateSet(set, we.exerciseId) },
+                                onDeleteSet = viewModel::deleteSet,
+                                onRemoveExercise = { viewModel.removeExercise(we) },
+                                onUnitToggle = {
+                                    we.exerciseId?.let { viewModel.toggleUnitForExercise(it, exerciseUnit) }
+                                },
+                                onUpdateNotes = { notes ->
+                                    viewModel.updateExerciseNotes(we.id, notes)
+                                },
+                                previousSetProvider = { exerciseId, position ->
+                                    viewModel.previousSetFor(exerciseId, position)
+                                },
+                                personalBestProvider = { exerciseId ->
+                                    viewModel.personalBestForExercise(exerciseId)
+                                },
+                                observeSets = { viewModel.observeSets(we.id) },
+                                onReorderSets = { viewModel.persistSetOrder(it) },
+                                dragHandle = {
+                                    Icon(
+                                        imageVector = Icons.Default.DragHandle,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .draggableHandle(
+                                                onDragStopped = {
+                                                    viewModel.persistExerciseOrder(localExercises.toList())
+                                                }
+                                            )
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
