@@ -262,6 +262,7 @@ fun WorkoutExerciseCard(
                             unit = unit,
                             previousSet = previousSet,
                             personalBest = personalBest,
+                            allSets = sets,
                             onUpdate = onUpdateSet
                         )
                     }
@@ -399,8 +400,6 @@ private fun androidx.compose.foundation.layout.RowScope.HeaderCell(
     )
 }
 
-private val prAmber = Color(0xFFFFB300)
-
 private fun epley1RM(weightKg: Float, reps: Int): Float =
     if (reps == 1) weightKg else weightKg * (1f + reps / 30f)
 
@@ -411,25 +410,39 @@ private fun SetRow(
     unit: WeightUnit,
     previousSet: PreviousSet?,
     personalBest: PersonalBest?,
+    allSets: List<WorkoutSet>,
     onUpdate: (WorkoutSet) -> Unit
 ) {
     var liveWeightKg by remember(set.weightKg) { mutableStateOf(set.weightKg) }
     var liveReps by remember(set.reps) { mutableStateOf(set.reps) }
     var liveDurationSeconds by remember(set.durationSeconds) { mutableStateOf(set.durationSeconds) }
 
-    val isNewPR = when (exerciseType) {
+    val otherCompletedSets = allSets.filter { it.id != set.id && it.isCompleted }
+
+    val isNewPR = set.isCompleted && when (exerciseType) {
         ExerciseType.WEIGHT_REPS -> {
             val w = liveWeightKg
             val r = liveReps
-            val best1RM = personalBest?.oneRepMaxKg
-            if (w != null && r != null && r > 0 && best1RM != null) {
-                epley1RM(w, r) > best1RM
+            if (w != null && r != null && r > 0) {
+                val live1RM = epley1RM(w, r)
+                val historicBest = personalBest?.oneRepMaxKg ?: 0f
+                val inWorkoutBest = otherCompletedSets.mapNotNull { s ->
+                    val sw = s.weightKg ?: return@mapNotNull null
+                    val sr = s.reps?.takeIf { it > 0 } ?: return@mapNotNull null
+                    epley1RM(sw, sr)
+                }.maxOrNull() ?: 0f
+                val effectiveBest = maxOf(historicBest, inWorkoutBest)
+                effectiveBest > 0f && live1RM > effectiveBest
             } else false
         }
         ExerciseType.TIME -> {
             val current = liveDurationSeconds
-            val best = personalBest?.durationSeconds
-            current != null && best != null && current > best
+            if (current != null) {
+                val historicBest = personalBest?.durationSeconds ?: 0
+                val inWorkoutBest = otherCompletedSets.mapNotNull { it.durationSeconds }.maxOrNull() ?: 0
+                val effectiveBest = maxOf(historicBest, inWorkoutBest)
+                effectiveBest > 0 && current > effectiveBest
+            } else false
         }
     }
     Row(
@@ -546,11 +559,8 @@ private fun SetRow(
         ) {
             if (isNewPR) {
                 Text(
-                    text = "PR",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = prAmber,
-                    fontSize = 9.sp
+                    text = "🥇",
+                    fontSize = 16.sp
                 )
             }
         }

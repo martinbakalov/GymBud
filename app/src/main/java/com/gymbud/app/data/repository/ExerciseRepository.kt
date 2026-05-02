@@ -1,28 +1,45 @@
 package com.gymbud.app.data.repository
 
+import android.content.Context
 import com.gymbud.app.data.local.dao.ExerciseDao
 import com.gymbud.app.data.local.entity.Exercise
 import com.gymbud.app.domain.model.Equipment
 import com.gymbud.app.domain.model.MuscleGroup
+import com.gymbud.app.ui.util.exerciseNameResId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 
 class ExerciseRepository(
-    private val dao: ExerciseDao
+    private val dao: ExerciseDao,
+    private val context: Context
 ) {
+
+    private fun Exercise.resolvedDisplayName(): String {
+        val key = nameKey ?: return name
+        val resId = exerciseNameResId(key) ?: return name
+        return context.getString(resId)
+    }
 
     fun observeFiltered(
         query: String?,
         muscle: MuscleGroup?,
         equipment: Equipment?
     ): Flow<List<Exercise>> {
+        val trimmed = query?.trim()
+
         val source: Flow<List<Exercise>> = when {
-            !query.isNullOrBlank() -> dao.searchByName("%${query.trim()}%")
-            muscle != null         -> dao.observeByMuscle(muscle)
-            equipment != null      -> dao.observeByEquipment(equipment)
-            else                   -> dao.observeAll()
+            !trimmed.isNullOrBlank() -> dao.observeAll().map { list ->
+                list.filter { exercise ->
+                    exercise.name.contains(trimmed, ignoreCase = true) ||
+                    exercise.resolvedDisplayName().contains(trimmed, ignoreCase = true)
+                }
+            }
+            muscle != null           -> dao.observeByMuscle(muscle)
+            equipment != null        -> dao.observeByEquipment(equipment)
+            else                     -> dao.observeAll()
         }
 
         return source.combine(flowOf(Unit)) { list, _ ->

@@ -25,7 +25,7 @@ class GymBudApplication : Application() {
         GymBudDatabase.getDatabase(this, applicationScope)
     }
     val exerciseRepository: ExerciseRepository by lazy {
-        ExerciseRepository(database.exerciseDao())
+        ExerciseRepository(database.exerciseDao(), this)
     }
     val preferences: AppPreferences by lazy {
         AppPreferences(this)
