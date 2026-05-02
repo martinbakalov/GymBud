@@ -145,6 +145,9 @@
     <string name="sex_female">Жена</string>
     <string name="sex_prefer_not_to_say">Не е ваша работа</string>
     <string name="settings_title">Настройки</string>
+    <string name="settings_group_account">Акаунт</string>
+    <string name="settings_group_preferences">Предпочитания</string>
+    <string name="settings_group_support">Помощ</string>
     <string name="settings_section_theme">Тема</string>
     <string name="settings_section_language">Език</string>
     <string name="settings_section_about">Информация</string>
