@@ -36,6 +36,7 @@ class GymBudApplication : Application() {
             workoutDao = database.workoutDao(),
             workoutExerciseDao = database.workoutExerciseDao(),
             workoutSetDao = database.workoutSetDao(),
+            exerciseDao = database.exerciseDao(),
         )
     }
 

@@ -70,6 +70,7 @@
     <string name="profile_workouts_count_label">Workouts</string>
     <string name="profile_edit">Edit profile</string>
     <string name="profile_workout_history">Workout history</string>
+    <string name="profile_overview_label">All-Time Overview</string>
     <string name="profile_empty_history">No finished workouts yet</string>
     <string name="muscle_chest">Chest</string>
     <string name="muscle_back">Back</string>

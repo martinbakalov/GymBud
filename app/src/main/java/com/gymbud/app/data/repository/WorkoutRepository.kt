@@ -1,11 +1,13 @@
 package com.gymbud.app.data.repository
 
+import com.gymbud.app.data.local.dao.ExerciseDao
 import com.gymbud.app.data.local.dao.WorkoutDao
 import com.gymbud.app.data.local.dao.WorkoutExerciseDao
 import com.gymbud.app.data.local.dao.WorkoutSetDao
 import com.gymbud.app.data.local.entity.Workout
 import com.gymbud.app.data.local.entity.WorkoutExercise
 import com.gymbud.app.data.local.entity.WorkoutSet
+import com.gymbud.app.domain.model.MuscleGroup
 import com.gymbud.app.domain.model.PersonalBest
 import com.gymbud.app.domain.model.PreviousSet
 import com.gymbud.app.domain.model.WorkoutStats
@@ -20,6 +22,7 @@ class WorkoutRepository(
     private val workoutDao: WorkoutDao,
     private val workoutExerciseDao: WorkoutExerciseDao,
     private val workoutSetDao: WorkoutSetDao,
+    private val exerciseDao: ExerciseDao,
 ) {
 
 
@@ -271,6 +274,7 @@ class WorkoutRepository(
         var totalSets = 0
         var totalVolumeKg = 0f
         var prCount = 0
+        val muscleCount = mutableMapOf<MuscleGroup, Int>()
 
         for (we in exercises) {
             val sets = workoutSetDao.observeForWorkoutExercise(we.id).firstValueOrEmpty()
@@ -284,17 +288,24 @@ class WorkoutRepository(
                     totalVolumeKg += w * r
                 }
             }
+            val muscle = we.exerciseId?.let { exerciseDao.getById(it)?.primaryMuscle }
+            if (muscle != null) {
+                muscleCount[muscle] = (muscleCount[muscle] ?: 0) + 1
+            }
         }
 
         val duration = if (workout?.startedAt != null && workout.endedAt != null) {
             workout.endedAt - workout.startedAt
         } else null
 
+        val dominantMuscle = muscleCount.maxByOrNull { it.value }?.key
+
         return WorkoutStats(
             totalSets = totalSets,
             totalVolumeKg = totalVolumeKg,
             durationMillis = duration,
-            prCount = prCount
+            prCount = prCount,
+            dominantMuscle = dominantMuscle
         )
     }
 
